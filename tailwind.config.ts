@@ -13,6 +13,7 @@ const config: Config = {
           themeColor: 'rgba(33, 33, 33, 1)',
           fontColor: 'rgba(34, 34, 34, 1)',
           grayFont: 'rgba(158, 158, 158, 1)',
+          darkGrayFont: 'rgba(117, 117, 117, 1)',
           grayBorder: 'rgba(117, 117, 117, 1)',
         },
       },
