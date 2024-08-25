@@ -28,7 +28,7 @@ const page = () => {
             <h2 className="text-2xl font-bold">Welcome Back</h2>
             <p className="mt-1 text-lg font-semibold">Login in your account</p>
           </div>
-          <div className="flex flex-col gap-2 my-1">
+          <div className="flex flex-col gap-2 my-1 text-sm">
             <div>
               <label htmlFor="email" className="font-semibold">
                 Email
@@ -60,7 +60,7 @@ const page = () => {
           <div className="text-right">
             <Link
               href="/forgot"
-              className="text-colors-fontColor text-sm font-semibold"
+              className="text-colors-fontColor text-sm font-semibold hover:underline"
             >
               Forgot Password?
             </Link>
@@ -68,13 +68,13 @@ const page = () => {
           <div>
             <button
               type="submit"
-              className="flex items-center justify-center bg-colors-themeColor font-semibold text-white w-full p-2"
+              className="flex items-center justify-center bg-colors-themeColor font-semibold text-white w-full p-2 hover:underline"
             >
               Sign in
             </button>
           </div>
           <div>
-            <button className="flex gap-2 items-center justify-center border border-colors-grayBorder w-full p-2">
+            <button className="flex gap-2 items-center justify-center border border-colors-grayBorder w-full p-2 hover:underline">
               <span>
                 <Image src={G_icon} alt="Icon" width={20} height={100} />
               </span>
@@ -84,7 +84,7 @@ const page = () => {
           <div className="text-center">
             <p className="text-sm">
               Didn't have an account?{" "}
-              <Link href="/signup" className="font-semibold">
+              <Link href="/signup" className="font-semibold hover:underline">
                 Sign-up
               </Link>
             </p>
