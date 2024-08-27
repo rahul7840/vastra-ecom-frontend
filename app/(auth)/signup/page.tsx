@@ -1,11 +1,31 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import Image from "next/image";
 import G_icon from "@/public/auth/G-icon.svg";
 import logo from "@/public/auth/logo.svg";
 import authImg from "@/public/auth/authImg.svg";
 import Link from "next/link";
 
-const page = () => {
+const Page = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    password: "",
+    gender: "",
+    birthdate: "",
+  });
+
+  const handleChange = (e: { target: { name: string; value: string } }) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e: { preventDefault: () => void }) => {
+    e.preventDefault();
+    console.log(formData);
+  };
+
   return (
     <div className="flex flex-col lg:flex-row justify-center items-center h-screen lg:h-full">
       <div className="h-2/5 lg:h-full w-full lg:order-2">
@@ -23,7 +43,7 @@ const page = () => {
           height={100}
           className="absolute top-5 left-5 hidden lg:block"
         />
-        <form className="mt-10 flex flex-col gap-2 w-full max-w-sm lg:max-w-md">
+        <form className="mt-10 flex flex-col gap-2 w-full max-w-sm lg:max-w-md" onSubmit={handleSubmit}>
           <div>
             <h2 className="text-2xl font-bold">Create an Account</h2>
             <p className="mt-1 text-lg font-semibold">
@@ -32,14 +52,18 @@ const page = () => {
           </div>
           <div className="flex flex-col gap-2 my-1 text-sm">
             <div>
-              <label htmlFor="FullName" className="font-semibold">
+              <label htmlFor="fullName" className="font-semibold">
                 Full Name
               </label>
               <div className="mt-1">
                 <input
                   type="text"
+                  id="fullName"
+                  name="fullName" // Add name attribute
                   placeholder="Enter your Fullname"
                   className="border border-colors-grayBorder w-full p-2"
+                  value={formData.fullName}
+                  onChange={handleChange}
                 />
               </div>
             </div>
@@ -49,9 +73,14 @@ const page = () => {
               </label>
               <div className="mt-1">
                 <input
-                  type="text"
+                  type="email"
+                  id="email"
+                  name="email" // Add name attribute
                   placeholder="Enter your email"
                   className="border border-colors-grayBorder w-full p-2"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
                 />
               </div>
             </div>
@@ -62,8 +91,12 @@ const page = () => {
               <div className="mt-1">
                 <input
                   type="text"
+                  id="phone"
+                  name="phone" // Add name attribute
                   placeholder="Enter your Phone no"
                   className="border border-colors-grayBorder w-full p-2"
+                  value={formData.phone}
+                  onChange={handleChange}
                 />
               </div>
             </div>
@@ -73,12 +106,20 @@ const page = () => {
               </label>
               <div className="relative mt-1">
                 <input
-                  type="text"
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  name="password" // Add name attribute
                   placeholder="Enter your password"
                   className="border border-colors-grayBorder w-full p-2"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
                 />
-                <p className="absolute top-3 right-2 text-xs font-medium text-colors-grayFont">
-                  Show
+                <p
+                  className="absolute top-3 right-2 text-xs font-medium text-colors-grayFont cursor-pointer"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? "Hide" : "Show"}
                 </p>
               </div>
             </div>
@@ -90,8 +131,10 @@ const page = () => {
                 <div className="mt-1">
                   <select
                     id="gender"
-                    name="gender"
+                    name="gender" // Add name attribute
                     className="border border-colors-grayBorder text-colors-grayFont w-full p-2 rounded-none"
+                    value={formData.gender}
+                    onChange={handleChange}
                     defaultValue=""
                   >
                     <option
@@ -117,8 +160,10 @@ const page = () => {
                 <input
                   type="date"
                   id="birthdate"
-                  name="birthdate"
+                  name="birthdate" // Add name attribute
                   className="border border-colors-grayBorder text-colors-grayFont w-full p-2 mt-1"
+                  value={formData.birthdate}
+                  onChange={handleChange}
                 />
               </div>
             </div>
@@ -153,4 +198,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

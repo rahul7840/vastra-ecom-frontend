@@ -38,6 +38,7 @@ const page = () => {
                   type="text"
                   placeholder="Enter your email"
                   className="border border-colors-grayBorder w-full p-2"
+                  required
                 />
               </div>
             </div>
@@ -47,9 +48,11 @@ const page = () => {
               </label>
               <div className="relative mt-1">
                 <input
-                  type="text"
+                  type="password"
+                  id="password"
                   placeholder="Enter your password"
                   className="border border-colors-grayBorder w-full p-2"
+                  required
                 />
                 <p className="absolute top-3 right-2 text-xs font-medium text-colors-grayFont">
                   Show
