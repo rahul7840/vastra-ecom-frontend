@@ -52,7 +52,7 @@ const page = () => {
 
           <div className="text-center">
             <p className="text-sm">
-              Back to
+              Back to {" "}
               <Link href="/login" className="font-semibold hover:underline">
                 Login
               </Link>

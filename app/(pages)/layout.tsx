@@ -1,7 +1,8 @@
 'use client';
 
+import Footer from '@/components/navbar/Footer';
 import { useState } from 'react';
-import Footer from '../components/Footer';
+import Footer2 from '../components/Footer';
 
 export default function layout({
 	children,
@@ -137,6 +138,36 @@ export default function layout({
 			</nav>
 			<main>{children}</main>
 			<Footer />
+			<Footer2 />
 		</>
+
+		//     <div className="flex justify-center items-center gap-8">
+		//       <a href="/search">
+		//         <img
+		//           className="w-7 h-7"
+		//           src="/assets/images/search.svg"
+		//           alt="Search"
+		//         />
+		//       </a>
+		//       <a href="/account">
+		//         <img
+		//           className="w-7 h-7"
+		//           src="/assets/images/group.svg"
+		//           alt="Group"
+		//         />
+		//       </a>
+		//       <a href="/cart">
+		//         <img className="w-7 h-7" src="/assets/images/cart.svg" alt="Cart" />
+		//       </a>
+		//     </div>
+		//   </nav>
+		//   <main>{children}</main>
+		// <div className="text-white bg-[#E12D2D] text-center text-base py-4 px-4 font-normal">
+		// Lorem ipsum dolor sit amet consectetur. Platea neque metus mauris scelerisque lobortis posuere. Nisl leo nunc ipsum bibendum pretium eget. Adipiscing neque sit sed proin justo. Parturient mauris in a lorem elit.
+		//   </div>
+		//   <div>
+		//     <Footer />
+		//   </div>
+		// </>
 	);
 }
