@@ -1,54 +1,11 @@
 'use client';
-import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/swiper-bundle.css';
 import { CustomCarousel } from '../components/CustomCarousel';
-import { Title } from '../components/Title';
+import { TestimonailsComponent } from '../components/Testimonials';
 import { TitleWithCards } from '../components/TitleWithCards';
-import { TestimonailCard } from '../components/TestimonialCard';
-import { Autoplay } from 'swiper/modules';
-import { useState } from 'react';
 
 export default function Home() {
 	const images = ['/assets/images/banner.png', '/assets/images/banner.png'];
-
-	const testimonials = [
-		{
-			name: 'Nelson Kuhlman',
-			text: "I was hesitant to try this brand, but I'm so glad I did! The reviews were spot on. This product is a must-have.",
-			stars: 3,
-			createdAt: '24/05/2024',
-		},
-		{
-			name: 'Sally Thiel',
-			text: 'Best purchase ever! Fast shipping and excellent customer service.',
-			stars: 3,
-			createdAt: '24/05/2024',
-		},
-		{
-			name: 'Omar Watsica',
-			text: 'Amazing quality! This product exceeded my expectations. Highly recommend',
-			stars: 3,
-			createdAt: '24/05/2024',
-		},
-		{
-			name: 'Omar Watsica',
-			text: 'Amazing quality! This product exceeded my expectations. Highly recommend',
-			stars: 3,
-			createdAt: '24/05/2024',
-		},
-		{
-			name: 'Omar Watsica',
-			text: 'Amazing quality! This product exceeded my expectations. Highly recommend',
-			stars: 3,
-			createdAt: '24/05/2024',
-		},
-		{
-			name: 'Omar Watsica',
-			text: 'Amazing quality! This product exceeded my expectations. Highly recommend',
-			stars: 3,
-			createdAt: '24/05/2024',
-		},
-	];
 
 	const items = [
 		{
@@ -127,29 +84,7 @@ export default function Home() {
 				<TitleWithCards viewAll={true} items={items} text='New Arrival' />
 			</div>
 
-			<div className='flex flex-col gap-9 mt-44'>
-				<Title text='Testimonials' />
-
-				<div className='mx-7 my-4'>
-					<Swiper
-						spaceBetween={30}
-						slidesPerView={5}
-						// onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
-						autoplay={{
-							delay: 2500,
-							disableOnInteraction: false,
-						}}
-						modules={[Autoplay]}
-						loop={true}
-					>
-						{testimonials.map((e, index) => (
-							<SwiperSlide className='py-3' key={index}>
-								<TestimonailCard item={e} />
-							</SwiperSlide>
-						))}
-					</Swiper>
-				</div>
-			</div>
+			<TestimonailsComponent />
 		</div>
 	);
 }

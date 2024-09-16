@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Footer from '../components/Footer';
 
 export default function layout({
 	children,
@@ -135,6 +136,7 @@ export default function layout({
 				</div>
 			</nav>
 			<main>{children}</main>
+			<Footer />
 		</>
 	);
 }
