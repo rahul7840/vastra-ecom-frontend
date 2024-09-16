@@ -13,7 +13,10 @@ import location from "@/public/assets/images/locationIcon.svg";
 const Footer = () => {
   return (
     <footer className="text-black-100 mt-5 border-t border-gray-100">
-      <div className="flex flex-col gap-5 p-12 lg:flex-row xl:justify-between">
+        <div className="my-5 text-center">
+            <p className="text-gray-700">Over <span className="font-bold">15 Thousand</span> Happy Customers</p>
+        </div>
+      <div className="flex flex-col gap-5 px-12 my-10 lg:flex-row xl:justify-between">
         {/* Logo and Description */}
         <div className="w-[25%]">
           <Image
