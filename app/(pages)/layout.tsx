@@ -1,8 +1,6 @@
 'use client';
-
-import Footer from '@/components/navbar/Footer';
 import { useState } from 'react';
-import Footer2 from '../components/Footer';
+import Footer from '../components/Footer';
 
 export default function layout({
 	children,
@@ -138,7 +136,6 @@ export default function layout({
 			</nav>
 			<main>{children}</main>
 			<Footer />
-			<Footer2 />
 		</>
 
 		//     <div className="flex justify-center items-center gap-8">

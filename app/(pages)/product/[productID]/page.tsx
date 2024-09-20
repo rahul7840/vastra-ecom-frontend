@@ -32,7 +32,7 @@ const page = () => {
 						/>
 					</div>
 				</div>
-				<div className='flex flex-col min-w-[240px] w-[413px]'>
+				<div className='flex flex-col min-w-[240px] w-[513px]'>
 					<h1 className='text-2xl font-semibold tracking-wider leading-snug text-neutral-800'>
 						Product Name Lorem ipsum
 					</h1>
@@ -58,15 +58,15 @@ const page = () => {
 							300 review
 						</div>
 					</div>
-					<div className='flex gap-3 items-center mt-4 font-semibold tracking-wider'>
-						<div className='self-stretch my-auto text-2xl leading-snug text-neutral-700'>
+					<div className='flex gap-3 items-center mt-4 font-semibold w-full'>
+						<div className='my-auto min-w-[140px] line-through text-2xl  leading-snug text-neutral-700'>
 							Rs. 1599.00
 						</div>
-						<div className='flex gap-3 items-end self-stretch my-auto min-w-[240px]'>
-							<div className='text-3xl leading-snug text-neutral-700'>
+						<div className='flex gap-1 items-end my-auto w-full'>
+							<div className='text-3xl w-full text-neutral-700'>
 								Rs. 1299.00
 							</div>
-							<div className='text-xs leading-4 text-neutral-400 w-[126px]'>
+							<div className='text-xs leading-4 mb-1 text-neutral-400 w-full'>
 								MRP incl. of all taxes
 							</div>
 						</div>
@@ -115,7 +115,7 @@ const page = () => {
 												key={color}
 												className={`flex shrink-0 self-stretch py-1.5 my-auto ${
 													index === 0
-														? 'border border-solid border-neutral-400'
+														? 'border justify-center border-solid border-neutral-400'
 														: ''
 												} bg-${color} h-[25px] rounded-[63px] w-[25px]`}
 												aria-label={`Select ${color} color`}

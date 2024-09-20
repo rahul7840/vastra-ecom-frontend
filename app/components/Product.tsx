@@ -1,3 +1,4 @@
+import { useRouter } from 'next/navigation';
 import { Product } from '../utils/types';
 
 interface Props {
@@ -6,9 +7,10 @@ interface Props {
 
 export const CustomProduct = (props: Props) => {
 	const { item } = props;
+	const router = useRouter();
 
 	return (
-		<div className='flex justify-center items-center'>
+		<div onClick={e=> router.push(`/product/${item.id}`)} className='flex justify-center items-center'>
 			<div className='flex flex-col gap-8 w-full max-w-72'>
 				<img
 					className='w-full max-w-72 h-full'

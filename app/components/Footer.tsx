@@ -1,31 +1,173 @@
-import React from 'react';
-import Contact from './Contact';
-import AboutUs from './AboutUs';
-import CustomerService from './CustomerService';
-import Legal from './Legal';
-import Newsletter from './NewsLetter';
+import Image from "next/image";
+import React from "react";
+import logo from "../../public/auth/logo.svg";
+import facebook from "@/public/assets/images/facebook.svg";
+import instagram from "@/public/assets/images/instagram.svg";
+import pinterest from "@/public/assets/images/pinterest.svg";
+import youtube from "@/public/assets/images/youtube.svg";
+import twitter from "@/public/assets/images/twitter.svg";
+import email from "@/public/assets/images/mailIcon.svg";
+import call from "@/public/assets/images/callIcon.svg";
+import location from "@/public/assets/images/locationIcon.svg";
 
-const Footer: React.FC = () => {
-	return (
-		<div className='flex flex-col'>
-			<section className='flex-1 shrink gap-2.5 self-stretch px-8 py-4 mt-6 w-full text-xl font-semibold tracking-wide leading-snug text-white bg-red-600 max-md:px-5 max-md:max-w-full'>
-				Lorem ipsum dolor sit amet consectetur. Platea neque metus mauris
-				scelerisque lobortis posuere. Nisl leo nunc ipsum bibendum pretium eget.
-				Adipiscing neque sit sed proin justo. Parturient mauris in a lorem elit.
-			</section>
-			<footer className='flex flex-wrap justify-center gap-10 items-center w-full self-center mt-8 mb-14 max-md:max-w-full'>
-				<AboutUs />
-				<Contact />
-				<div className='flex flex-col self-stretch tracking-wide leading-snug min-w-[240px] w-[360px]'>
-					<div className='flex gap-10 justify-between items-start w-full'>
-						<CustomerService />
-						<Legal />
-					</div>
-				</div>
-				<Newsletter />
-			</footer>
-		</div>
-	);
+const Footer = () => {
+  return (
+    <footer className="text-black-100 mt-5 border-t border-gray-100">
+        <div className="my-5 text-center">
+            <p className="text-gray-700">Over <span className="font-bold">15 Thousand</span> Happy Customers</p>
+        </div>
+      <div className="flex flex-col gap-5 px-12 my-10 lg:flex-row xl:justify-between">
+        {/* Logo and Description */}
+        <div className="w-[25%]">
+          <Image
+            src={logo}
+            alt="logo"
+            width={90}
+            height={37}
+            className="object-contain "
+          />
+          <p className="mb-6 mt-10 text-sm text-gray-500">
+            About us ipsum dolor sit amet, consectetuer adipiscing elit, sed
+            diam nonummy dolor sit amet, consectetuer adipiscing elit, sed diam
+            nonummy.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <Image
+              src={facebook}
+              alt="Facebook"
+              width={45}
+              height={41}
+              className="object-contain "
+            />
+            <Image
+              src={instagram}
+              alt="Instagram"
+              width={45}
+              height={41}
+              className="object-contain "
+            />
+            <Image
+              src={pinterest}
+              alt="Pinterest"
+              width={45}
+              height={41}
+              className="object-contain "
+            />
+            <Image
+              src={youtube}
+              alt="YouTube"
+              width={45}
+              height={41}
+              className="object-contain "
+            />
+            <Image
+              src={twitter}
+              alt="Twitter"
+              width={45}
+              height={41}
+              className="object-contain "
+            />
+          </div>
+        </div>
+        {/* Contact Section */}
+        <div className="flex flex-col gap-5 text-base w-[20%]">
+          <h3 className="font-bold text-gray-600">Contact</h3>
+          <div className="flex gap-2 items-start">
+          <Image
+              src={email}
+              alt="email"
+              width={20}
+              height={20}
+              className="object-contain "
+            />
+            <a
+              href="mailto:thingslinker@gmail.com"
+              className="text-gray-500 text-sm"
+            >
+              demoemail@gmail.com
+            </a>
+          </div>
+
+          <div className="flex gap-2 items-start">
+          <Image
+              src={call}
+              alt="Call"
+              width={20}
+              height={20}
+              className="object-contain "
+            />
+            <a href="/" className="text-gray-500 text-sm">
+              +91-00000-00000
+            </a>
+          </div>
+
+          <div className="flex gap-2 items-start">
+          <Image
+              src={location}
+              alt="location"
+              width={20}
+              height={20}
+              className="object-contain "
+            />
+            <a href="/" className="text-gray-500 text-sm">
+              Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam
+              nonummy
+            </a>
+          </div>
+        </div>
+
+        {/* Customer Service */}
+        <div className="flex flex-col gap-5 text-base w-[15%]">
+          <h3 className="font-bold text-gray-600">Customer Service</h3>
+          <a href="/" className="text-gray-500 text-sm">
+            Contact us
+          </a>
+          <a href="/" className="text-gray-500 text-sm">
+            FAQ's
+          </a>
+          <a href="/" className="text-gray-500 text-sm">
+            Shipping and Returns
+          </a>
+          <a href="/" className="text-gray-500 text-sm">
+            Size Guide
+          </a>
+        </div>
+
+        {/* Legal Section */}
+        <div className="flex flex-col gap-5 text-base w-[15%]">
+          <h3 className="font-bold text-gray-600">Legal</h3>
+          <a href="/" className="text-gray-500 text-sm">
+            Privacy Policy
+          </a>
+          <a href="/" className="text-gray-500 text-sm">
+            Terms & Conditions
+          </a>
+        </div>
+
+        {/* Sign Up for Offers Section */}
+        <div className="flex flex-col text-base w-[25%]">
+          <h3 className="font-bold mb-5 text-gray-600">Sign up for exciting offers</h3>
+          <div>
+            <p className="text-sm text-gray-500 mb-5">
+              About us ipsum dolor sit amet, consectetuer adipiscing elit, sed
+              diam nonummy dolor sit amet, consectetuer adipiscing elit, sed
+              diam nonummy.
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              placeholder="Enter your email"
+              className="px-5 py-2 border-gray-400 border-[1.5px] text-sm"
+            />
+            <button className="px-5 py-2 bg-[#871B1B] text-md text-white">
+              Submit
+            </button>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
 };
 
 export default Footer;
