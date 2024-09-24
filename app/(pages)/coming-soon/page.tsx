@@ -40,18 +40,24 @@ const Page = () => {
   }, [targetDate]);
 
   return (
-    <div className="flex flex-col lg:flex-row w-full h-screen">
-      <div className="relative w-full lg:w-1/2 h-1/2 lg:h-full">
-        <Image src={image} alt="img" className="w-full h-full object-cover" />
-        <p className="text-3xl text-gray-800 absolute top-8 left-8">
+    <div className="flex flex-col md:flex-row w-full min-h-screen">
+      {/* Left side - Image */}
+      <div className="hidden md:block relative w-full md:w-1/2 h-auto">
+        <Image
+          src={image}
+          alt="img"
+          className="w-full h-auto object-cover"
+          style={{ maxHeight: "100vh" }}
+        />
+        <p className="text-2xl text-gray-900 absolute top-8 left-8 font-medium">
           VASTRA
         </p>
       </div>
 
-      <div className="relative w-full lg:w-1/2 bg-gray-100 p-8">
+      {/* Right side - Countdown */}
+      <div className="relative w-full md:w-1/2 bg-gray-100 h-screen md:h-auto p-8 flex flex-col justify-center">
         <div className="absolute top-8 right-8">
-          <Link href="/" className="text-blue-500 text-base font-medium
-          ">
+          <Link href="/" className="text-blue-500 text-base font-medium">
             Home
           </Link>
         </div>
@@ -59,6 +65,7 @@ const Page = () => {
         <div className="flex flex-col items-center justify-center h-full">
           <h2 className="text-4xl mb-10">Coming Soon</h2>
 
+          {/* Countdown Timer */}
           <div className="flex gap-10 text-center">
             <div>
               <span className="block text-5xl font-bold">{timeLeft.days}</span>
