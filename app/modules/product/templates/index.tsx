@@ -1,19 +1,12 @@
 'use client';
+import { StarRating } from '@/app/components/StarRating';
 import { TestimonailsComponent } from '@/app/components/Testimonials';
 import { useState } from 'react';
+import { ProductQuantity } from '../../common/components/ProductQuantity';
 
 export const ProductTemplate = () => {
 	const [selectedSize, setSelectedSize] = useState('M');
 	const [selectedColor, setSelectedColor] = useState('M');
-	const [quantity, setQuantity] = useState(1);
-
-	const incrementQuantity = () => {
-		setQuantity((prev) => Math.min(prev + 1, 10));
-	};
-
-	const decrementQuantity = () => {
-		setQuantity((prev) => Math.max(prev - 1, 1));
-	};
 
 	return (
 		<section className='flex z-0 flex-col gap-10 items-start px-12 mt-12 w-full max-md:px-5 max-md:mt-10 max-md:max-w-full'>
@@ -51,15 +44,7 @@ export const ProductTemplate = () => {
 					</h1>
 					<div className='flex gap-4 items-center mt-2 max-w-full w-[196px]'>
 						<div className='flex gap-1 items-center self-stretch my-auto'>
-							{[1, 2, 3, 4, 5].map((star) => (
-								<img
-									key={star}
-									loading='lazy'
-									src={`http://b.io/ext_${star <= 3 ? '9' : '10'}-`}
-									className='object-contain shrink-0 self-stretch my-auto aspect-square w-[18px]'
-									alt={star <= 3 ? 'Filled star' : 'Empty star'}
-								/>
-							))}
+							<StarRating rating={4} />
 						</div>
 						<img
 							loading='lazy'
@@ -171,23 +156,7 @@ export const ProductTemplate = () => {
 						</div>
 						<div className='flex flex-col mt-8 w-full text-2xl font-semibold tracking-wider leading-snug'>
 							<div className='flex gap-3 items-center w-full'>
-								<div className='flex gap-7 justify-between items-center self-stretch px-4 py-2.5 my-auto whitespace-nowrap border border-solid border-neutral-800 min-h-[51px] text-neutral-500 w-[125px]'>
-									<button
-										onClick={decrementQuantity}
-										className='self-stretch my-auto'
-									>
-										-
-									</button>
-									<span className='self-stretch my-auto tracking-wide text-neutral-700'>
-										{quantity}
-									</span>
-									<button
-										onClick={incrementQuantity}
-										className='self-stretch my-auto'
-									>
-										+
-									</button>
-								</div>
+								<ProductQuantity initialQuantity={1} />
 								<button className='gap-2 self-stretch px-7 py-2.5 my-auto border border-solid border-neutral-800 min-w-[240px] text-neutral-800 w-[283px] max-md:px-5'>
 									Add to Cart
 								</button>

@@ -1,9 +1,8 @@
-import React from 'react'
+import { CartTemplate } from '@/app/modules/cart/templates';
+import React from 'react';
 
 const page = () => {
-  return (
-    <div>page</div>
-  )
-}
+	return <CartTemplate />;
+};
 
-export default page
+export default page;
