@@ -8,6 +8,9 @@ const config: Config = {
 	],
 	theme: {
 		extend: {
+			fontFamily: {
+				fraunces: ['var(--font-fraunces)'],
+			},
 			colors: {
 				colors: {
 					themeColor: 'rgba(33, 33, 33, 1)',

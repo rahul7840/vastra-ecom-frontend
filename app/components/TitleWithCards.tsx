@@ -1,12 +1,11 @@
 'use client';
-
-import { Product } from '../utils/types';
+import { IProduct } from '../utils/types';
 import { CustomProduct } from './Product';
 import { Title } from './Title';
 
 interface Props {
 	text: string;
-	items: Product[];
+	items: IProduct[];
 	viewAll?: boolean;
 }
 

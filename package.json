@@ -13,6 +13,7 @@
     "react": "^18",
     "react-dom": "^18",
     "react-responsive-carousel": "^3.2.23",
+    "sass": "^1.79.3",
     "swiper": "^11.1.12"
   },
   "devDependencies": {

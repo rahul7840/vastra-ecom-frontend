@@ -27,3 +27,7 @@
 	background: #555555;
 	border-radius: 6px;
 }
+
+.frauncesText {
+	font-family: var(--font-fraunces);
+}
