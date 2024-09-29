@@ -68,7 +68,7 @@ export const Navbar = () => {
 							alt='Search'
 						/>
 					</a>
-					<a href='/account'>
+					<a href='/login'>
 						<img
 							className='w-7 h-7'
 							src='/assets/images/group.svg'
