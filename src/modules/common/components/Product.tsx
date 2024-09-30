@@ -5,7 +5,7 @@ interface Props {
 	item: IProduct;
 }
 
-export const CustomProduct = (props: Props) => {
+export const ProductCard = (props: Props) => {
 	const { item } = props;
 	const router = useRouter();
 

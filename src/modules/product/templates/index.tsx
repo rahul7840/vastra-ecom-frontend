@@ -1,8 +1,8 @@
 'use client';
-import { StarRating } from '@/app/modules/common/components/StarRating';
 import { useState } from 'react';
 import { ProductQuantity } from '../../common/components/ProductQuantity';
 import { Testimonails } from '../../common/testimonials/Testimonials';
+import { StarRating } from '@/modules/common/components/StarRating';
 
 export const ProductTemplate = () => {
 	const [selectedSize, setSelectedSize] = useState('M');

@@ -3,17 +3,21 @@ import G_icon from '@/../public/assets/images/G-icon.svg';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FC } from 'react';
 import { useForm } from 'react-hook-form';
-import { loginFormSchema, LoginFormSchema } from './index';
+import { loginFormSchema, LoginFormSchema } from './schema';
 import { IApiError } from '@/api/types';
 import { api } from '@/api';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import { useMutation } from '@tanstack/react-query';
+import { populateError } from '@/modules/core/lib/error';
+import Link from 'next/link';
+import Image from 'next/image';
 
 interface LoginFormProps {}
 
 export const LoginForm: FC<LoginFormProps> = () => {
 	const router = useRouter();
+
 	const form = useForm<LoginFormSchema>({
 		defaultValues: {
 			email: '',
@@ -26,23 +30,26 @@ export const LoginForm: FC<LoginFormProps> = () => {
 		mutationFn: (data: LoginFormSchema) => api.auth.login(data),
 		onSuccess: (response) => {
 			console.log('response', response);
-			toast.success("You're now logged in successfully.");
+			toast.success('Log in successfully.');
 			router.push('/');
-			window.location.reload();
 		},
 		onError: (error: IApiError) => {
+			if (error.response?.data.message) {
+				toast.error(error.response.data.message);
+			}
 			populateError(form, error);
 		},
 	});
 
 	const onSubmit = (data: LoginFormSchema) => {
-		console.log('dataaaa submit', data);
 		mutation.mutate(data);
 	};
 
+	const { register, handleSubmit } = form;
+
 	return (
 		<form
-			onSubmit={form.handleSubmit(onSubmit)}
+			onSubmit={handleSubmit(onSubmit)}
 			className='flex flex-col gap-2 w-full max-w-sm lg:max-w-md'
 		>
 			<div>
@@ -57,6 +64,7 @@ export const LoginForm: FC<LoginFormProps> = () => {
 					<div className='mt-1'>
 						<input
 							type='text'
+							{...register('email')}
 							placeholder='Enter your email'
 							className='border border-colors-grayBorder w-full p-2'
 							required
@@ -71,6 +79,7 @@ export const LoginForm: FC<LoginFormProps> = () => {
 						<input
 							type='password'
 							id='password'
+							{...register('password')}
 							placeholder='Enter your password'
 							className='border border-colors-grayBorder w-full p-2'
 							required

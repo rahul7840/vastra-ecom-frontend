@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import logo from '@/../public/assets/images/logo.svg';
 import authImg from '@/../public/assets/images/authImg.svg';
-import { LoginForm } from '../form/schema/login';
+import { LoginForm } from '../form';
 
 export const LoginTemplate = () => {
 	return (

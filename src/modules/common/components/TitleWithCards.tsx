@@ -1,7 +1,7 @@
 'use client';
 import { IProduct } from '@/app/utils/types';
-import { CustomProduct } from './Product';
 import { Title } from './Title';
+import { ProductCard } from './Product';
 
 interface Props {
 	text: string;
@@ -18,7 +18,7 @@ export const TitleWithCards = (props: Props) => {
 			<div className='flex flex-col justify-center items-center mt-16 px-14'>
 				<div className='grid grid-cols-4 max-xl:grid-cols-3 max-lg:grid-cols-2 items-center justify-center gap-x-16 gap-y-20 w-full max-w-[1383px]'>
 					{items.map((e) => {
-						return <CustomProduct item={e} />;
+						return <ProductCard item={e} />;
 					})}
 				</div>
 

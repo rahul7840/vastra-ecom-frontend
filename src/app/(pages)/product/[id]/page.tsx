@@ -1,4 +1,4 @@
-import { ProductTemplate } from '@/app/modules/product/templates';
+import { ProductTemplate } from '@/modules/product/templates';
 
 const page = () => {
 	return <ProductTemplate />;

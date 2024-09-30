@@ -1,4 +1,4 @@
-import { LandingTemplate } from '../modules/landing/template';
+import { LandingTemplate } from '@/modules/landing/template';
 
 const LandingPage = () => {
 	return <LandingTemplate />;
