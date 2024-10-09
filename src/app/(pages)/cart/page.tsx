@@ -1,4 +1,4 @@
-import { CartTemplate } from '@/app/modules/cart/templates';
+import { CartTemplate } from '@/modules/cart/templates';
 import React from 'react';
 
 const page = () => {

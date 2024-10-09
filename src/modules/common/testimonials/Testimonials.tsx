@@ -5,7 +5,12 @@ import { Autoplay } from 'swiper/modules';
 import { Title } from '../components/Title';
 import { TestimonailCard } from './TestimonialCard';
 
-export const Testimonails = () => {
+interface TestimonialsProps {
+	showTitle?: boolean;
+	
+}
+
+export const Testimonails = ({ showTitle = true }: TestimonialsProps) => {
 	const testimonials = [
 		{
 			name: 'Nelson Kuhlman',
@@ -46,8 +51,8 @@ export const Testimonails = () => {
 	];
 
 	return (
-		<div className='flex flex-col gap-9 mt-44'>
-			<Title text='Testimonials' />
+		<div className={'flex flex-col gap-9'}>
+			{showTitle && <Title text='Testimonials' />}
 
 			<div className='mx-7 my-4'>
 				<Swiper

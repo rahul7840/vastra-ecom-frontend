@@ -1,17 +1,17 @@
 'use client';
 import G_icon from '@/../public/assets/images/G-icon.svg';
+import { api } from '@/api';
+import { IApiError } from '@/api/types';
+import { populateError } from '@/modules/core/lib/error';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@tanstack/react-query';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { FC } from 'react';
 import { useForm } from 'react-hook-form';
-import { loginFormSchema, LoginFormSchema } from './schema';
-import { IApiError } from '@/api/types';
-import { api } from '@/api';
 import { toast } from 'react-toastify';
-import { useRouter } from 'next/navigation';
-import { useMutation } from '@tanstack/react-query';
-import { populateError } from '@/modules/core/lib/error';
-import Link from 'next/link';
-import Image from 'next/image';
+import { loginFormSchema, LoginFormSchema } from './schema';
 
 interface LoginFormProps {}
 
@@ -29,7 +29,6 @@ export const LoginForm: FC<LoginFormProps> = () => {
 	const mutation = useMutation({
 		mutationFn: (data: LoginFormSchema) => api.auth.login(data),
 		onSuccess: (response) => {
-			console.log('response', response);
 			toast.success('Log in successfully.');
 			router.push('/');
 		},

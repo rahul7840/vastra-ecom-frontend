@@ -2,7 +2,7 @@ import React from 'react';
 
 interface SummaryItemProps {
 	label: string;
-	value: string;
+	value: number;
 	isBold?: boolean;
 }
 
@@ -21,7 +21,7 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
 					<div
 						className={`${isBold ? 'font-bold' : 'font-semibold'} text-right`}
 					>
-						{value}
+						₹{value.toFixed(2)}
 					</div>
 				</div>
 			</div>

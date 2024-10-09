@@ -1,7 +1,13 @@
 import { ProductTemplate } from '@/modules/product/templates';
 
-const page = () => {
-	return <ProductTemplate />;
+interface PageProps {
+	params: {
+		id: string;
+	};
+}
+
+const page = ({ params }: PageProps) => {
+	return <ProductTemplate id={params.id} />;
 };
 
 export default page;

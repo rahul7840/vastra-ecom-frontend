@@ -1,4 +1,4 @@
-import { IProduct } from '@/app/utils/types';
+import { IProduct } from '@/modules/types/product';
 import { useRouter } from 'next/navigation';
 
 interface Props {
@@ -12,28 +12,30 @@ export const ProductCard = (props: Props) => {
 	return (
 		<div
 			onClick={(e) => router.push(`/product/${item.id}`)}
-			className='flex justify-center items-center'
+			className='flex justify-center items-center cursor-pointer'
 		>
 			<div className='flex flex-col gap-8 w-full max-w-72'>
 				<img
 					className='w-full max-w-72 h-full'
-					src='/assets/images/shirt.png'
+					src={item?.images[0] ?? ''}
 					alt=''
 				/>
 				<div className='flex flex-col gap-2'>
-					<div className='font-semibold text-xl text-[#212121]'>
+					<div className='font-semibold capitalize text-xl text-[#212121]'>
 						{item.name}
 					</div>
-					<div className='text-[#757575] text-base font-semibold'>
-						{item.category}
-					</div>
+					{item.category && (
+						<div className='text-[#757575] text-base font-semibold'>
+							{item.category}
+						</div>
+					)}
 
 					<div className='flex items-center gap-2'>
 						<div className='text-sm line-through font-semibold text-[#616161]'>
 							{item.discountedPrice}
 						</div>
 						<div className='text-lg font-semibold text-[#4F1010]'>
-							{item.price}
+							{item.priceWithoutTax}
 						</div>
 					</div>
 				</div>

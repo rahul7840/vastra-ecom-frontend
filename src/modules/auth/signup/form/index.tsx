@@ -1,16 +1,17 @@
 'use client';
 import G_icon from '@/../public/assets/images/G-icon.svg';
+import { api } from '@/api';
+import { IApiError } from '@/api/types';
+import { populateError } from '@/modules/core/lib/error';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@tanstack/react-query';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { FC, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { IApiError } from '@/api/types';
-import { api } from '@/api';
+import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
-import { useRouter } from 'next/navigation';
-import { useMutation } from '@tanstack/react-query';
-import { populateError } from '@/modules/core/lib/error';
-import Link from 'next/link';
-import Image from 'next/image';
 import { signupFormSchema, SignupFormSchema } from './schema';
 
 interface SignupFormProps {}
@@ -18,6 +19,7 @@ interface SignupFormProps {}
 export const SignupForm: FC<SignupFormProps> = () => {
 	const [showPassword, setShowPassword] = useState(false);
 	const router = useRouter();
+	const dispatch = useDispatch();
 
 	const form = useForm<SignupFormSchema>({
 		defaultValues: {
@@ -35,6 +37,7 @@ export const SignupForm: FC<SignupFormProps> = () => {
 		onSuccess: (response) => {
 			toast.success('Signup successfully.');
 			router.push('/');
+			window.location.reload();
 		},
 		onError: (error: IApiError) => {
 			if (error.response?.data.message) {

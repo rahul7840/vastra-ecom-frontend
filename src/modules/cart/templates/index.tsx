@@ -1,85 +1,41 @@
-import { Title } from '@/app/modules/common/components/Title';
+'use client';
+import { Title } from '@/modules/common/components/Title';
+import { RootState } from '@/store';
+import { useSelector } from 'react-redux';
 import ShoppingCartList from '../components/CartList';
 import { CartProgress } from '../components/CartProgress';
 import { CartSummary } from '../components/CartSummary';
+import { CheckoutDetails } from '../components/CheckoutDetails';
 import { CouponSection } from '../components/CouponSection';
-
-const cartItems = [
-	{
-		id: 1,
-		imageSrc:
-			'https://cdn.builder.io/api/v1/image/assets/TEMP/70c6202df6da878330a6d91dc3241ebaf1ec4dbfd07792604f0cc93624a086f7?placeholderIfAbsent=true&apiKey=58620f448f4d4934b34d4e1e054160c6',
-		productName: 'T-shirt Name',
-		color: 'Black',
-		price: 19.0,
-		quantity: 1,
-	},
-	{
-		id: 2,
-		imageSrc:
-			'https://cdn.builder.io/api/v1/image/assets/TEMP/3d05d0881817cd132946dfbf3978a4fd693a35011c4d46fd3e048e5bccb64368?placeholderIfAbsent=true&apiKey=58620f448f4d4934b34d4e1e054160c6',
-		productName: 'T-shirt Name',
-		color: 'Black',
-		price: 19.0,
-		quantity: 1,
-	},
-	{
-		id: 3,
-		imageSrc:
-			'https://cdn.builder.io/api/v1/image/assets/TEMP/1d1dead8b31a812d7a348b5c24359a9868c2a052869d1d3c8279d81bfbb145e6?placeholderIfAbsent=true&apiKey=58620f448f4d4934b34d4e1e054160c6',
-		productName: 'T-shirt Name',
-		color: 'Black',
-		price: 19.0,
-		quantity: 1,
-	},
-	{
-		id: 4,
-		imageSrc:
-			'https://cdn.builder.io/api/v1/image/assets/TEMP/be45fb2404c6aaf11ae3428c283d305c735474e92349cb7409dd2869ce43cde3?placeholderIfAbsent=true&apiKey=58620f448f4d4934b34d4e1e054160c6',
-		productName: 'T-shirt Name',
-		color: 'Black',
-		price: 19.0,
-		quantity: 1,
-	},
-];
-
-const shippingOptions = [
-	{
-		label: 'Standard Shipping',
-		price: '$5.00',
-		isSelected: true,
-	},
-];
-
-const summaryItems = [
-	{
-		label: 'Subtotal',
-		value: '$47.00',
-		isBold: true,
-	},
-	{
-		label: 'Shipping',
-		value: '$5.00',
-		isBold: false,
-	},
-];
+import { useCartManager } from '../queries/use-cart-manager';
+import { ICart } from '@/modules/types/cart';
 
 export const CartTemplate = () => {
+	const { progressStep } = useSelector((state: RootState) => state.cart);
+	const { cart } = useCartManager();
+
+	const steps = [
+		<CheckoutDetails />,
+		<ShoppingCartList cart={cart as ICart} />,
+	];
+
+	const labelSteps = [
+		{ number: 1, text: 'Checkout details' },
+		{ number: 2, text: 'Shopping cart' },
+		{ number: 3, text: 'Order complete' },
+	];
+
 	return (
 		<div>
 			<Title className='my-12' text='Cart' />
 
-			<CartProgress currentStep={1} />
+			<CartProgress currentStep={progressStep} steps={labelSteps} />
 
 			<main className='container flex justify-between mx-auto px-4'>
-				<ShoppingCartList items={cartItems} />
-
+				{steps[progressStep - 1]}
 				<div className='flex flex-col gap-4'>
-					<CartSummary
-						shippingOptions={shippingOptions}
-						summaryItems={summaryItems}
-					/>
-					<CouponSection />
+					<CartSummary cart={cart as ICart} />
+					<CouponSection cart={cart as ICart} />
 				</div>
 			</main>
 		</div>

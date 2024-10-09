@@ -1,8 +1,13 @@
 'use client';
 import { useState } from 'react';
 import CouponList from './CouponList';
+import { ICart } from '@/modules/types/cart';
 
-export const CouponSection = () => {
+interface CouponSectionProps {
+	cart: ICart;
+}
+
+export const CouponSection: React.FC<CouponSectionProps> = ({ cart }) => {
 	const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
 	const openDrawer = () => setIsDrawerOpen(true);

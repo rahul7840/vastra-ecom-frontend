@@ -14,6 +14,10 @@ export class AuthClient extends BaseClient {
 		return await this.post('/signup', data);
 	}
 
+	async session() {
+		return await this.get('/session');
+	}
+
 	async logout() {
 		return await this.post('/logout');
 	}

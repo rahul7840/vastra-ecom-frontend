@@ -1,15 +1,23 @@
 'use client';
 import logo from '@/../public/assets/images/logo.svg';
+import { useSession } from '@/modules/auth/queries/use-session';
+import { useCartManager } from '@/modules/cart/queries/use-cart-manager';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 export const Navbar = () => {
+	const { user } = useSession();
 	const [isOpen, setIsOpen] = useState(false);
+
+	const { cart } = useCartManager();
 
 	const linkClass = (path: any) =>
 		window?.location?.pathname === path
 			? 'text-[#222222] font-semibold'
 			: 'text-[#616161]';
+
+	const router = useRouter();
 
 	return (
 		<>
@@ -17,9 +25,16 @@ export const Navbar = () => {
 				Lorem ipsum dolor sit amet consectetur. Tellus nec orci faucibus mi
 				faucibus magna. Egestas sed viverra rutrum justo sit praesent sit.
 			</div>
-			<nav className='flex justify-between items-center px-10 py-5'>
+			<nav className='flex shadow-md justify-between items-center px-10 py-5 sticky top-0 bg-white z-50'>
 				<div>
-					<Image src={logo} alt='Logo' width={64} height={64} />
+					<Image
+						onClick={() => router.push('/')}
+						className='cursor-pointer'
+						src={logo}
+						alt='Logo'
+						width={64}
+						height={64}
+					/>
 				</div>
 
 				<div className='lg:hidden'>
@@ -75,9 +90,20 @@ export const Navbar = () => {
 							alt='Group'
 						/>
 					</a>
-					<a href='/cart'>
-						<img className='w-7 h-7' src='/assets/images/cart.svg' alt='Cart' />
-					</a>
+					<div className='relative'>
+						<a href='/cart'>
+							<img
+								className='w-7 h-7'
+								src='/assets/images/cart.svg'
+								alt='Cart'
+							/>
+						</a>
+						{cart?.cartItems?.length && cart?.cartItems?.length > 0 ? (
+							<span className='absolute flex justify-center items-center top-[-5px] right-[-7px] text-[12px] font-semibold bg-red-500 text-white rounded-full w-5 h-5'>
+								{cart?.cartItems?.reduce((sum, item) => sum + item.quantity, 0)}
+							</span>
+						) : null}
+					</div>
 				</div>
 			</nav>
 		</>

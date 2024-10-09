@@ -1,21 +1,20 @@
 'use client';
-import { useState } from 'react';
 
 interface ProductQuantityProps {
-	initialQuantity: number;
+	quantity: number;
+	handleQuantityChange: any;
 }
 
 export const ProductQuantity: React.FC<ProductQuantityProps> = ({
-	initialQuantity,
+	quantity,
+	handleQuantityChange,
 }) => {
-	const [quantity, setQuantity] = useState(initialQuantity);
-
 	const incrementQuantity = () => {
-		setQuantity((prev) => Math.min(prev + 1, 10));
+		handleQuantityChange(Math.min(quantity + 1, 10));
 	};
 
 	const decrementQuantity = () => {
-		setQuantity((prev) => Math.max(prev - 1, 1));
+		handleQuantityChange(Math.max(quantity - 1, 1));
 	};
 
 	return (

@@ -42,7 +42,7 @@ const ShippingOption: React.FC<ShippingOptionProps> = ({
 					</label>
 				</div>
 				<div className='text-2xl font-semibold tracking-wide leading-snug text-right text-neutral-800'>
-					{price}
+					₹{price}
 				</div>
 			</div>
 		</div>

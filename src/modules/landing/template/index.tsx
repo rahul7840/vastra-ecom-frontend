@@ -1,78 +1,26 @@
 'use client';
-import { IProduct } from '@/app/utils/types';
-import { Testimonails } from '../../common/testimonials/Testimonials';
-import { CustomCarousel } from '../../common/components/CustomCarousel';
-import { TitleWithCards } from '../../common/components/TitleWithCards';
+import { CustomCarousel } from '@/modules/common/components/CustomCarousel';
+import { TitleWithCards } from '@/modules/common/components/TitleWithCards';
+import { Testimonails } from '@/modules/common/testimonials/Testimonials';
+import { useProducts } from '@/modules/product/queries/use-products';
 
 export const LandingTemplate = () => {
 	const images = ['/assets/images/banner.png', '/assets/images/banner.png'];
 
-	const items: IProduct[] = [
-		{
-			id: '1',
-			name: 'T-Shirt Name Lorem ipsum lorem ipsum ',
-			img: '/assets/images/shirt.png',
-			category: 'Category lorem ipsum',
-			price: 'Rs.9,990.00',
-			discountedPrice: 'Rs.9,990.00',
-		},
-		{
-			id: '2',
-			name: 'T-Shirt Name Lorem ipsum lorem ipsum ',
-			img: '/assets/images/shirt.png',
-			category: 'Category lorem ipsum',
-			price: 'Rs.9,990.00',
-			discountedPrice: 'Rs.9,990.00',
-		},
-		{
-			id: '3',
-			name: 'T-Shirt Name Lorem ipsum lorem ipsum ',
-			img: '/assets/images/shirt.png',
-			category: 'Category lorem ipsum',
-			price: 'Rs.9,990.00',
-			discountedPrice: 'Rs.9,990.00',
-		},
-		{
-			id: '4',
-			name: 'T-Shirt Name Lorem ipsum lorem ipsum ',
-			img: '/assets/images/shirt.png',
-			category: 'Category lorem ipsum',
-			price: 'Rs.9,990.00',
-			discountedPrice: 'Rs.9,990.00',
-		},
-		{
-			id: '5',
-			name: 'T-Shirt Name Lorem ipsum lorem ipsum ',
-			img: '/assets/images/shirt.png',
-			category: 'Category lorem ipsum',
-			price: 'Rs.9,990.00',
-			discountedPrice: 'Rs.9,990.00',
-		},
-		{
-			id: '6',
-			name: 'T-Shirt Name Lorem ipsum lorem ipsum ',
-			img: '/assets/images/shirt.png',
-			category: 'Category lorem ipsum',
-			price: 'Rs.9,990.00',
-			discountedPrice: 'Rs.9,990.00',
-		},
-		{
-			id: '7',
-			name: 'T-Shirt Name Lorem ipsum lorem ipsum ',
-			img: '/assets/images/shirt.png',
-			category: 'Category lorem ipsum',
-			price: 'Rs.9,990.00',
-			discountedPrice: 'Rs.9,990.00',
-		},
-		{
-			id: '8',
-			name: 'T-Shirt Name Lorem ipsum lorem ipsum ',
-			img: '/assets/images/shirt.png',
-			category: 'Category lorem ipsum',
-			price: 'Rs.9,990.00',
-			discountedPrice: 'Rs.9,990.00',
-		},
-	];
+	const { products: trendingNow, isLoading } = useProducts({
+		limit: 10,
+		sort: 'trending',
+	});
+
+	const { products: bestSeller, isLoading: bestSellerLoading } = useProducts({
+		limit: 10,
+		sort: 'best_seller',
+	});
+
+	const { products: newArrival, isLoading: newArrivalLoading } = useProducts({
+		limit: 10,
+		sort: 'new_arrival',
+	});
 
 	return (
 		<div>
@@ -86,10 +34,14 @@ export const LandingTemplate = () => {
 				})}
 			/>
 
-			<div className='flex flex-col gap-32'>
-				<TitleWithCards viewAll={true} items={items} text='Trending Now' />
-				<TitleWithCards items={items} text='Best Seller' />
-				<TitleWithCards viewAll={true} items={items} text='New Arrival' />
+			<div className='flex flex-col gap-32 mb-14'>
+				<TitleWithCards
+					viewAll={true}
+					items={trendingNow}
+					text='Trending Now'
+				/>
+				<TitleWithCards items={bestSeller} text='Best Seller' />
+				<TitleWithCards viewAll={true} items={newArrival} text='New Arrival' />
 			</div>
 
 			<Testimonails />
