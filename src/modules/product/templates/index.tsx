@@ -1,11 +1,12 @@
 'use client';
 import { api } from '@/api';
 import { IApiError } from '@/api/types';
+import { useCartManager } from '@/modules/cart/queries/use-cart-manager';
 import { StarRating } from '@/modules/common/components/StarRating';
 import { TitleWithCards } from '@/modules/common/components/TitleWithCards';
 import { useMutation } from '@tanstack/react-query';
-import { notFound } from 'next/navigation';
-import { useState } from 'react';
+import { notFound, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { ProductQuantity } from '../../common/components/ProductQuantity';
 import { Testimonails } from '../../common/testimonials/Testimonials';
@@ -14,8 +15,7 @@ import { ReviewForm } from '../forms/review';
 import { ReviewFormSchema } from '../forms/review/schema';
 import { useProduct } from '../queries/use-product';
 import { useProducts } from '../queries/use-products';
-import { useCartManager } from '@/modules/cart/queries/use-cart-manager';
-import { useRouter } from 'next/navigation';
+import { IProduct } from '@/modules/types/product';
 
 interface ProductTemplateProps {
 	id: string;
@@ -31,8 +31,12 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 
 	const { addItemToCart } = useCartManager();
 
-	const [selectedSize, setSelectedSize] = useState(product?.sizes[0]);
-	const [selectedColor, setSelectedColor] = useState('');
+	const [selectedSize, setSelectedSize] = useState<string | null>(null);
+	const [selectedColor, setSelectedColor] = useState<string | null>(null);
+
+	console.log('selectedSize', selectedSize);
+	console.log('selectedColor', selectedColor);
+
 	const [selectedTab, setSelectedTab] = useState(0);
 	const [isWriteReview, setIsWriteReview] = useState(false);
 
@@ -57,10 +61,23 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 			toast.error('Please select size and color');
 			return;
 		}
-		addItemToCart(id, quantity, selectedSize, selectedColor);
+		addItemToCart({
+			productId: id,
+			quantity,
+			size: selectedSize,
+			color: selectedColor,
+			product: product as IProduct,
+		});
 	};
 
 	const router = useRouter();
+
+	useEffect(() => {
+		if (product?.sizes?.length && product?.colors?.length) {
+			setSelectedSize(product?.sizes[0]);
+			setSelectedColor(product?.colors[0]);
+		}
+	}, [product]);
 
 	if (isLoading) return <div>Loading...</div>;
 	if (!product) return notFound();
@@ -161,7 +178,7 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 													<button
 														key={color}
 														style={{ backgroundColor: color }}
-														className={`flex shrink-0 self-stretch py-1.5 my-auto ${
+														className={`flex shrink-0 self-stretch  my-auto ${
 															selectedColor === color
 																? 'border justify-center border-solid border-neutral-400'
 																: ''
@@ -170,12 +187,21 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 														onClick={() => setSelectedColor(color)}
 													>
 														{selectedColor === color && (
-															<img
-																loading='lazy'
-																src='https://cdn.builder.io/api/v1/image/assets/TEMP/9115dc142c8b29197e5c49ea30b0bb6f8c596ae0f9e64a8bb9c43239ca40475e?placeholderIfAbsent=true&apiKey=58620f448f4d4934b34d4e1e054160c6'
-																className='object-contain w-3 aspect-square'
-																alt=''
-															/>
+															<svg
+																width='24'
+																height='24'
+																viewBox='0 0 24 24'
+																fill='none'
+																xmlns='http://www.w3.org/2000/svg'
+															>
+																<path
+																	d='M5.16699 14.5C5.16699 14.5 6.66699 14.5 8.66699 18C8.66699 18 14.2258 8.83333 19.167 7'
+																	stroke='white'
+																	stroke-width='2'
+																	stroke-linecap='round'
+																	stroke-linejoin='round'
+																/>
+															</svg>
 														)}
 													</button>
 												))}

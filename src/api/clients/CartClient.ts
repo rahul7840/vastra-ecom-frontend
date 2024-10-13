@@ -1,7 +1,9 @@
 import {
 	IAddItemToCart,
+	IAddress,
 	ICart,
 	ICheckServiceability,
+	IUpdateAddress,
 } from '@/modules/types/cart';
 import { CrudClient } from './templates/CrudClient';
 
@@ -18,8 +20,8 @@ export class CartClient extends CrudClient<ICart> {
 		return this.get('');
 	}
 
-	removeItemFromCart(cartId: string, id: string) {
-		return this.delete(`/${cartId}/remove-item/${id}`);
+	removeItemFromCart(cartId: string, lineId: string) {
+		return this.delete(`/${cartId}/remove-item/${lineId}`);
 	}
 
 	checkServiceability(data: ICheckServiceability) {
@@ -28,5 +30,9 @@ export class CartClient extends CrudClient<ICart> {
 
 	updateCartItemQuantityById(cartId: string, lineId: string, quantity: number) {
 		return this.put(`/${cartId}/update-item-quantity/${lineId}`, { quantity });
+	}
+
+	updateAddress(cartId: string, data: IUpdateAddress) {
+		return this.put(`/${cartId}/update-address`, data);
 	}
 }

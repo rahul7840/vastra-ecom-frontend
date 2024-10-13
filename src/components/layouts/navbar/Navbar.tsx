@@ -1,21 +1,28 @@
 'use client';
 import logo from '@/../public/assets/images/logo.svg';
-import { useSession } from '@/modules/auth/queries/use-session';
 import { useCartManager } from '@/modules/cart/queries/use-cart-manager';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+declare global {
+	interface Window {
+		location: Location;
+	}
+}
+
 export const Navbar = () => {
-	const { user } = useSession();
 	const [isOpen, setIsOpen] = useState(false);
 
 	const { cart } = useCartManager();
 
-	const linkClass = (path: any) =>
-		window?.location?.pathname === path
+	const linkClass = (path: any) => {
+		if (!window) return 'text-[#616161]';
+
+		return window?.location?.pathname === path
 			? 'text-[#222222] font-semibold'
 			: 'text-[#616161]';
+	};
 
 	const router = useRouter();
 
@@ -83,23 +90,21 @@ export const Navbar = () => {
 							alt='Search'
 						/>
 					</a>
-					<a href='/login'>
+					<div onClick={() => router.push('/login')}>
 						<img
 							className='w-7 h-7'
 							src='/assets/images/group.svg'
 							alt='Group'
 						/>
-					</a>
-					<div className='relative'>
-						<a href='/cart'>
-							<img
-								className='w-7 h-7'
-								src='/assets/images/cart.svg'
-								alt='Cart'
-							/>
-						</a>
+					</div>
+					<div
+						className='relative cursor-pointer'
+						onClick={() => router.push('/cart')}
+					>
+						<img className='w-7 h-7' src='/assets/images/cart.svg' alt='Cart' />
+
 						{cart?.cartItems?.length && cart?.cartItems?.length > 0 ? (
-							<span className='absolute flex justify-center items-center top-[-5px] right-[-7px] text-[12px] font-semibold bg-red-500 text-white rounded-full w-5 h-5'>
+							<span className='absolute cursor-pointer flex justify-center items-center top-[-5px] right-[-7px] text-[12px] font-semibold bg-red-500 text-white rounded-full w-5 h-5'>
 								{cart?.cartItems?.reduce((sum, item) => sum + item.quantity, 0)}
 							</span>
 						) : null}

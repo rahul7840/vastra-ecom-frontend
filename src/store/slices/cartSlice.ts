@@ -1,49 +1,32 @@
+import { IShippingCharges } from '@/modules/types/cart';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface CartState {
-	progressStep: number;
-	shippingCharges: {
-		shippingCost: number;
-		estimatedDeliveryDate: string;
-	} | null;
-	steps: boolean[];
+	disabledCheckoutButton: boolean;
+	shippingCharges: IShippingCharges | null;
 }
 
 const initialState: CartState = {
-	progressStep: 1,
+	disabledCheckoutButton: false,
 	shippingCharges: null,
-	steps: [false, false],
 };
 
 const cartSlice = createSlice({
 	name: 'cart',
 	initialState,
 	reducers: {
-		setProgressStep: (state, action: PayloadAction<number>) => {
-			state.progressStep = action.payload;
+		setDisabledCheckoutButton: (state, action: PayloadAction<boolean>) => {
+			state.disabledCheckoutButton = action.payload;
 		},
 		setShippingCharges: (
 			state,
-			action: PayloadAction<{
-				shippingCost: number;
-				estimatedDeliveryDate: string;
-			}>
+			action: PayloadAction<IShippingCharges | null>
 		) => {
 			state.shippingCharges = action.payload;
-		},
-		setStep1Completed: (state, action: PayloadAction<boolean>) => {
-			state.steps[0] = action.payload;
-		},
-		setStep2Completed: (state, action: PayloadAction<boolean>) => {
-			state.steps[1] = action.payload;
 		},
 	},
 });
 
-export const {
-	setProgressStep,
-	setShippingCharges,
-	setStep1Completed,
-	setStep2Completed,
-} = cartSlice.actions;
+export const { setDisabledCheckoutButton, setShippingCharges } =
+	cartSlice.actions;
 export default cartSlice.reducer;

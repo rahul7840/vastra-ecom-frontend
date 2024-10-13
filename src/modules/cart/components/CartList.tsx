@@ -1,13 +1,13 @@
 'use client';
-import { ICart } from '@/modules/types/cart';
 import React from 'react';
+import { useCartManager } from '../queries/use-cart-manager';
 import { ShoppingCartItem } from './CartItem';
 
-interface ShoppingCartListProps {
-	cart: ICart;
-}
+interface ShoppingCartListProps {}
 
-const ShoppingCartList: React.FC<ShoppingCartListProps> = ({ cart }) => {
+const ShoppingCartList: React.FC<ShoppingCartListProps> = () => {
+	const { cart } = useCartManager();
+
 	return (
 		<section className='flex flex-col tracking-wide leading-snug min-w-[240px] w-[888px] max-md:max-w-full'>
 			<header className='flex flex-col w-full text-2xl font-semibold text-neutral-700 max-md:max-w-full'>
