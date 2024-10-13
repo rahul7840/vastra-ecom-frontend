@@ -6,7 +6,7 @@ export class OrderClient extends CrudClient<IOrder> {
 		super('customer/order');
 	}
 
-	createOrder(cartId: string) {
-		return this.post(`/${cartId}/create-order`);
+	createOrder() {
+		return this.post('', {});
 	}
 }

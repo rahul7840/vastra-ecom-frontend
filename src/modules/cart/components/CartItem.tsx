@@ -1,8 +1,9 @@
 'use client';
 import { ProductQuantity } from '@/modules/common/components/ProductQuantity';
 import { ICartItem } from '@/modules/types/cart';
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useCartManager } from '../queries/use-cart-manager';
+import { debounce } from 'lodash';
 
 interface ShoppingCartItemProps {
 	item: ICartItem;
@@ -12,13 +13,19 @@ export const ShoppingCartItem: React.FC<ShoppingCartItemProps> = ({ item }) => {
 	const { updateCartItemQuantity, removeCartItem } = useCartManager();
 	const [quantity, setQuantity] = useState(item.quantity);
 
-	const handleQuantityChange = (quantity: number) => {
-		setQuantity(quantity);
+	const debouncedUpdateQuantity = useCallback(
+		debounce((newQuantity: number) => {
+			updateCartItemQuantity({
+				quantity: newQuantity,
+				lineId: item.id,
+			});
+		}, 500),
+		[updateCartItemQuantity, item.id]
+	);
 
-		updateCartItemQuantity({
-			quantity,
-			lineId: item.id,
-		});
+	const handleQuantityChange = (newQuantity: number) => {
+		setQuantity(newQuantity);
+		debouncedUpdateQuantity(newQuantity);
 	};
 
 	const product = item.product;

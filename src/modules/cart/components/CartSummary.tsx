@@ -5,6 +5,9 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { useCartManager } from '../queries/use-cart-manager';
 import SummaryItem from './SummaryItem';
+import { useMutation } from '@tanstack/react-query';
+import { api } from '@/api';
+import { toast } from 'react-toastify';
 
 interface CartSummaryProps {
 	checkout?: boolean;
@@ -18,6 +21,20 @@ export const CartSummary: React.FC<CartSummaryProps> = ({ checkout }) => {
 	);
 
 	const router = useRouter();
+
+	const createOrderMutation = useMutation({
+		mutationFn: () => api.order.createOrder(),
+		onSuccess: () => {
+			toast.success('Order created successfully.');
+		},
+		onError: () => {
+			toast.error('Something went wrong.');
+		},
+	});
+
+	const handlePlaceOrder = () => {
+		createOrderMutation.mutate();
+	};
 
 	return (
 		<section className='flex flex-col p-8 max-w-full bg-white border border-solid border-neutral-100 w-[551px] max-md:px-5'>
@@ -48,7 +65,7 @@ export const CartSummary: React.FC<CartSummaryProps> = ({ checkout }) => {
 				</div>
 				<button
 					onClick={() => {
-						checkout ? '' : router.push('/checkout');
+						checkout ? handlePlaceOrder() : router.push('/checkout');
 					}}
 					disabled={
 						checkout

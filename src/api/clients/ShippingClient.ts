@@ -16,11 +16,13 @@ export class ShippingClient extends CrudClient<ICart> {
 		return this.post('/create-order', data);
 	}
 
-	getCharges(data: ICheckServiceability) {
-		return this.post<IShippingCharges>('/charges', data);
+	getCharges(cartId: string, data: ICheckServiceability) {
+		return this.post<IShippingCharges>(`/charges/${cartId}`, data);
 	}
 
-	validatePincode(pincode: string) {
-		return this.get(`/validate-pincode/${pincode}`);
+	validatePincode(pincode: number) {
+		return this.get<{ isValid: boolean; city: string; state: string }>(
+			`/validate-pincode/${pincode}`
+		);
 	}
 }

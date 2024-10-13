@@ -53,6 +53,19 @@ export const AddressForm: React.FC<AddressFormProps> = ({
 				error={typedErrors[`${prefix}Email`]?.message}
 			/>
 			<InputField
+				label='Phone'
+				placeholder='Phone'
+				inputProps={{
+					type: 'tel',
+					maxLength: 10,
+					...register(`${prefix}Phone`, {
+						validate: (value) =>
+							value.length === 10 || 'Phone number must be 10 digits',
+					}),
+				}}
+				error={typedErrors[`${prefix}Phone`]?.message}
+			/>
+			<InputField
 				label='Address'
 				placeholder='Address'
 				inputProps={{
@@ -68,31 +81,40 @@ export const AddressForm: React.FC<AddressFormProps> = ({
 				}}
 				error={typedErrors[`${prefix}Address2`]?.message}
 			/>
-				
-			<InputField
-				label='City'
-				placeholder='City'
-				inputProps={{
-					...register(`${prefix}City`),
-				}}
-				error={typedErrors[`${prefix}City`]?.message}
-			/>
-			<InputField
-				label='State'
-				placeholder='State'
-				inputProps={{
-					...register(`${prefix}State`),
-				}}
-				error={typedErrors[`${prefix}State`]?.message}
-			/>
-			<InputField
-				label='Zip Code'
-				placeholder='Zip Code'
-				inputProps={{
-					...register(`${prefix}Pincode`),
-				}}
-				error={typedErrors[`${prefix}Pincode`]?.message}
-			/>
+
+			<div className='flex w-full gap-4'>
+				<InputField
+					label='Zip Code'
+					placeholder='Zip Code'
+					inputProps={{
+						maxLength: 6,
+						...register(`${prefix}Pincode`, {
+							validate: (value) => {
+								return value.length > 6 || 'Pincode must be 6 digits';
+							},
+						}),
+					}}
+					error={typedErrors[`${prefix}Pincode`]?.message}
+				/>
+				<InputField
+					label='City'
+					placeholder='City'
+					inputProps={{
+						...register(`${prefix}City`),
+					}}
+					readonly
+					error={typedErrors[`${prefix}City`]?.message}
+				/>
+				<InputField
+					label='State'
+					placeholder='State'
+					inputProps={{
+						...register(`${prefix}State`),
+					}}
+					readonly
+					error={typedErrors[`${prefix}State`]?.message}
+				/>
+			</div>
 		</div>
 	);
 };

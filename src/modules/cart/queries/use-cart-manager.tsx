@@ -9,11 +9,12 @@ import {
 } from '@/modules/types/cart';
 import { RootState } from '@/store';
 import { setShippingCharges } from '@/store/slices/cartSlice';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { debounce } from 'lodash';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import { useCart } from './use-cart';
+import { debounce } from 'lodash';
 
 const LOCAL_STORAGE_CART_KEY = 'guestCart';
 
@@ -21,60 +22,75 @@ export const useCartManager = () => {
 	const { user } = useSession();
 	const queryClient = useQueryClient();
 	const dispatch = useDispatch();
-	const [isInitialized, setIsInitialized] = useState(false);
-	const [cart, setCart] = useState<ICart | undefined | null>(null);
-	const [isSynced, setIsSynced] = useState(false);
-	const queryKey = user?.id ? ['cart', user?.id] : ['cart'];
+	const queryKey = ['cart', user?.id ?? 'guest'];
+	const { cart, isCartLoading } = useCart(user?.id);
 
 	const charges = useSelector((state: RootState) => state.cart.shippingCharges);
 
-	const { data: cartResponse, isLoading: isCartLoading } = useQuery({
-		queryKey: queryKey,
-		queryFn: () => api.cart.getCartByCustomerId(),
-		enabled: !!user,
-	});
+	useEffect(() => {
+		if (!cart?.id && !isCartLoading && user?.id) {
+			queryClient.setQueryData(queryKey, () => {
+				return cart;
+			});
+		}
+	}, [user?.id, cart, queryClient, queryKey]);
 
 	useEffect(() => {
-		if (!charges && cart?.shippingAddress?.pincode) {
-			shippingChargesDebounced(cart?.shippingAddress?.pincode as string);
-		}
-	}, [charges, cart]);
+		const syncGuestCartWithUserCart = async () => {
+			if (user?.id && cart?.id) {
+				const guestCart = getGuestCart();
+				const promises = guestCart?.cartItems?.map(async (item) => {
+					return await api.cart.addItemToCart(cart?.id as string, {
+						quantity: item?.quantity,
+						productId: item?.productId as string,
+						size: item?.size as string,
+						color: item?.color as string,
+					});
+				});
+				const results = await Promise.all(promises);
+				console.log('results logs 33333333', results);
 
-	useEffect(() => {
-		if (user?.id && cartResponse?.data?.data && !isCartLoading) {
-			setCart(cartResponse?.data?.data as ICart);
-		} else if (!user?.id && !isCartLoading) {
-			setCart(getGuestCart());
+				queryClient.invalidateQueries({
+					queryKey,
+				});
+
+				localStorage.removeItem(LOCAL_STORAGE_CART_KEY);
+			}
+		};
+
+		if (user?.id && cart?.id && getGuestCart()?.cartItems?.length > 0) {
+			syncGuestCartWithUserCart();
 		}
-	}, [user, cartResponse, isCartLoading]);
+	}, [user, cart, queryClient, queryKey]);
 
 	const createCartMutation = useMutation({
 		mutationFn: () => api.cart.create({}),
 		onSuccess: (response) => {
 			queryClient.setQueryData(queryKey, () => {
-				return {
-					data: {
-						data: response?.data?.data,
-					},
-				};
+				return response?.data?.data;
 			});
-			setIsInitialized(true);
 		},
 	});
 
-	const validateAndFetchShippingChargesDebounced = useRef(
-		debounce(async (pincode: string) => {
+	const validatePincodeMutation = useMutation({
+		mutationFn: (pincode: number) => api.shipping.validatePincode(pincode),
+	});
+
+	const validatePincode = useCallback(
+		async (pincode: number) => {
 			if (pincode) {
 				try {
-					const validationResponse = await api.shipping.validatePincode(
+					const validationResponse = await validatePincodeMutation.mutateAsync(
 						pincode
 					);
 
 					if (validationResponse?.data?.data?.isValid) {
-						shippingChargesDebounced(pincode);
-						return { isValid: true };
+						return {
+							isValid: true,
+							city: validationResponse?.data?.data?.city,
+							state: validationResponse?.data?.data?.state,
+						};
 					} else {
-						dispatch(setShippingCharges(null));
 						return { isValid: false, error: 'Invalid pincode' };
 					}
 				} catch (error) {
@@ -83,15 +99,8 @@ export const useCartManager = () => {
 				}
 			}
 			return { isValid: false, error: 'Pincode is required' };
-		}, 500)
-	).current;
-
-	const validateAndFetchShippingCharges = useCallback(
-		async (pincode: string) => {
-			const result = await validateAndFetchShippingChargesDebounced(pincode);
-			return result;
 		},
-		[validateAndFetchShippingChargesDebounced]
+		[dispatch, cart]
 	);
 
 	const deleteMutation = useMutation({
@@ -102,19 +111,24 @@ export const useCartManager = () => {
 			toast.success('Item deleted successfully');
 			queryClient.invalidateQueries({ queryKey });
 			if (cart?.shippingAddress?.pincode) {
-				shippingChargesDebounced(cart?.shippingAddress?.pincode);
+				getShippingCharges(cart?.shippingAddress?.pincode as number);
 			}
 		},
 	});
 
-	const shippingChargesDebounced = useCallback(
-		debounce(async (pincode?: string) => {
+	const getShippingCharges = useCallback(
+		async (pincode?: number) => {
 			try {
-				if (pincode && pincode?.length > 0) {
-					const response = await api.shipping.getCharges({
+				if (pincode) {
+					const response = await api.shipping.getCharges(cart?.id as string, {
 						cod: 0,
 						delivery_postcode: pincode,
 					});
+
+					console.log(
+						'response shipping charges debounced logs 2222222',
+						response
+					);
 					dispatch(
 						setShippingCharges({
 							shippingCost: response?.data?.data?.shippingCost ?? 0,
@@ -129,19 +143,46 @@ export const useCartManager = () => {
 			} catch (error) {
 				console.error('error in shipping debounced logs 9999', error);
 			}
-		}, 500),
-		[dispatch]
+		},
+		[cart, dispatch]
 	);
+
+	const debouncedGetShippingCharges = useCallback(
+		debounce((pincode: number) => {
+			getShippingCharges(pincode);
+		}, 500),
+		[getShippingCharges]
+	);
+
+	useEffect(() => {
+		if (user?.id && !charges && cart?.shippingAddress?.pincode) {
+			debouncedGetShippingCharges(cart.shippingAddress.pincode as number);
+		}
+
+		return () => {
+			debouncedGetShippingCharges.cancel();
+		};
+	}, [
+		user?.id,
+		charges,
+		cart?.shippingAddress?.pincode,
+		debouncedGetShippingCharges,
+	]);
 
 	const updateAddressMutation = useMutation({
 		mutationFn: (data: IUpdateAddress) =>
 			api.cart.updateAddress(cart?.id as string, data),
 		onSuccess: (_, variables) => {
 			toast.success('Address updated successfully.');
-			if (variables?.shipping?.pincode) {
-				validateAndFetchShippingCharges(variables?.shipping?.pincode);
-			}
+			console.log('variables logs 2222222', variables);
 			queryClient.invalidateQueries({ queryKey });
+			if (variables?.shipping?.pincode) {
+				console.log(
+					'variables?.shipping?.pincode logs 2222222',
+					variables?.shipping?.pincode
+				);
+				getShippingCharges(variables?.shipping?.pincode);
+			}
 		},
 		onError: (error: IApiError) => {
 			if (error.response?.data.message) {
@@ -177,7 +218,7 @@ export const useCartManager = () => {
 
 		console.log('logs 33333333 subtotal', subTotal);
 
-		const shippingCharges = {
+		const newShippingCharges = {
 			shippingCost: 0,
 			codCharges: 0,
 			estimatedDeliveryDate: '',
@@ -185,7 +226,7 @@ export const useCartManager = () => {
 			totalCost: subTotal ?? 0,
 		};
 
-		dispatch(setShippingCharges(shippingCharges));
+		dispatch(setShippingCharges(newShippingCharges));
 
 		return cart;
 	};
@@ -203,52 +244,31 @@ export const useCartManager = () => {
 			console.log('queryKey', queryKey);
 			console.log('cart in update quantity logs 9999', cart);
 			if (cart?.shippingAddress?.pincode) {
-				shippingChargesDebounced(cart?.shippingAddress?.pincode as string);
+				getShippingCharges(cart?.shippingAddress?.pincode as number);
 			}
 			queryClient.invalidateQueries({ queryKey });
 		},
 	});
 
-	const updateCartItemQuantityDebounced = useRef(
-		debounce(
-			async ({ lineId, quantity }: { lineId: string; quantity: number }) => {
-				console.log('update debounce func called logs 99999');
-				if (user?.id) {
-					await updateCartItemQuantityMutation.mutateAsync({
-						lineId,
-						quantity,
-					});
-				} else {
-					const guestCart = getGuestCart();
-					const item = guestCart.cartItems.find((item) => item?.id === lineId);
-					if (item) {
-						item.quantity = quantity;
-						saveGuestCart(guestCart);
-					}
-				}
-				toast.success('Quantity updated successfully');
-			},
-			500
-		)
-	).current;
-
 	const updateCartItemQuantity = useCallback(
-		(data: { lineId: string; quantity: number }) => {
-			console.log('update cart item quanity callback func called logs 99999');
-			return updateCartItemQuantityDebounced(data);
+		async ({ lineId, quantity }: { lineId: string; quantity: number }) => {
+			if (user?.id) {
+				await updateCartItemQuantityMutation.mutateAsync({
+					lineId,
+					quantity,
+				});
+			} else {
+				const guestCart = getGuestCart();
+				const item = guestCart.cartItems.find((item) => item?.id === lineId);
+				if (item) {
+					item.quantity = quantity;
+					saveGuestCart(guestCart);
+				}
+			}
+			toast.success('Quantity updated successfully');
 		},
-		[updateCartItemQuantityDebounced]
+		[user]
 	);
-
-	useEffect(() => {
-		return () => {
-			console.log('cancelling all the debounce logs 9999');
-			validateAndFetchShippingChargesDebounced.cancel();
-			shippingChargesDebounced.cancel();
-			addItemToCartDebounced.cancel();
-			updateCartItemQuantityDebounced.cancel();
-		};
-	}, []);
 
 	const removeCartItem = async (itemId: string) => {
 		if (user) {
@@ -276,7 +296,7 @@ export const useCartManager = () => {
 				queryKey,
 			});
 			if (cart?.shippingAddress?.pincode) {
-				shippingChargesDebounced(cart?.shippingAddress?.pincode);
+				getShippingCharges(cart?.shippingAddress?.pincode as number);
 			}
 		},
 		onError: (error: IApiError) => {
@@ -286,112 +306,66 @@ export const useCartManager = () => {
 		},
 	});
 
-	const addItemToCartDebounced = useRef(
-		debounce(
-			async ({ productId, quantity, size, color, product }: IAddItemToCart) => {
-				if (user) {
-					await addItemToCartMutation.mutateAsync({
-						quantity,
-						productId,
-						size,
-						color,
-					});
-				} else {
-					const guestCart = getGuestCart();
+	const addItemToCart = useRef(
+		async ({ productId, quantity, size, color, product }: IAddItemToCart) => {
+			if (user) {
+				await addItemToCartMutation.mutateAsync({
+					quantity,
+					productId,
+					size,
+					color,
+				});
+			} else {
+				const guestCart = getGuestCart();
 
-					const lineItem: ICartItem = {
-						id: `guest_${Date.now()}_${Math.random()
-							.toString(36)
-							.substr(2, 9)}`,
-						productId,
-						quantity,
-						size,
-						color,
-						cartId: guestCart.id,
-						product,
-						createdAt: new Date().toISOString(),
-						updatedAt: new Date().toISOString(),
-					};
+				const lineItem: ICartItem = {
+					id: `guest_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+					productId,
+					quantity,
+					size,
+					color,
+					cartId: guestCart.id,
+					product,
+					createdAt: new Date().toISOString(),
+					updatedAt: new Date().toISOString(),
+				};
 
-					const existingItem = guestCart?.cartItems?.find(
-						(item) => item?.productId === productId
-					);
+				const existingItem = guestCart?.cartItems?.find(
+					(item) => item?.productId === productId
+				);
 
-					if (existingItem) {
-						existingItem.quantity += quantity;
-						if (existingItem.quantity > 10) {
-							existingItem.quantity = 10;
-						}
-					} else if (!existingItem) {
-						lineItem.quantity = quantity;
-						guestCart?.cartItems?.push(lineItem as unknown as ICartItem);
+				if (existingItem) {
+					existingItem.quantity += quantity;
+					if (existingItem.quantity > 10) {
+						existingItem.quantity = 10;
 					}
-					saveGuestCart(guestCart);
-					toast.success('Item added to cart successfully');
+				} else if (!existingItem) {
+					lineItem.quantity = quantity;
+					guestCart?.cartItems?.push(lineItem as unknown as ICartItem);
 				}
-			},
-			500
-		)
+				saveGuestCart(guestCart);
+				toast.success('Item added to cart successfully');
+			}
+		}
 	).current;
-
-	const addItemToCart = useCallback(
-		(data: IAddItemToCart) => addItemToCartDebounced(data),
-		[addItemToCartDebounced]
-	);
 
 	useEffect(() => {
 		const initializeCart = async () => {
 			await createCartMutation.mutateAsync();
 		};
 
-		if (
-			!isInitialized &&
-			user?.id &&
-			!isCartLoading &&
-			!cartResponse?.data?.data
-		) {
+		if (user?.id && !isCartLoading && !cart?.id) {
 			initializeCart();
 		}
-	}, [user, isCartLoading, cartResponse, isInitialized, createCartMutation]);
-
-	useEffect(() => {
-		const syncGuestCartWithUserCart = async () => {
-			if (user?.id && cart?.id && cartResponse?.data?.data?.id) {
-				const guestCart = getGuestCart();
-				const promises = guestCart?.cartItems?.map(async (item) => {
-					return await api.cart.addItemToCart(cart?.id as string, {
-						quantity: item?.quantity,
-						productId: item?.productId as string,
-						size: item?.size as string,
-						color: item?.color as string,
-					});
-				});
-				const results = await Promise.all(promises);
-				console.log('results logs 33333333', results);
-
-				queryClient.invalidateQueries({
-					queryKey: ['cart', user.id],
-				});
-				queryClient.invalidateQueries({
-					queryKey: ['cart'],
-				});
-
-				localStorage.removeItem(LOCAL_STORAGE_CART_KEY);
-				setIsSynced(true);
-			}
-		};
-
-		if (user?.id && cartResponse?.data?.data?.id && !isSynced) {
-			syncGuestCartWithUserCart();
-		}
-	}, [user, cart, isSynced, cartResponse, queryClient, queryKey]);
+	}, [user, isCartLoading, cart, createCartMutation]);
 
 	return {
 		cart,
 		addItemToCart,
 		updateCartItemQuantity,
 		removeCartItem,
-		validateAndFetchShippingCharges,
+		validatePincode,
+		getShippingCharges,
 		updateAddressMutation,
 	};
 };

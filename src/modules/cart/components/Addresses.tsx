@@ -1,7 +1,7 @@
 import { IUpdateAddress } from '@/modules/types/cart';
 import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useForm, UseFormReturn } from 'react-hook-form';
 import { useCartManager } from '../queries/use-cart-manager';
 import { AddressForm } from './AddressForm';
 import {
@@ -12,8 +12,9 @@ import {
 } from './contact-info-schema';
 
 export const Addresses: React.FC = () => {
-	const { cart, updateAddressMutation, validateAndFetchShippingCharges } =
-		useCartManager();
+	const { cart, updateAddressMutation, validatePincode } = useCartManager();
+
+	const [isPincodeLoading, setIsPincodeLoading] = useState(false);
 
 	const [useDifferentBillingAddress, setUseDifferentBillingAddress] =
 		useState(false);
@@ -31,6 +32,10 @@ export const Addresses: React.FC = () => {
 	const onSubmit = async (
 		data: shippingAddressSchema | billingAddressSchema
 	) => {
+		console.log(
+			'shipping dataa logs 3333333 ',
+			shippingAddressForm.getValues()
+		);
 		const isValid = await shippingAddressForm.trigger();
 		console.log('isValid', isValid);
 		if (!isValid) return;
@@ -43,6 +48,7 @@ export const Addresses: React.FC = () => {
 
 		const shippingFormData = shippingAddressForm.getValues();
 		const billingData = billingAddressForm.getValues();
+
 		const shippingData = {
 			firstName: shippingFormData.shippingFirstName,
 			lastName: shippingFormData.shippingLastName,
@@ -52,7 +58,7 @@ export const Addresses: React.FC = () => {
 			phone: shippingFormData.shippingPhone,
 			city: shippingFormData.shippingCity,
 			state: shippingFormData.shippingState,
-			pincode: shippingFormData.shippingPincode,
+			pincode: Number(shippingFormData.shippingPincode),
 			country: 'India',
 		};
 
@@ -69,103 +75,193 @@ export const Addresses: React.FC = () => {
 						phone: billingData.billingPhone ?? '',
 						city: billingData.billingCity ?? '',
 						state: billingData.billingState ?? '',
-						pincode: billingData.billingPincode ?? '',
+						pincode: Number(billingData.billingPincode),
 						country: 'India',
 				  }
 				: undefined,
 		};
 
-		updateAddressMutation.mutate(addressData);
-		setShowForm(false);
+		const response = await updateAddressMutation.mutateAsync(addressData);
+		if (response?.data?.success) {
+			setShowForm(false);
+		}
 	};
 
-	useEffect(() => {
-		const subscription = shippingAddressForm.watch(
-			async (value, { name, type }) => {
-				if (name === 'shippingPincode' && type === 'change') {
-					const pincode = value.shippingPincode as string;
-					if (pincode && pincode.length === 6) {
-						const validationResult = await validateAndFetchShippingCharges(
-							pincode
-						);
-						if (validationResult && !validationResult.isValid) {
-							shippingAddressForm.setError('shippingPincode', {
-								type: 'manual',
-								message: validationResult.error || 'Invalid pincode',
-							});
-						} else {
-							shippingAddressForm.clearErrors('shippingPincode');
-						}
+	const handlePincodeChange = useCallback(
+		async (formType: 'shipping' | 'billing', pincode: number) => {
+			const form: any =
+				formType === 'shipping' ? shippingAddressForm : billingAddressForm;
+			const prefix = formType === 'shipping' ? 'shipping' : 'billing';
+			if (pincode?.toString().length === 6) {
+				setIsPincodeLoading(true);
+
+				try {
+					const validationResult = await validatePincode(pincode);
+
+					if (validationResult && validationResult.isValid) {
+						form.setValue(`${prefix}City`, validationResult?.city, {
+							shouldValidate: true,
+						});
+						form.setValue(`${prefix}State`, validationResult?.state, {
+							shouldValidate: true,
+						});
+						form.clearErrors(`${prefix}Pincode`);
+					} else {
+						form.setError(`${prefix}Pincode`, {
+							type: 'manual',
+							message: validationResult?.error || 'Invalid pincode',
+						});
 					}
+				} catch (error) {
+					console.error(
+						'Error validating pincode: logs 11111 in address component',
+						error
+					);
+					form.setError(`${prefix}Pincode`, {
+						type: 'manual',
+						message: 'Invalid pincode',
+					});
+				} finally {
+					setIsPincodeLoading(false);
+				}
+			}
+		},
+		[shippingAddressForm, billingAddressForm, validatePincode]
+	);
+
+	useEffect(() => {
+		const shippingSubscription = shippingAddressForm.watch(
+			(value, { name, type }) => {
+				if (
+					name === 'shippingPincode' &&
+					type === 'change' &&
+					value.shippingPincode
+				) {
+					handlePincodeChange('shipping', Number(value.shippingPincode));
 				}
 			}
 		);
-		return () => subscription.unsubscribe();
-	}, [shippingAddressForm, validateAndFetchShippingCharges]);
 
-	// useEffect(() => {
-	// 	const subscription = shippingAddressForm.watch((value, { name, type }) => {
-	// 		if (name === 'shippingPincode' && type === 'change') {
-	// 			validateAndFetchShippingCharges(value.shippingPincode as string);
-	// 		}
-	// 	});
-	// 	return () => subscription.unsubscribe();
-	// }, [shippingAddressForm, validateAndFetchShippingCharges]);
+		const billingSubscription = billingAddressForm.watch(
+			(value, { name, type }) => {
+				if (
+					name === 'billingPincode' &&
+					type === 'change' &&
+					value.billingPincode
+				) {
+					handlePincodeChange('billing', Number(value.billingPincode));
+				}
+			}
+		);
+
+		return () => {
+			shippingSubscription.unsubscribe();
+			billingSubscription.unsubscribe();
+		};
+	}, [shippingAddressForm, billingAddressForm, handlePincodeChange]);
 
 	useEffect(() => {
-		console.log('cart', cart);
+		console.log('cart logs 111111', cart);
 
-		if (cart?.shippingAddress) {
+		if (cart?.shippingAddress?.firstName) {
 			shippingAddressForm.setValue(
 				'shippingFirstName',
-				cart.shippingAddress.firstName ?? ''
-			);
-			shippingAddressForm.setValue(
-				'shippingLastName',
-				cart.shippingAddress.lastName ?? ''
-			);
-			shippingAddressForm.setValue(
-				'shippingAddress',
-				cart.shippingAddress.address ?? ''
-			);
-			shippingAddressForm.setValue(
-				'shippingCity',
-				cart.shippingAddress.city ?? ''
-			);
-			shippingAddressForm.setValue(
-				'shippingState',
-				cart.shippingAddress.state ?? ''
-			);
-			shippingAddressForm.setValue(
-				'shippingPincode',
-				cart.shippingAddress.pincode ?? ''
+				cart.shippingAddress.firstName
 			);
 		}
 
-		if (cart?.billingAddress) {
+		if (cart?.shippingAddress?.lastName) {
+			shippingAddressForm.setValue(
+				'shippingLastName',
+				cart.shippingAddress.lastName
+			);
+		}
+
+		if (cart?.shippingAddress?.email) {
+			shippingAddressForm.setValue('shippingEmail', cart.shippingAddress.email);
+		}
+
+		if (cart?.shippingAddress?.phone) {
+			shippingAddressForm.setValue('shippingPhone', cart.shippingAddress.phone);
+		}
+
+		if (cart?.shippingAddress?.address) {
+			shippingAddressForm.setValue(
+				'shippingAddress',
+				cart.shippingAddress.address
+			);
+		}
+
+		if (cart?.shippingAddress?.address2) {
+			shippingAddressForm.setValue(
+				'shippingAddress2',
+				cart.shippingAddress.address2
+			);
+		}
+
+		if (cart?.shippingAddress?.city) {
+			shippingAddressForm.setValue('shippingCity', cart.shippingAddress.city);
+		}
+
+		if (cart?.shippingAddress?.state) {
+			shippingAddressForm.setValue('shippingState', cart.shippingAddress.state);
+		}
+
+		if (cart?.shippingAddress?.pincode) {
+			shippingAddressForm.setValue(
+				'shippingPincode',
+				cart.shippingAddress.pincode.toString()
+			);
+		}
+
+		if (cart?.billingAddress?.firstName) {
 			billingAddressForm.setValue(
 				'billingFirstName',
-				cart.billingAddress.firstName ?? ''
+				cart.billingAddress.firstName
 			);
+		}
+
+		if (cart?.billingAddress?.lastName) {
 			billingAddressForm.setValue(
 				'billingLastName',
-				cart.billingAddress.lastName ?? ''
+				cart.billingAddress.lastName
 			);
+		}
+
+		if (cart?.billingAddress?.email) {
+			billingAddressForm.setValue('billingEmail', cart.billingAddress.email);
+		}
+
+		if (cart?.billingAddress?.phone) {
+			billingAddressForm.setValue('billingPhone', cart.billingAddress.phone);
+		}
+
+		if (cart?.billingAddress?.address) {
 			billingAddressForm.setValue(
 				'billingAddress',
-				cart.billingAddress.address ?? ''
+				cart.billingAddress.address
 			);
+		}
+
+		if (cart?.billingAddress?.address2) {
 			billingAddressForm.setValue(
-				'billingCity',
-				cart.billingAddress.city ?? ''
+				'billingAddress2',
+				cart.billingAddress.address2
 			);
-			billingAddressForm.setValue(
-				'billingState',
-				cart.billingAddress.state ?? ''
-			);
+		}
+
+		if (cart?.billingAddress?.city) {
+			billingAddressForm.setValue('billingCity', cart.billingAddress.city);
+		}
+
+		if (cart?.billingAddress?.state) {
+			billingAddressForm.setValue('billingState', cart.billingAddress.state);
+		}
+
+		if (cart?.billingAddress?.pincode) {
 			billingAddressForm.setValue(
 				'billingPincode',
-				cart.billingAddress.pincode ?? ''
+				cart.billingAddress.pincode.toString()
 			);
 		}
 

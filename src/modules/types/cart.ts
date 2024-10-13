@@ -46,14 +46,14 @@ export interface IAddress {
 	city?: string;
 	state?: string;
 	country?: string;
-	pincode?: string;
+	pincode?: number;
 	email?: string;
 	phone?: string;
 	address2?: string;
 }
 
 export interface ICheckServiceability {
-	delivery_postcode: string;
+	delivery_postcode: number;
 	cod: number;
 }
 

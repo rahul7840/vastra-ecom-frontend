@@ -1,12 +1,11 @@
 'use client';
 import { Title } from '@/modules/common/components/Title';
 import { RootState } from '@/store';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import { Addresses } from '../components/Addresses';
 import { CartSummary } from '../components/CartSummary';
-import { toast } from 'react-toastify';
-import { useEffect, useState } from 'react';
-import { api } from '@/api';
 import { useCartManager } from '../queries/use-cart-manager';
 
 declare global {
@@ -47,11 +46,11 @@ export const CheckoutTemplate = () => {
 				return;
 			}
 
-			const order = await api.order.createOrder(cart.id);
+			// const order = await api.order.createOrder(cart.id);
 
-			const razorpay = new window.Razorpay(order.data);
-			console.log('razorpay', razorpay);
-			razorpay.open();
+			// const razorpay = new window.Razorpay(order.data);
+			// console.log('razorpay', razorpay);
+			// razorpay.open();
 		} catch (error) {
 			console.error('Error creating order:', error);
 			toast.error('Failed to initiate payment. Please try again.');
