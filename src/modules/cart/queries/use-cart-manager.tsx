@@ -43,8 +43,7 @@ export const useCartManager = () => {
 					return await api.cart.addItemToCart(cart?.id as string, {
 						quantity: item?.quantity,
 						productId: item?.productId as string,
-						size: item?.size as string,
-						color: item?.color as string,
+						variantId: item?.variantId as string,
 					});
 				});
 				const results = await Promise.all(promises);

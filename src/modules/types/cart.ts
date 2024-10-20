@@ -3,27 +3,25 @@ import { IProduct } from './product';
 export interface ICart {
 	id: string;
 	userId: string;
-	createdAt: string;
-	updatedAt: string;
 	cartItems: ICartItem[];
 	billingAddressId: string | null;
 	shippingAddressId: string | null;
 	billingAddress: IAddress | null;
 	shippingAddress: IAddress | null;
-	shipping_total: number;
-	discount_total: number;
-	subtotal: number;
-	total: number;
-	total_items: number;
-	refundable_amount: number;
+	shippingCost: number;
+	codCharges: number;
+	subTotal: number;
+	totalCost: number;
+	totalItems: number;
+	refundableAmount: number;
+	createdAt: string;
+	updatedAt: string;
 }
 
 export interface IAddItemToCart {
 	productId: string;
 	quantity: number;
-	size: string;
-	color: string;
-	product?: IProduct;
+	variantId: string;
 }
 
 export interface ICartItem {

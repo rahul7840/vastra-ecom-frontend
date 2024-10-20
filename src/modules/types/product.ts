@@ -1,36 +1,18 @@
 export interface IProduct {
 	id: string;
 	name: string;
+	thumbnail: string;
 	description: string;
 	quantity: number;
 	priceWithoutTax: number;
 	tax: number;
 	discountedPrice: number;
-	specification: {
-		color: string;
-		fabric: string;
-		pattern: string;
-		material: string;
-		warranty: string;
-		closure_type: string;
-		sleeve_length: string;
-		care_instructions: string;
-		country_of_origin: string;
-	};
-	stock: number;
-	sizes: string[];
 	category: string;
-	colors: string[];
-	price: string;
-	images: string[];
 	isLive: boolean;
 	sellerId: string;
+	variants: IProductVariant[];
 	reviews: IReview[];
-	seller: {
-		id: string;
-		firstName: string;
-		lastName: string | null;
-	};
+	seller: ISeller;
 }
 
 export interface IReview {
@@ -45,4 +27,23 @@ export interface IReview {
 export interface IReviewForm {
 	rating: number;
 	comment: string;
+}
+
+export interface ISeller {
+	id: string;
+	firstName: string;
+	lastName: string | null;
+}
+
+export interface IProductVariant {
+	id: string;
+	sku: string;
+	color: string;
+	size: string;
+	weight: number;
+	breadth: number;
+	height: number;
+	length: number;
+	stock: number;
+	images: string[];
 }

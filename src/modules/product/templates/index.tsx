@@ -15,27 +15,21 @@ import { ReviewForm } from '../forms/review';
 import { ReviewFormSchema } from '../forms/review/schema';
 import { useProduct } from '../queries/use-product';
 import { useProducts } from '../queries/use-products';
-import { IProduct } from '@/modules/types/product';
+import { IProduct, IProductVariant } from '@/modules/types/product';
 
 interface ProductTemplateProps {
 	id: string;
 }
 
 export const ProductTemplate = ({ id }: ProductTemplateProps) => {
+	const { addItemToCart } = useCartManager();
 	const { product, isLoading } = useProduct(id);
-
 	const { products: relatedProducts } = useProducts({
 		limit: 10,
 		sort: 'new_arrival',
 	});
 
-	const { addItemToCart } = useCartManager();
-
-	const [selectedSize, setSelectedSize] = useState<string | null>(null);
-	const [selectedColor, setSelectedColor] = useState<string | null>(null);
-
-	console.log('selectedSize', selectedSize);
-	console.log('selectedColor', selectedColor);
+	const [selectedVariant, setSelectedVariant] = useState<IProductVariant>();
 
 	const [selectedTab, setSelectedTab] = useState(0);
 	const [isWriteReview, setIsWriteReview] = useState(false);
@@ -57,25 +51,19 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 
 	const handleAddToCart = () => {
 		console.log('add to cart');
-		if (!selectedSize || !selectedColor) {
-			toast.error('Please select size and color');
-			return;
-		}
+
 		addItemToCart({
 			productId: id,
 			quantity,
-			size: selectedSize,
-			color: selectedColor,
-			product: product as IProduct,
+			variantId: selectedVariant?.id as string,
 		});
 	};
 
 	const router = useRouter();
 
 	useEffect(() => {
-		if (product?.sizes?.length && product?.colors?.length) {
-			setSelectedSize(product?.sizes[0]);
-			setSelectedColor(product?.colors[0]);
+		if (product?.variants?.length) {
+			setSelectedVariant(product?.variants[0]);
 		}
 	}, [product]);
 
@@ -88,7 +76,7 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 				<div className='flex  gap-10'>
 					<div className='flex flex-wrap gap-10 items-start min-w-[240px] max-md:max-w-full'>
 						<div className='flex flex-col gap-10 justify-start items-start w-[150px] mt-3'>
-							{product.images.slice(0, 4).map((image, index) => (
+							{selectedVariant?.images?.slice(0, 4).map((image, index) => (
 								<div
 									key={index}
 									className={`flex overflow-hidden flex-col items-center bg-white h-[150px] w-[150px]`}
@@ -105,7 +93,7 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 						<div className='flex overflow-hidden flex-col self-stretch my-auto bg-white min-w-[240px] w-[575px] max-md:max-w-full'>
 							<img
 								loading='lazy'
-								src={product.images[0]}
+								src={selectedVariant?.images?.[0]}
 								className='object-contain w-full aspect-[0.78] max-md:max-w-full'
 								alt='Main product image'
 							/>
@@ -140,7 +128,7 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 						<div className='flex flex-col mt-8 w-full'>
 							<div className='flex flex-col max-w-full w-[325px]'>
 								<div className='flex flex-col w-full'>
-									{product?.sizes && (
+									{product?.variants && (
 										<div className='flex flex-col w-full font-semibold tracking-wide leading-snug whitespace-nowrap'>
 											<label
 												htmlFor='size-select'
@@ -149,23 +137,23 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 												Size
 											</label>
 											<div className='flex gap-2.5 items-center mt-5 w-full text-sm text-neutral-400'>
-												{product?.sizes?.map((size) => (
+												{product?.variants?.map((variant) => (
 													<button
-														key={size}
+														key={variant.id}
 														className={`py-2.5 my-auto w-10 h-10 ${
-															size === selectedSize
+															variant.id === selectedVariant?.id
 																? 'text-white bg-red-600 border border-red-600 border-solid'
 																: 'bg-zinc-100'
 														}`}
-														onClick={() => setSelectedSize(size)}
+														onClick={() => setSelectedVariant(variant)}
 													>
-														{size}
+														{variant.size}
 													</button>
 												))}
 											</div>
 										</div>
 									)}
-									{product?.colors && (
+									{product?.variants && (
 										<div className='flex flex-col mt-8 w-full'>
 											<label
 												htmlFor='color-select'
@@ -174,19 +162,19 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 												Color
 											</label>
 											<div className='flex gap-2.5 items-center mt-5 w-full'>
-												{product?.colors?.map((color) => (
+												{product?.variants?.map((variant) => (
 													<button
-														key={color}
-														style={{ backgroundColor: color }}
+														key={variant.id}
+														style={{ backgroundColor: variant.color }}
 														className={`flex shrink-0 self-stretch  my-auto ${
-															selectedColor === color
+															selectedVariant?.id === variant.id
 																? 'border justify-center border-solid border-neutral-400'
 																: ''
 														} h-[25px] rounded-[63px] w-[25px]`}
-														aria-label={`Select ${color} color`}
-														onClick={() => setSelectedColor(color)}
+														aria-label={`Select ${variant.color} color`}
+														onClick={() => setSelectedVariant(variant)}
 													>
-														{selectedColor === color && (
+														{selectedVariant?.id === variant.id && (
 															<svg
 																width='24'
 																height='24'

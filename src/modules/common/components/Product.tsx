@@ -17,7 +17,7 @@ export const ProductCard = (props: Props) => {
 			<div className='flex flex-col gap-8 w-full max-w-72'>
 				<img
 					className='w-full max-w-72 h-full'
-					src={item?.images[0] ?? ''}
+					src={item?.thumbnail ?? ''}
 					alt=''
 				/>
 				<div className='flex flex-col gap-2'>
