@@ -10,5 +10,5 @@ export const useCart = (userId?: string) => {
 		staleTime: 1000 * 60 * 5,
 	});
 
-	return { cart: cartResponse?.data?.data, isCartLoading };
+	return { queryKey, cart: cartResponse?.data?.data, isCartLoading };
 };

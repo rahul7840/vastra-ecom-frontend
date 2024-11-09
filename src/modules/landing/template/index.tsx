@@ -8,17 +8,17 @@ export const LandingTemplate = () => {
 	const images = ['/assets/images/banner.png', '/assets/images/banner.png'];
 
 	const { products: trendingNow, isLoading } = useProducts({
-		limit: 10,
+		limit: 8,
 		sort: 'trending',
 	});
 
 	const { products: bestSeller, isLoading: bestSellerLoading } = useProducts({
-		limit: 10,
+		limit: 8,
 		sort: 'best_seller',
 	});
 
 	const { products: newArrival, isLoading: newArrivalLoading } = useProducts({
-		limit: 10,
+		limit: 8,
 		sort: 'new_arrival',
 	});
 
@@ -34,7 +34,7 @@ export const LandingTemplate = () => {
 				})}
 			/>
 
-			<div className='flex flex-col gap-32 mb-14'>
+			<div className='flex flex-col gap-8 md:gap-32 mb-14'>
 				<TitleWithCards
 					viewAll={true}
 					items={trendingNow}

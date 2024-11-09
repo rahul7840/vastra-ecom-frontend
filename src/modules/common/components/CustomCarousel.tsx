@@ -56,7 +56,7 @@ export const CustomCarousel = (props: any) => {
 				onClick={goNext} // Trigger the goNext function on click
 			/>
 
-			<div className='flex justify-center gap-[6px] my-8'>
+			<div className='flex justify-center gap-[6px] my-4 md:my-8'>
 				{items.map((e: any, index: number) => {
 					return (
 						<div

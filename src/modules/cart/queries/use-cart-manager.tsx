@@ -22,18 +22,10 @@ export const useCartManager = () => {
 	const { user } = useSession();
 	const queryClient = useQueryClient();
 	const dispatch = useDispatch();
-	const queryKey = ['cart', user?.id ?? 'guest'];
-	const { cart, isCartLoading } = useCart(user?.id);
+	const { cart, queryKey, isCartLoading } = useCart(user?.id);
+	const [isInitialized, setIsInitialized] = useState(false);
 
 	const charges = useSelector((state: RootState) => state.cart.shippingCharges);
-
-	useEffect(() => {
-		if (!cart?.id && !isCartLoading && user?.id) {
-			queryClient.setQueryData(queryKey, () => {
-				return cart;
-			});
-		}
-	}, [user?.id, cart, queryClient, queryKey]);
 
 	useEffect(() => {
 		const syncGuestCartWithUserCart = async () => {
@@ -68,6 +60,8 @@ export const useCartManager = () => {
 			queryClient.setQueryData(queryKey, () => {
 				return response?.data?.data;
 			});
+
+			setIsInitialized(true);
 		},
 	});
 
@@ -124,10 +118,6 @@ export const useCartManager = () => {
 						delivery_postcode: pincode,
 					});
 
-					console.log(
-						'response shipping charges debounced logs 2222222',
-						response
-					);
 					dispatch(
 						setShippingCharges({
 							shippingCost: response?.data?.data?.shippingCost ?? 0,
@@ -140,7 +130,7 @@ export const useCartManager = () => {
 					);
 				}
 			} catch (error) {
-				console.error('error in shipping debounced logs 9999', error);
+				console.error('Error in shipping debounced logs 9999', error);
 			}
 		},
 		[cart, dispatch]
@@ -283,12 +273,8 @@ export const useCartManager = () => {
 	};
 
 	const addItemToCartMutation = useMutation({
-		mutationFn: (data: {
-			quantity: number;
-			productId: string;
-			size: string;
-			color: string;
-		}) => api.cart.addItemToCart(cart?.id as string, data),
+		mutationFn: (data: IAddItemToCart) =>
+			api.cart.addItemToCart(cart?.id as string, data),
 		onSuccess: (response) => {
 			toast.success('Product added to cart successfully');
 			queryClient.invalidateQueries({
@@ -306,13 +292,12 @@ export const useCartManager = () => {
 	});
 
 	const addItemToCart = useRef(
-		async ({ productId, quantity, size, color, product }: IAddItemToCart) => {
+		async ({ productId, quantity, variantId }: IAddItemToCart) => {
 			if (user) {
 				await addItemToCartMutation.mutateAsync({
 					quantity,
 					productId,
-					size,
-					color,
+					variantId,
 				});
 			} else {
 				const guestCart = getGuestCart();
@@ -320,11 +305,9 @@ export const useCartManager = () => {
 				const lineItem: ICartItem = {
 					id: `guest_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
 					productId,
+					variantId,
 					quantity,
-					size,
-					color,
 					cartId: guestCart.id,
-					product,
 					createdAt: new Date().toISOString(),
 					updatedAt: new Date().toISOString(),
 				};
@@ -348,15 +331,21 @@ export const useCartManager = () => {
 		}
 	).current;
 
-	useEffect(() => {
-		const initializeCart = async () => {
-			await createCartMutation.mutateAsync();
-		};
+	const initializeCart = async () => {
+		await createCartMutation.mutateAsync();
+	};
 
-		if (user?.id && !isCartLoading && !cart?.id) {
+	useEffect(() => {
+		if (
+			user?.id &&
+			!isCartLoading &&
+			!cart?.id &&
+			!createCartMutation.isPending &&
+			!isInitialized
+		) {
 			initializeCart();
 		}
-	}, [user, isCartLoading, cart, createCartMutation]);
+	}, [user, isCartLoading, cart, createCartMutation, isInitialized]);
 
 	return {
 		cart,

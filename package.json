@@ -1,37 +1,37 @@
 {
-  "name": "vastra-ecom",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "@hookform/resolvers": "^3.9.0",
-    "@reduxjs/toolkit": "^2.2.7",
-    "@tanstack/react-query": "^5.56.2",
-    "@types/lodash": "^4.17.10",
-    "axios": "^1.7.7",
-    "lodash": "^4.17.21",
-    "next": "14.2.5",
-    "react": "^18",
-    "react-dom": "^18",
-    "react-hook-form": "^7.53.0",
-    "react-redux": "^9.1.2",
-    "react-responsive-carousel": "^3.2.23",
-    "react-toastify": "^10.0.5",
-    "sass": "^1.79.3",
-    "swiper": "^11.1.12",
-    "zod": "^3.23.8"
-  },
-  "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "postcss": "^8",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^5"
-  }
+	"name": "vastra-ecom",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"dev": "NODE_OPTIONS='--max-old-space-size=1024' next dev --port 3000",
+		"build": "next build",
+		"start": "next start",
+		"lint": "next lint"
+	},
+	"dependencies": {
+		"@hookform/resolvers": "^3.9.0",
+		"@reduxjs/toolkit": "^2.2.7",
+		"@tanstack/react-query": "^5.56.2",
+		"@types/lodash": "^4.17.10",
+		"axios": "^1.7.7",
+		"lodash": "^4.17.21",
+		"next": "14.2.5",
+		"react": "^18",
+		"react-dom": "^18",
+		"react-hook-form": "^7.53.0",
+		"react-redux": "^9.1.2",
+		"react-responsive-carousel": "^3.2.23",
+		"react-toastify": "^10.0.5",
+		"sass": "^1.79.3",
+		"swiper": "^11.1.12",
+		"zod": "^3.23.8"
+	},
+	"devDependencies": {
+		"@types/node": "^20",
+		"@types/react": "^18",
+		"@types/react-dom": "^18",
+		"postcss": "^8",
+		"tailwindcss": "^3.4.1",
+		"typescript": "^5"
+	}
 }

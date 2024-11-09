@@ -10,7 +10,7 @@ export const Title = ({ text, className, ...otherProps }: Props) => {
 			<img src='/assets/images/curly.svg' alt='' />
 			<div
 				{...otherProps}
-				className={`font-bold text-3xl max-xl:text-2xl max-lg:text-xl  ${className}`}
+				className={`font-bold text-lg sm:text-xl md:text-2xl lg:text-3xl  ${className}`}
 			>
 				{text}
 			</div>

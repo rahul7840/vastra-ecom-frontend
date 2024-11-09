@@ -4,15 +4,18 @@ export interface IProduct {
 	thumbnail: string;
 	description: string;
 	quantity: number;
-	priceWithoutTax: number;
 	tax: number;
+	price: number;
 	discountedPrice: number;
 	category: string;
 	isLive: boolean;
 	sellerId: string;
-	variants: IProductVariant[];
+	images: string[];
+	variants: IVariant[];
+	attributes: IAttribute[];
 	reviews: IReview[];
 	seller: ISeller;
+	hasVariants: boolean;
 }
 
 export interface IReview {
@@ -35,15 +38,39 @@ export interface ISeller {
 	lastName: string | null;
 }
 
-export interface IProductVariant {
+export interface IVariant {
 	id: string;
+	productId: string;
 	sku: string;
-	color: string;
-	size: string;
+	price: number;
+	discountedPrice?: number;
 	weight: number;
-	breadth: number;
+	width: number;
 	height: number;
 	length: number;
 	stock: number;
+	thumbnail: string;
 	images: string[];
+	attributeValues: IAttributeValue[];
+	createdAt: string;
+	updatedAt: string;
+}
+
+export interface IAttribute {
+	id?: string;
+	productId?: string;
+	title: string;
+	values: IAttributeValue[];
+	createdAt?: string;
+	updatedAt?: string;
+}
+
+export interface IAttributeValue {
+	id?: string;
+	attributeId?: string;
+	variantId?: string;
+	value: string;
+	attribute?: IAttribute;
+	createdAt?: string;
+	updatedAt?: string;
 }

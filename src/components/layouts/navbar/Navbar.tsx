@@ -1,7 +1,5 @@
 'use client';
-import logo from '@/../public/assets/images/logo.svg';
 import { useCartManager } from '@/modules/cart/queries/use-cart-manager';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -28,30 +26,24 @@ export const Navbar = () => {
 
 	return (
 		<>
-			<div className='text-[#871B1B] bg-[#FCEAEA] text-center text-base py-4 px-4 font-normal'>
+			<div className='h-8 sm:h-14 text-[#871B1B] bg-[#FCEAEA] text-center truncate text-xs sm:text-base p-2 sm:p-4 font-normal'>
 				Lorem ipsum dolor sit amet consectetur. Tellus nec orci faucibus mi
 				faucibus magna. Egestas sed viverra rutrum justo sit praesent sit.
 			</div>
-			<nav className='flex shadow-md justify-between items-center px-10 py-5 sticky top-0 bg-white z-50'>
-				<div>
-					<Image
-						onClick={() => router.push('/')}
-						className='cursor-pointer'
-						src={logo}
-						alt='Logo'
-						width={64}
-						height={64}
-					/>
-				</div>
-
+			<nav className='flex h-12 md:h-24 shadow-md justify-between items-center  px-4 md:px-10  md:py-5 sticky top-0 bg-white z-50'>
 				<div className='lg:hidden'>
 					<button onClick={() => setIsOpen(!isOpen)}>
-						<img
-							className='w-7 h-7'
-							src='/assets/images/hamburger-icon.svg'
-							alt='Menu'
-						/>
+						<img className='w-7 h-7' src='/assets/images/menu.svg' alt='Menu' />
 					</button>
+				</div>
+
+				<div>
+					<img
+						onClick={() => router.push('/')}
+						className='w-12 h-12 max-md:left-8 relative md:w-16 md:h-16 cursor-pointer'
+						src='/assets/images/logo.svg'
+						alt='Logo'
+					/>
 				</div>
 
 				<ul
@@ -65,12 +57,12 @@ export const Navbar = () => {
 					<li className={linkClass('/new-arrivals')}>
 						<a href='/new-arrivals'>New Arrivals</a>
 					</li>
-					<li className={linkClass('/size-chart')}>
+					{/* <li className={linkClass('/size-chart')}>
 						<a href='/size-chart'>Size Chart</a>
-					</li>
-					<li className={linkClass('/collections')}>
+					</li> */}
+					{/* <li className={linkClass('/collections')}>
 						<a href='/collections'>Collections</a>
-					</li>
+					</li> */}
 					<li className={linkClass('/policies')}>
 						<a href='/policies'>Policies</a>
 					</li>
@@ -85,14 +77,14 @@ export const Navbar = () => {
 				<div className='flex justify-center items-center gap-8'>
 					<a href='/search'>
 						<img
-							className='w-7 h-7'
+							className='w-5 h-5 md:w-7 md:h-7'
 							src='/assets/images/search.svg'
 							alt='Search'
 						/>
 					</a>
 					<div onClick={() => router.push('/login')}>
 						<img
-							className='w-7 h-7'
+							className='w-5 h-5 md:w-7 md:h-7'
 							src='/assets/images/group.svg'
 							alt='Group'
 						/>
@@ -101,7 +93,11 @@ export const Navbar = () => {
 						className='relative cursor-pointer'
 						onClick={() => router.push('/cart')}
 					>
-						<img className='w-7 h-7' src='/assets/images/cart.svg' alt='Cart' />
+						<img
+							className='w-5 h-5 md:w-7 md:h-7'
+							src='/assets/images/cart.svg'
+							alt='Cart'
+						/>
 
 						{cart?.cartItems?.length && cart?.cartItems?.length > 0 ? (
 							<span className='absolute cursor-pointer flex justify-center items-center top-[-5px] right-[-7px] text-[12px] font-semibold bg-red-500 text-white rounded-full w-5 h-5'>

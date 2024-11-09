@@ -7,7 +7,6 @@ import { TestimonailCard } from './TestimonialCard';
 
 interface TestimonialsProps {
 	showTitle?: boolean;
-	
 }
 
 export const Testimonails = ({ showTitle = true }: TestimonialsProps) => {
@@ -51,7 +50,7 @@ export const Testimonails = ({ showTitle = true }: TestimonialsProps) => {
 	];
 
 	return (
-		<div className={'flex flex-col gap-9'}>
+		<div className={'flex flex-col gap-4 md:gap-9'}>
 			{showTitle && <Title text='Testimonials' />}
 
 			<div className='mx-7 my-4'>
@@ -61,6 +60,37 @@ export const Testimonails = ({ showTitle = true }: TestimonialsProps) => {
 					autoplay={{
 						delay: 2500,
 						disableOnInteraction: false,
+					}}
+					breakpoints={{
+						// Mobile first - when viewport width is >= 320px
+						320: {
+							slidesPerView: 1,
+							spaceBetween: 10,
+						},
+						// Small devices (landscape phones)
+						576: {
+							slidesPerView: 1,
+							spaceBetween: 15,
+						},
+						// Medium devices (tablets)
+						768: {
+							slidesPerView: 2,
+							spaceBetween: 20,
+						},
+						// Large devices (desktops)
+						1024: {
+							slidesPerView: 2,
+							spaceBetween: 25,
+						},
+						// Extra large devices
+						1280: {
+							slidesPerView: 4,
+							spaceBetween: 30,
+						},
+						1440: {
+							slidesPerView: 5,
+							spaceBetween: 30,
+						},
 					}}
 					modules={[Autoplay]}
 					loop={true}

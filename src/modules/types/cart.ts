@@ -27,10 +27,9 @@ export interface IAddItemToCart {
 export interface ICartItem {
 	id: string;
 	productId: string;
+	variantId: string;
 	cartId: string;
 	quantity: number;
-	size: string;
-	color: string;
 	product?: IProduct;
 	createdAt: string;
 	updatedAt: string;

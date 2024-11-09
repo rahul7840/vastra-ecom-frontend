@@ -15,7 +15,7 @@ import { ReviewForm } from '../forms/review';
 import { ReviewFormSchema } from '../forms/review/schema';
 import { useProduct } from '../queries/use-product';
 import { useProducts } from '../queries/use-products';
-import { IProduct, IProductVariant } from '@/modules/types/product';
+import { IAttribute, IProduct, IVariant } from '@/modules/types/product';
 
 interface ProductTemplateProps {
 	id: string;
@@ -29,10 +29,14 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 		sort: 'new_arrival',
 	});
 
-	const [selectedVariant, setSelectedVariant] = useState<IProductVariant>();
-
+	const [selectedAttributes, setSelectedAttributes] = useState<
+		Record<string, string>
+	>({});
+	const [selectedVariant, setSelectedVariant] = useState<IVariant>();
+	const [hoveredVariant, setHoveredVariant] = useState<IVariant | null>(null);
 	const [selectedTab, setSelectedTab] = useState(0);
 	const [isWriteReview, setIsWriteReview] = useState(false);
+	const displayedVariant = hoveredVariant || selectedVariant;
 
 	const mutation = useMutation({
 		mutationFn: (data: ReviewFormSchema) => api.review.createReview(id, data),
@@ -59,6 +63,49 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 		});
 	};
 
+	const handleAttributeSelect = (title: string, value: string) => {
+		const newSelectedAttributes = {
+			...selectedAttributes,
+			[title]: value,
+		};
+		setSelectedAttributes(newSelectedAttributes);
+
+		const matchingVariant = product?.variants?.find((variant) =>
+			Object.entries(newSelectedAttributes).every(([attrTitle, attrValue]) =>
+				variant.attributeValues.some(
+					(av) => av?.attribute?.title === attrTitle && av.value === attrValue
+				)
+			)
+		);
+
+		if (matchingVariant) {
+			setSelectedVariant(matchingVariant);
+		}
+	};
+
+	const getAvailableColors = (variants: IVariant[], selectedSize: string) => {
+		// Get all colors available for the selected size
+		return variants
+			.filter((variant) =>
+				variant.attributeValues.some(
+					(av) => av?.attribute?.title === 'Size' && av.value === selectedSize
+				)
+			)
+			.flatMap((variant) =>
+				variant.attributeValues
+					.filter((av) => av?.attribute?.title === 'Color')
+					.map((av) => av?.value)
+			)
+			.filter((value, index, self) => self.indexOf(value) === index);
+	};
+
+	// Sort attributes to ensure Size comes before Color
+	const sortedAttributes = product?.attributes?.sort((a, b) => {
+		if (a.title.toLowerCase() === 'size') return -1;
+		if (b.title.toLowerCase() === 'size') return 1;
+		return 0;
+	});
+
 	const router = useRouter();
 
 	useEffect(() => {
@@ -75,14 +122,13 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 			<section className='flex z-0 flex-col gap-10 items-start px-12 mt-12 w-full max-md:px-5 max-md:mt-10 max-md:max-w-full'>
 				<div className='flex  gap-10'>
 					<div className='flex flex-wrap gap-10 items-start min-w-[240px] max-md:max-w-full'>
-						<div className='flex flex-col gap-10 justify-start items-start w-[150px] mt-3'>
+						<div className='flex flex-col gap-10 justify-start items-start w-[150px]'>
 							{selectedVariant?.images?.slice(0, 4).map((image, index) => (
 								<div
 									key={index}
 									className={`flex overflow-hidden flex-col items-center bg-white h-[150px] w-[150px]`}
 								>
 									<img
-										loading='lazy'
 										src={image}
 										className='object-contain aspect-square w-[150px]'
 										alt={`Product image ${index + 1}`}
@@ -90,11 +136,12 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 								</div>
 							))}
 						</div>
-						<div className='flex overflow-hidden flex-col self-stretch my-auto bg-white min-w-[240px] w-[575px] max-md:max-w-full'>
+
+						{/* Main image */}
+						<div className='flex overflow-hidden flex-col bg-white min-w-[240px] w-[575px] max-md:max-w-full'>
 							<img
-								loading='lazy'
-								src={selectedVariant?.images?.[0]}
-								className='object-contain w-full aspect-[0.78] max-md:max-w-full'
+								src={displayedVariant?.thumbnail}
+								className='object-contain w-full h-full max-md:max-w-full'
 								alt='Main product image'
 							/>
 						</div>
@@ -114,11 +161,11 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 						</div>
 						<div className='flex gap-3 items-center mt-4 font-semibold w-full'>
 							<div className='my-auto min-w-[140px] line-through text-2xl  leading-snug text-neutral-700'>
-								Rs. {product.priceWithoutTax.toFixed(2)}
+								Rs. {product?.price?.toFixed(2)}
 							</div>
 							<div className='flex gap-1 items-end my-auto w-full'>
 								<div className='text-3xl w-full text-neutral-700'>
-									Rs. {product.discountedPrice.toFixed(2)}
+									Rs. {product?.discountedPrice?.toFixed(2)}
 								</div>
 								<div className='text-xs leading-4 mb-1 text-neutral-400 w-full'>
 									MRP incl. of all taxes
@@ -128,74 +175,173 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 						<div className='flex flex-col mt-8 w-full'>
 							<div className='flex flex-col max-w-full w-[325px]'>
 								<div className='flex flex-col w-full'>
-									{product?.variants && (
-										<div className='flex flex-col w-full font-semibold tracking-wide leading-snug whitespace-nowrap'>
-											<label
-												htmlFor='size-select'
-												className='text-base text-zinc-600'
+									{sortedAttributes?.map((attribute) => {
+										const isColorAttribute =
+											attribute.title.toLowerCase() === 'color';
+										const selectedValue = selectedAttributes[attribute.title];
+										const selectedSize = selectedAttributes['Size'];
+
+										// Only check available colors if we're on the color attribute and have a size selected
+										const availableColors =
+											isColorAttribute && selectedSize
+												? getAvailableColors(product.variants, selectedSize)
+												: [];
+
+										return (
+											<div
+												key={attribute.id}
+												className='flex flex-col w-full font-semibold tracking-wide leading-snug whitespace-nowrap mb-8'
 											>
-												Size
-											</label>
-											<div className='flex gap-2.5 items-center mt-5 w-full text-sm text-neutral-400'>
-												{product?.variants?.map((variant) => (
-													<button
-														key={variant.id}
-														className={`py-2.5 my-auto w-10 h-10 ${
-															variant.id === selectedVariant?.id
-																? 'text-white bg-red-600 border border-red-600 border-solid'
-																: 'bg-zinc-100'
-														}`}
-														onClick={() => setSelectedVariant(variant)}
-													>
-														{variant.size}
-													</button>
-												))}
+												<label className='text-base text-zinc-600'>
+													{attribute.title}
+													{isColorAttribute && selectedValue && (
+														<span className='ml-2 text-neutral-800'>
+															: {selectedValue}
+														</span>
+													)}
+												</label>
+
+												{isColorAttribute ? (
+													<div className='flex flex-wrap gap-4 mt-5'>
+														{attribute.values.map((attrValue) => {
+															const isSelected =
+																selectedValue === attrValue.value;
+															const isAvailable = availableColors.includes(
+																attrValue.value
+															);
+
+															// Find variant with this color regardless of size
+															const variantWithColor = product?.variants?.find(
+																(v) =>
+																	v.attributeValues.some(
+																		(av) =>
+																			av.value === attrValue.value &&
+																			av?.attribute?.title === 'Color'
+																	)
+															);
+
+															// Find exact variant match with selected size (for availability)
+															const exactVariantMatch = selectedSize
+																? product?.variants?.find((v) =>
+																		v.attributeValues.some(
+																			(av) =>
+																				av.value === attrValue.value &&
+																				av?.attribute?.title === 'Color' &&
+																				v.attributeValues.some(
+																					(sav) =>
+																						sav?.attribute?.title === 'Size' &&
+																						sav.value === selectedSize
+																				)
+																		)
+																  )
+																: null;
+
+															return (
+																<div
+																	key={attrValue.id}
+																	className='flex flex-col items-center gap-2'
+																>
+																	<button
+																		disabled={!isAvailable}
+																		className={`relative w-16 h-16 border ${
+																			isSelected
+																				? 'border-2 border-red-600'
+																				: 'border-gray-200'
+																		} rounded-md overflow-hidden`}
+																		onClick={() =>
+																			handleAttributeSelect(
+																				attribute.title,
+																				attrValue.value
+																			)
+																		}
+																		onMouseEnter={() =>
+																			isAvailable &&
+																			setHoveredVariant(
+																				exactVariantMatch as IVariant
+																			)
+																		}
+																		onMouseLeave={() => setHoveredVariant(null)}
+																	>
+																		<div
+																			className={`w-full h-full ${
+																				!isAvailable ? 'opacity-50' : ''
+																			}`}
+																		>
+																			<img
+																				src={variantWithColor?.thumbnail}
+																				alt={`${attrValue.value} variant`}
+																				className='w-full h-full object-cover'
+																			/>
+																		</div>
+																		{isSelected && (
+																			<div className='absolute bottom-0 right-0 w-4 h-4 bg-red-600 flex items-center justify-center'>
+																				<svg
+																					width='12'
+																					height='12'
+																					viewBox='0 0 24 24'
+																					fill='none'
+																				>
+																					<path
+																						d='M5.16699 14.5C5.16699 14.5 6.66699 14.5 8.66699 18C8.66699 18 14.2258 8.83333 19.167 7'
+																						stroke='white'
+																						strokeWidth='2'
+																						strokeLinecap='round'
+																						strokeLinejoin='round'
+																					/>
+																				</svg>
+																			</div>
+																		)}
+																	</button>
+																	<span
+																		className={`text-xs ${
+																			!isAvailable
+																				? 'text-gray-400'
+																				: 'text-gray-700'
+																		}`}
+																	>
+																		{attrValue.value}
+																	</span>
+																</div>
+															);
+														})}
+													</div>
+												) : (
+													<div className='flex gap-2.5 items-center mt-5 w-full'>
+														{attribute.values.map((attrValue) => {
+															const isSelected =
+																selectedValue === attrValue.value;
+															return (
+																<button
+																	key={attrValue.id}
+																	className={`py-2.5 my-auto ${
+																		attrValue.value.length > 3
+																			? 'w-full'
+																			: 'w-10'
+																	} h-10 ${
+																		isSelected
+																			? 'text-white bg-red-600 border border-red-600 border-solid'
+																			: 'bg-zinc-100'
+																	}`}
+																	onClick={() => {
+																		handleAttributeSelect(
+																			attribute.title,
+																			attrValue.value
+																		);
+																		// Clear color selection when size changes
+																		if (selectedAttributes['Color']) {
+																			handleAttributeSelect('Color', '');
+																		}
+																	}}
+																>
+																	{attrValue.value}
+																</button>
+															);
+														})}
+													</div>
+												)}
 											</div>
-										</div>
-									)}
-									{product?.variants && (
-										<div className='flex flex-col mt-8 w-full'>
-											<label
-												htmlFor='color-select'
-												className='text-base font-semibold tracking-wide leading-snug text-zinc-600'
-											>
-												Color
-											</label>
-											<div className='flex gap-2.5 items-center mt-5 w-full'>
-												{product?.variants?.map((variant) => (
-													<button
-														key={variant.id}
-														style={{ backgroundColor: variant.color }}
-														className={`flex shrink-0 self-stretch  my-auto ${
-															selectedVariant?.id === variant.id
-																? 'border justify-center border-solid border-neutral-400'
-																: ''
-														} h-[25px] rounded-[63px] w-[25px]`}
-														aria-label={`Select ${variant.color} color`}
-														onClick={() => setSelectedVariant(variant)}
-													>
-														{selectedVariant?.id === variant.id && (
-															<svg
-																width='24'
-																height='24'
-																viewBox='0 0 24 24'
-																fill='none'
-																xmlns='http://www.w3.org/2000/svg'
-															>
-																<path
-																	d='M5.16699 14.5C5.16699 14.5 6.66699 14.5 8.66699 18C8.66699 18 14.2258 8.83333 19.167 7'
-																	stroke='white'
-																	stroke-width='2'
-																	stroke-linecap='round'
-																	stroke-linejoin='round'
-																/>
-															</svg>
-														)}
-													</button>
-												))}
-											</div>
-										</div>
-									)}
+										);
+									})}
 								</div>
 							</div>
 							<div className='flex flex-col mt-8 w-full text-2xl font-semibold tracking-wider leading-snug'>
