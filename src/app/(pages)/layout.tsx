@@ -10,7 +10,7 @@ export default function layout({
 		<>
 			<Navbar />
 			<main>{children}</main>
-			{/* <Footer /> */}
+			<Footer />
 		</>
 	);
 }

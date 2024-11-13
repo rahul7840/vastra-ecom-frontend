@@ -16,6 +16,7 @@ import { ReviewFormSchema } from '../forms/review/schema';
 import { useProduct } from '../queries/use-product';
 import { useProducts } from '../queries/use-products';
 import { IAttribute, IProduct, IVariant } from '@/modules/types/product';
+import { ProductSkeleton } from '../skeleton/product-skeleton';
 
 interface ProductTemplateProps {
 	id: string;
@@ -114,7 +115,7 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 		}
 	}, [product]);
 
-	if (isLoading) return <div>Loading...</div>;
+	if (isLoading) return <ProductSkeleton />;
 	if (!product) return notFound();
 
 	return (

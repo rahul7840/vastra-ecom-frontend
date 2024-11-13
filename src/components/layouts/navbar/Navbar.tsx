@@ -1,5 +1,7 @@
 'use client';
+import { useSession } from '@/modules/auth/queries/use-session';
 import { useCartManager } from '@/modules/cart/queries/use-cart-manager';
+import { ICartItem } from '@/modules/types/cart';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -23,6 +25,7 @@ export const Navbar = () => {
 	};
 
 	const router = useRouter();
+	const { user } = useSession();
 
 	return (
 		<>
@@ -66,9 +69,6 @@ export const Navbar = () => {
 					<li className={linkClass('/policies')}>
 						<a href='/policies'>Policies</a>
 					</li>
-					<li className={linkClass('/track-order')}>
-						<a href='/track-order'>Track Order</a>
-					</li>
 					<li className={linkClass('/contact')}>
 						<a href='/contact'>Contact Us</a>
 					</li>
@@ -82,7 +82,11 @@ export const Navbar = () => {
 							alt='Search'
 						/>
 					</a>
-					<div onClick={() => router.push('/login')}>
+					<div
+						onClick={() =>
+							user ? router.push('/dashboard') : router.push('/login')
+						}
+					>
 						<img
 							className='w-5 h-5 md:w-7 md:h-7'
 							src='/assets/images/group.svg'
@@ -101,7 +105,10 @@ export const Navbar = () => {
 
 						{cart?.cartItems?.length && cart?.cartItems?.length > 0 ? (
 							<span className='absolute cursor-pointer flex justify-center items-center top-[-5px] right-[-7px] text-[12px] font-semibold bg-red-500 text-white rounded-full w-5 h-5'>
-								{cart?.cartItems?.reduce((sum, item) => sum + item.quantity, 0)}
+								{cart?.cartItems?.reduce(
+									(sum: number, item: ICartItem) => sum + item.quantity,
+									0
+								)}
 							</span>
 						) : null}
 					</div>

@@ -4,12 +4,17 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
 import { Title } from '../components/Title';
 import { TestimonailCard } from './TestimonialCard';
+import { TestimonialsSkeleton } from './TestimonialsSkeleton';
 
 interface TestimonialsProps {
 	showTitle?: boolean;
+	isLoading?: boolean;
 }
 
-export const Testimonails = ({ showTitle = true }: TestimonialsProps) => {
+export const Testimonails = ({
+	showTitle = true,
+	isLoading,
+}: TestimonialsProps) => {
 	const testimonials = [
 		{
 			name: 'Nelson Kuhlman',
@@ -48,6 +53,10 @@ export const Testimonails = ({ showTitle = true }: TestimonialsProps) => {
 			createdAt: '24/05/2024',
 		},
 	];
+
+	if (isLoading) {
+		return <TestimonialsSkeleton showTitle={showTitle} />;
+	}
 
 	return (
 		<div className={'flex flex-col gap-4 md:gap-9'}>
