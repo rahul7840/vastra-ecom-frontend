@@ -21,7 +21,7 @@ export const WishlistItems = () => {
 				<h2 className='text-xl font-semibold'>Wishlist</h2>
 				<Link
 					href='/account/wishlist'
-					className='text-primary flex items-center hover:underline'
+					className='text-primary flex items-center'
 				>
 					View All
 					<Icon name='chevron_right' className='ml-1' />

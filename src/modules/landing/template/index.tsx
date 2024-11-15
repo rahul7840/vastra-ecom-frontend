@@ -40,17 +40,20 @@ export const LandingTemplate = () => {
 					isLoading={trendingNowLoading}
 					items={trendingNow}
 					text='Trending Now'
+					link='/products'
 				/>
 				<TitleWithCards
 					isLoading={bestSellerLoading}
 					items={bestSeller}
 					text='Best Seller'
+					link='/products'
 				/>
 				<TitleWithCards
 					isLoading={newArrivalLoading}
 					viewAll={true}
 					items={newArrival}
 					text='New Arrival'
+					link='/new-arrivals'
 				/>
 			</div>
 

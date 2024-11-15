@@ -1,3 +1,5 @@
+import { IAddress } from './address';
+import { ICreateAddress } from './address';
 import { IProduct } from './product';
 
 export interface ICart {
@@ -35,29 +37,15 @@ export interface ICartItem {
 	updatedAt: string;
 }
 
-export interface IAddress {
-	id?: string;
-	firstName?: string;
-	lastName?: string;
-	address?: string;
-	city?: string;
-	state?: string;
-	country?: string;
-	pincode?: number;
-	email?: string;
-	phone?: string;
-	address2?: string;
-}
-
 export interface ICheckServiceability {
 	delivery_postcode: number;
 	cod: number;
 }
 
-export interface IUpdateAddress {
+export interface ICartAddress {
 	billing_same_as_shipping: boolean;
-	shipping: IAddress;
-	billing?: IAddress;
+	shipping: ICreateAddress;
+	billing?: ICreateAddress;
 }
 
 export interface IShippingCharges {

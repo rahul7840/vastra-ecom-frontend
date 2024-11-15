@@ -2,15 +2,14 @@ import { api } from '@/api';
 import { IApiParams } from '@/api/types';
 import { useQuery } from '@tanstack/react-query';
 
-export const useProducts = (params: IApiParams) => {
+export const useOrders = (params: IApiParams) => {
 	const { data, isLoading } = useQuery({
-		queryKey: ['products', params],
-		queryFn: () => api.product.all(params),
+		queryKey: ['orders', params],
+		queryFn: () => api.order.all(params),
 	});
 
 	return {
-		products: data?.data?.data,
-		meta: data?.data?.meta,
+		orders: data?.data?.data,
 		isLoading,
 	};
 };

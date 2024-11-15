@@ -1,24 +1,25 @@
 'use client';
-import { ProductCard } from '@/modules/common/components/Product';
-import { useProducts } from '../queries/use-products';
-import { useState } from 'react';
 import {
 	Pagination,
 	PaginationContent,
+	PaginationEllipsis,
 	PaginationItem,
 	PaginationLink,
 	PaginationNext,
 	PaginationPrevious,
-	PaginationEllipsis,
 } from '@/modules/common/components/Pagination';
+import { ProductCard } from '@/modules/common/components/Product';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useState } from 'react';
+import { useProducts } from '../queries/use-products';
+import { ProductCardSkeleton } from '@/modules/common/components/ProductCardSkeleton';
 
-export const NewArrivalTemplate = () => {
+export const ProductsTemplate = () => {
 	const [sortBy, setSortBy] = useState('createdAt:desc');
 
 	const searchParams = useSearchParams();
 
-	const { products, meta } = useProducts({
+	const { products, meta, isLoading } = useProducts({
 		limit: 10,
 		page: Number(searchParams.get('page')) || 1,
 		sort: sortBy,
@@ -38,10 +39,10 @@ export const NewArrivalTemplate = () => {
 			{/* Header Section */}
 			<div className='mb-8 text-center'>
 				<h1 className='text-2xl md:text-4xl font-bold text-[#212121] mb-4'>
-					New Arrivals
+					Products
 				</h1>
 				<p className='text-[#757575] text-sm md:text-base max-w-2xl mx-auto'>
-					Discover our latest collection of trendsetting pieces that just landed
+					Discover products that match your style and exceed your expectations
 				</p>
 			</div>
 
@@ -82,7 +83,7 @@ export const NewArrivalTemplate = () => {
 					<span className='text-sm text-[#757575]'>
 						{products?.length} Products
 					</span>
-					<div className='flex gap-2'>
+					{/* <div className='flex gap-2'>
 						<button className='p-2 rounded-md hover:bg-gray-100'>
 							<svg
 								className='w-5 h-5 text-[#4F1010]'
@@ -113,15 +114,19 @@ export const NewArrivalTemplate = () => {
 								/>
 							</svg>
 						</button>
-					</div>
+					</div> */}
 				</div>
 			</div>
 
 			{/* Products Grid */}
 			<div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8'>
-				{products?.map((product) => (
-					<ProductCard key={product.id} product={product} />
-				))}
+				{isLoading
+					? Array.from({ length: 12 }).map((_, index) => (
+							<ProductCardSkeleton key={index} />
+					  ))
+					: products?.map((product) => (
+							<ProductCard key={product.id} product={product} />
+					  ))}
 			</div>
 
 			{/* Load More Button */}

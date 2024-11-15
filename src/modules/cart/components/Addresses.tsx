@@ -1,7 +1,7 @@
-import { IUpdateAddress } from '@/modules/types/cart';
+import { ICartAddress } from '@/modules/types/cart';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useForm, UseFormReturn } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { useCartManager } from '../queries/use-cart-manager';
 import { AddressForm } from './AddressForm';
 import {
@@ -10,9 +10,11 @@ import {
 	shippingAddressSchema,
 	ShippingAddressSchema,
 } from './contact-info-schema';
+import { useAddresses } from '@/modules/dashboard/queries/use-addresses';
 
 export const Addresses: React.FC = () => {
 	const { cart, updateAddressMutation, validatePincode } = useCartManager();
+	const { addresses } = useAddresses();
 
 	const [isPincodeLoading, setIsPincodeLoading] = useState(false);
 
@@ -60,9 +62,10 @@ export const Addresses: React.FC = () => {
 			state: shippingFormData.shippingState,
 			pincode: Number(shippingFormData.shippingPincode),
 			country: 'India',
+			isDefault: false,
 		};
 
-		const addressData: IUpdateAddress = {
+		const addressData: ICartAddress = {
 			shipping: shippingData,
 			billing_same_as_shipping: !useDifferentBillingAddress,
 			billing: useDifferentBillingAddress
@@ -77,6 +80,7 @@ export const Addresses: React.FC = () => {
 						state: billingData.billingState ?? '',
 						pincode: Number(billingData.billingPincode),
 						country: 'India',
+						isDefault: false,
 				  }
 				: undefined,
 		};

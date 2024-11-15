@@ -1,14 +1,17 @@
 'use client';
+import { useSession } from '@/modules/auth/queries/use-session';
+import Link from 'next/link';
 import { Card } from '../../common/components/Card';
 import { Icon } from '../../common/components/Icon';
 import { AddressBook } from '../components/AddressBook';
 import { RecentOrders } from '../components/RecentOrders';
 import { WishlistItems } from '../components/WishlistItems';
-import { useSession } from '@/modules/auth/queries/use-session';
-import Link from 'next/link';
+import { useAddresses } from '../queries/use-addresses';
 
 export const DashboardTemplate = () => {
 	const { user } = useSession();
+
+	const { addresses, isLoading } = useAddresses();
 
 	return (
 		<div className='p-4 md:p-6 max-w-7xl mx-auto'>
@@ -32,29 +35,20 @@ export const DashboardTemplate = () => {
 					</Card>
 				</Link>
 
-				<Link href='/account/wishlist'>
+				{/* <Link href='/account/wishlist'>
 					<Card className='p-4 hover:shadow-lg transition-shadow cursor-pointer'>
 						<div className='flex flex-col items-center'>
 							<Icon name='favorite' className='text-3xl text-primary mb-2' />
 							<span className='text-sm font-medium'>Wishlist</span>
 						</div>
 					</Card>
-				</Link>
+				</Link> */}
 
-				<Link href='/account/addresses'>
+				<Link href='/dashboard/addresses'>
 					<Card className='p-4 hover:shadow-lg transition-shadow cursor-pointer'>
 						<div className='flex flex-col items-center'>
 							<Icon name='location_on' className='text-3xl text-primary mb-2' />
 							<span className='text-sm font-medium'>Addresses</span>
-						</div>
-					</Card>
-				</Link>
-
-				<Link href='/account/settings'>
-					<Card className='p-4 hover:shadow-lg transition-shadow cursor-pointer'>
-						<div className='flex flex-col items-center'>
-							<Icon name='settings' className='text-3xl text-primary mb-2' />
-							<span className='text-sm font-medium'>Settings</span>
 						</div>
 					</Card>
 				</Link>
@@ -66,10 +60,10 @@ export const DashboardTemplate = () => {
 			</div>
 
 			{/* Two Column Layout */}
-			<div className='grid md:grid-cols-2 gap-6'>
-				<WishlistItems />
-				<AddressBook />
-			</div>
+			{/* <div className='grid md:grid-cols-2 gap-6'> */}
+			{/* <WishlistItems /> */}
+			<AddressBook address={addresses?.[0]} />
+			{/* </div> */}
 		</div>
 	);
 };

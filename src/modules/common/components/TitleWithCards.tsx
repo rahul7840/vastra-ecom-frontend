@@ -1,8 +1,9 @@
 'use client';
-import { Title } from './Title';
-import { ProductCard } from './Product';
 import { IProduct } from '@/modules/types/product';
+import { useRouter } from 'next/navigation';
+import { ProductCard } from './Product';
 import { ProductCardSkeleton } from './ProductCardSkeleton';
+import { Title } from './Title';
 
 interface Props {
 	text: string;
@@ -10,6 +11,7 @@ interface Props {
 	viewAll?: boolean;
 	mainDivClassName?: string;
 	isLoading?: boolean;
+	link?: string;
 }
 
 export const TitleWithCards = (props: Props) => {
@@ -19,7 +21,10 @@ export const TitleWithCards = (props: Props) => {
 		viewAll = false,
 		mainDivClassName = '',
 		isLoading = false,
+		link,
 	} = props;
+
+	const router = useRouter();
 
 	return (
 		<div
@@ -38,7 +43,10 @@ export const TitleWithCards = (props: Props) => {
 					</div>
 
 					{!isLoading && viewAll && (
-						<div className='flex gap-4 mt-4 sm:mt-12'>
+						<div
+							onClick={() => link && router.push(link)}
+							className='flex gap-4 mt-4 sm:mt-12 cursor-pointer'
+						>
 							<img src='/assets/images/curly-light.svg' alt='' />
 							<div className='underline text-sm font-semibold text-[#212121]'>
 								View All

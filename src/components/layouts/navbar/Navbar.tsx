@@ -75,13 +75,13 @@ export const Navbar = () => {
 				</ul>
 
 				<div className='flex justify-center items-center gap-8'>
-					<a href='/search'>
+					{/* <a href='/search'>
 						<img
 							className='w-5 h-5 md:w-7 md:h-7'
 							src='/assets/images/search.svg'
 							alt='Search'
 						/>
-					</a>
+					</a> */}
 					<div
 						onClick={() =>
 							user ? router.push('/dashboard') : router.push('/login')
