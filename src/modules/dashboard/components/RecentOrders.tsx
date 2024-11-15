@@ -3,7 +3,7 @@ import { Card } from '../../common/components/Card';
 import { Badge } from '../../common/components/Badge';
 import { Icon } from '../../common/components/Icon';
 import { useOrders } from '@/modules/order/queries/use-orders';
-import { formatDate } from '@/modules/common/lib/utils';
+import { formatDate } from '@/modules/lib/utils';
 
 // const orders = [
 // 	{

@@ -3,7 +3,7 @@
 import { useSession } from '@/modules/auth/queries/use-session';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { cn } from '../lib/utils';
+import { cn } from '../../lib/utils';
 interface ProtectedRouteProps {
 	children: React.ReactNode;
 }

@@ -1,87 +1,36 @@
-import { ICartAddress } from '@/modules/types/cart';
-import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useCallback, useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { useCartManager } from '../queries/use-cart-manager';
-import { AddressForm } from './AddressForm';
+import { Button } from '@/modules/common/components/Button';
 import {
-	billingAddressSchema,
-	BillingAddressSchema,
-	shippingAddressSchema,
-	ShippingAddressSchema,
-} from './contact-info-schema';
+	RadioGroup,
+	RadioGroupItem,
+} from '@/modules/common/components/RadioGroup';
+import { AddressForm } from '@/modules/dashboard/components/AddressForm';
 import { useAddresses } from '@/modules/dashboard/queries/use-addresses';
+import { IAddress } from '@/modules/types/address';
+import { ICartAddress } from '@/modules/types/cart';
+import React, { useState } from 'react';
+import { useCartManager } from '../queries/use-cart-manager';
 
 export const Addresses: React.FC = () => {
-	const { cart, updateAddressMutation, validatePincode } = useCartManager();
+	const { cart, updateAddressMutation } = useCartManager();
 	const { addresses } = useAddresses();
-
-	const [isPincodeLoading, setIsPincodeLoading] = useState(false);
-
+	const [selectedShippingId, setSelectedShippingId] = useState<string>(
+		cart?.shippingAddressId || ''
+	);
+	const [selectedBillingId, setSelectedBillingId] = useState<string>(
+		cart?.billingAddressId || ''
+	);
 	const [useDifferentBillingAddress, setUseDifferentBillingAddress] =
 		useState(false);
-
 	const [showForm, setShowForm] = useState(false);
+	const [isEditing, setIsEditing] = useState(false);
 
-	const shippingAddressForm = useForm<shippingAddressSchema>({
-		resolver: zodResolver(ShippingAddressSchema),
-	});
-
-	const billingAddressForm = useForm<billingAddressSchema>({
-		resolver: zodResolver(BillingAddressSchema),
-	});
-
-	const onSubmit = async (
-		data: shippingAddressSchema | billingAddressSchema
-	) => {
-		console.log(
-			'shipping dataa logs 3333333 ',
-			shippingAddressForm.getValues()
-		);
-		const isValid = await shippingAddressForm.trigger();
-		console.log('isValid', isValid);
-		if (!isValid) return;
-
-		if (useDifferentBillingAddress) {
-			const isValidBilling = await billingAddressForm.trigger();
-			console.log('isValidBilling', isValidBilling);
-			if (!isValidBilling) return;
-		}
-
-		const shippingFormData = shippingAddressForm.getValues();
-		const billingData = billingAddressForm.getValues();
-
-		const shippingData = {
-			firstName: shippingFormData.shippingFirstName,
-			lastName: shippingFormData.shippingLastName,
-			address: shippingFormData.shippingAddress,
-			address2: shippingFormData.shippingAddress2,
-			email: shippingFormData.shippingEmail,
-			phone: shippingFormData.shippingPhone,
-			city: shippingFormData.shippingCity,
-			state: shippingFormData.shippingState,
-			pincode: Number(shippingFormData.shippingPincode),
-			country: 'India',
-			isDefault: false,
-		};
-
+	const onSubmit = async () => {
 		const addressData: ICartAddress = {
-			shipping: shippingData,
-			billing_same_as_shipping: !useDifferentBillingAddress,
-			billing: useDifferentBillingAddress
-				? {
-						firstName: billingData.billingFirstName ?? '',
-						lastName: billingData.billingLastName ?? '',
-						address: billingData.billingAddress ?? '',
-						address2: billingData.billingAddress2 ?? '',
-						email: billingData.billingEmail ?? '',
-						phone: billingData.billingPhone ?? '',
-						city: billingData.billingCity ?? '',
-						state: billingData.billingState ?? '',
-						pincode: Number(billingData.billingPincode),
-						country: 'India',
-						isDefault: false,
-				  }
+			shippingAddressId: addresses?.find(
+				(addr: IAddress) => addr.id === selectedShippingId
+			)?.id,
+			billingAddressId: useDifferentBillingAddress
+				? addresses?.find((addr: IAddress) => addr.id === selectedBillingId)
 				: undefined,
 		};
 
@@ -91,239 +40,55 @@ export const Addresses: React.FC = () => {
 		}
 	};
 
-	const handlePincodeChange = useCallback(
-		async (formType: 'shipping' | 'billing', pincode: number) => {
-			const form: any =
-				formType === 'shipping' ? shippingAddressForm : billingAddressForm;
-			const prefix = formType === 'shipping' ? 'shipping' : 'billing';
-			if (pincode?.toString().length === 6) {
-				setIsPincodeLoading(true);
-
-				try {
-					const validationResult = await validatePincode(pincode);
-
-					if (validationResult && validationResult.isValid) {
-						form.setValue(`${prefix}City`, validationResult?.city, {
-							shouldValidate: true,
-						});
-						form.setValue(`${prefix}State`, validationResult?.state, {
-							shouldValidate: true,
-						});
-						form.clearErrors(`${prefix}Pincode`);
-					} else {
-						form.setError(`${prefix}Pincode`, {
-							type: 'manual',
-							message: validationResult?.error || 'Invalid pincode',
-						});
-					}
-				} catch (error) {
-					console.error(
-						'Error validating pincode: logs 11111 in address component',
-						error
-					);
-					form.setError(`${prefix}Pincode`, {
-						type: 'manual',
-						message: 'Invalid pincode',
-					});
-				} finally {
-					setIsPincodeLoading(false);
-				}
-			}
-		},
-		[shippingAddressForm, billingAddressForm, validatePincode]
-	);
-
-	useEffect(() => {
-		const shippingSubscription = shippingAddressForm.watch(
-			(value, { name, type }) => {
-				if (
-					name === 'shippingPincode' &&
-					type === 'change' &&
-					value.shippingPincode
-				) {
-					handlePincodeChange('shipping', Number(value.shippingPincode));
-				}
-			}
-		);
-
-		const billingSubscription = billingAddressForm.watch(
-			(value, { name, type }) => {
-				if (
-					name === 'billingPincode' &&
-					type === 'change' &&
-					value.billingPincode
-				) {
-					handlePincodeChange('billing', Number(value.billingPincode));
-				}
-			}
-		);
-
-		return () => {
-			shippingSubscription.unsubscribe();
-			billingSubscription.unsubscribe();
-		};
-	}, [shippingAddressForm, billingAddressForm, handlePincodeChange]);
-
-	useEffect(() => {
-		console.log('cart logs 111111', cart);
-
-		if (cart?.shippingAddress?.firstName) {
-			shippingAddressForm.setValue(
-				'shippingFirstName',
-				cart.shippingAddress.firstName
-			);
-		}
-
-		if (cart?.shippingAddress?.lastName) {
-			shippingAddressForm.setValue(
-				'shippingLastName',
-				cart.shippingAddress.lastName
-			);
-		}
-
-		if (cart?.shippingAddress?.email) {
-			shippingAddressForm.setValue('shippingEmail', cart.shippingAddress.email);
-		}
-
-		if (cart?.shippingAddress?.phone) {
-			shippingAddressForm.setValue('shippingPhone', cart.shippingAddress.phone);
-		}
-
-		if (cart?.shippingAddress?.address) {
-			shippingAddressForm.setValue(
-				'shippingAddress',
-				cart.shippingAddress.address
-			);
-		}
-
-		if (cart?.shippingAddress?.address2) {
-			shippingAddressForm.setValue(
-				'shippingAddress2',
-				cart.shippingAddress.address2
-			);
-		}
-
-		if (cart?.shippingAddress?.city) {
-			shippingAddressForm.setValue('shippingCity', cart.shippingAddress.city);
-		}
-
-		if (cart?.shippingAddress?.state) {
-			shippingAddressForm.setValue('shippingState', cart.shippingAddress.state);
-		}
-
-		if (cart?.shippingAddress?.pincode) {
-			shippingAddressForm.setValue(
-				'shippingPincode',
-				cart.shippingAddress.pincode.toString()
-			);
-		}
-
-		if (cart?.billingAddress?.firstName) {
-			billingAddressForm.setValue(
-				'billingFirstName',
-				cart.billingAddress.firstName
-			);
-		}
-
-		if (cart?.billingAddress?.lastName) {
-			billingAddressForm.setValue(
-				'billingLastName',
-				cart.billingAddress.lastName
-			);
-		}
-
-		if (cart?.billingAddress?.email) {
-			billingAddressForm.setValue('billingEmail', cart.billingAddress.email);
-		}
-
-		if (cart?.billingAddress?.phone) {
-			billingAddressForm.setValue('billingPhone', cart.billingAddress.phone);
-		}
-
-		if (cart?.billingAddress?.address) {
-			billingAddressForm.setValue(
-				'billingAddress',
-				cart.billingAddress.address
-			);
-		}
-
-		if (cart?.billingAddress?.address2) {
-			billingAddressForm.setValue(
-				'billingAddress2',
-				cart.billingAddress.address2
-			);
-		}
-
-		if (cart?.billingAddress?.city) {
-			billingAddressForm.setValue('billingCity', cart.billingAddress.city);
-		}
-
-		if (cart?.billingAddress?.state) {
-			billingAddressForm.setValue('billingState', cart.billingAddress.state);
-		}
-
-		if (cart?.billingAddress?.pincode) {
-			billingAddressForm.setValue(
-				'billingPincode',
-				cart.billingAddress.pincode.toString()
-			);
-		}
-
-		if (cart?.shippingAddressId) {
-			setUseDifferentBillingAddress(
-				cart?.shippingAddressId !== cart?.billingAddressId
-			);
-		}
-	}, [cart]);
-
-	return (
-		<>
-			{showForm === false ? (
-				<div>
-					{cart?.shippingAddress && (
-						<div className='border p-4 mb-4'>
-							<h3 className='font-semibold'>Shipping Address</h3>
-							<p>{cart?.shippingAddress?.address}</p>
-							<p>
-								{cart?.shippingAddress?.city}, {cart?.shippingAddress?.state}{' '}
-								{cart?.shippingAddress?.pincode}
-							</p>
-						</div>
-					)}
-					{cart?.billingAddress && (
-						<div className='border p-4 mb-4'>
-							<h3 className='font-semibold'>Billing Address</h3>
-							<p>{cart?.billingAddress?.address}</p>
-							<p>
-								{cart?.billingAddress?.city}, {cart?.billingAddress?.state}{' '}
-								{cart?.billingAddress?.pincode}
-							</p>
-						</div>
-					)}
-					<button
-						onClick={() => setShowForm(true)}
-						className='px-4 py-2 bg-red-700 text-white rounded'
+	const EditView = () => {
+		return (
+			<>
+				<div className='space-y-6'>
+					<RadioGroup
+						value={selectedShippingId}
+						onValueChange={setSelectedShippingId}
+						className='grid grid-cols-1 gap-4'
 					>
-						Edit Addresses
-					</button>
-				</div>
-			) : (
-				<form
-					onSubmit={(event) => {
-						event.preventDefault();
-						shippingAddressForm.handleSubmit(onSubmit)(event);
-
-						if (useDifferentBillingAddress) {
-							billingAddressForm.handleSubmit(onSubmit)(event);
-						}
-					}}
-					className='flex flex-col tracking-wide leading-snug max-w-[688px]'
-				>
-					<AddressForm
-						prefix='shipping'
-						errors={shippingAddressForm.formState.errors}
-						register={shippingAddressForm.register as any}
-					/>
+						{addresses?.map((address: IAddress) => (
+							<div
+								key={address.id}
+								className='flex items-start space-x-4 border rounded-lg p-4 hover:bg-gray-50'
+								onClick={() => setSelectedShippingId(address.id)}
+							>
+								<RadioGroupItem
+									value={address.id}
+									id={address.id}
+									className='mt-1'
+								/>
+								<div className='flex-1'>
+									<label
+										htmlFor={address.id}
+										className='font-medium cursor-pointer'
+									>
+										{address.firstName} {address.lastName}
+										{address.isDefault && (
+											<span className='ml-2 text-xs bg-gray-100 px-2 py-1 rounded'>
+												Default
+											</span>
+										)}
+									</label>
+									<p className='text-sm text-gray-600 mt-1'>
+										{address.address}
+										{address.address2 && <>, {address.address2}</>}
+									</p>
+									<p className='text-sm text-gray-600'>
+										{address.city}, {address.state} {address.pincode}
+									</p>
+									<p className='text-sm text-gray-600 mt-1'>
+										<span className='inline-block mr-4'>
+											📧 {address.email}
+										</span>
+										<span>📞 {address.phone}</span>
+									</p>
+								</div>
+							</div>
+						))}
+					</RadioGroup>
 
 					<label className='flex gap-3 items-center self-start mt-6 text-neutral-400 cursor-pointer'>
 						<input
@@ -358,26 +123,100 @@ export const Addresses: React.FC = () => {
 					</label>
 
 					{useDifferentBillingAddress && (
-						<>
-							<h2 className='text-2xl font-semibold text-neutral-800 mt-8 mb-4'>
-								Billing Address
-							</h2>
-							<AddressForm
-								prefix='billing'
-								errors={billingAddressForm.formState.errors}
-								register={billingAddressForm.register as any}
-							/>
-						</>
+						<div className='mt-6'>
+							<h3 className='text-lg font-medium mb-4'>Billing Address</h3>
+							<RadioGroup
+								value={selectedBillingId}
+								onValueChange={setSelectedBillingId}
+								className='grid grid-cols-1 gap-4'
+							>
+								{addresses?.map((address: IAddress) => (
+									<div
+										key={`billing-${address.id}`}
+										className='flex items-start space-x-4 border rounded-lg p-4 hover:bg-gray-50'
+									>
+										<RadioGroupItem
+											value={address.id}
+											id={`billing-${address.id}`}
+											className='mt-1'
+										/>
+										<div className='flex-1'>
+											<label
+												htmlFor={`billing-${address.id}`}
+												className='font-medium cursor-pointer'
+											>
+												{address.firstName} {address.lastName}
+											</label>
+											<p className='text-sm text-gray-600 mt-1'>
+												{address.address}
+												{address.address2 && <>, {address.address2}</>}
+											</p>
+											<p className='text-sm text-gray-600'>
+												{address.city}, {address.state} {address.pincode}
+											</p>
+										</div>
+									</div>
+								))}
+							</RadioGroup>
+						</div>
 					)}
 
-					<button
-						type='submit'
-						className='gap-3 self-stretch px-8 py-3.5 mt-6 w-full text-2xl font-bold text-center text-white bg-red-700 max-md:px-5 max-md:max-w-full'
-					>
-						Save
-					</button>
-				</form>
-			)}
+					<Button onClick={() => setShowForm(true)} variant='outline'>
+						Add New Address
+					</Button>
+				</div>
+				<button
+					onClick={onSubmit}
+					className='px-4 mt-4 w-56 rounded-full py-2 bg-red-700 text-white'
+				>
+					Save & Continue
+				</button>
+			</>
+		);
+	};
+
+	if (showForm) {
+		return (
+			<AddressForm onSubmit={onSubmit} onCancel={() => setShowForm(false)} />
+		);
+	}
+
+	if (isEditing) {
+		return <EditView />;
+	}
+
+	return (
+		<>
+			<div>
+				{cart?.shippingAddress ? (
+					<>
+						{cart?.shippingAddress && (
+							<div className='border p-4 mb-4'>
+								<h3 className='font-semibold'>Shipping Address</h3>
+								<p>{cart?.shippingAddress?.address}</p>
+								<p>
+									{cart?.shippingAddress?.city}, {cart?.shippingAddress?.state}{' '}
+									{cart?.shippingAddress?.pincode}
+								</p>
+							</div>
+						)}
+						{cart?.billingAddress && (
+							<div className='border p-4 mb-4'>
+								<h3 className='font-semibold'>Billing Address</h3>
+								<p>{cart?.billingAddress?.address}</p>
+								<p>
+									{cart?.billingAddress?.city}, {cart?.billingAddress?.state}{' '}
+									{cart?.billingAddress?.pincode}
+								</p>
+							</div>
+						)}
+					</>
+				) : (
+					<Button onClick={() => setIsEditing(true)} variant='outline'>
+						Manage Addresses
+					</Button>
+				)}
+			</div>
 		</>
 	);
 };

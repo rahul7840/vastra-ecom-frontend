@@ -43,9 +43,8 @@ export interface ICheckServiceability {
 }
 
 export interface ICartAddress {
-	billing_same_as_shipping: boolean;
-	shipping: ICreateAddress;
-	billing?: ICreateAddress;
+	shippingAddressId: string;
+	billingAddressId?: string;
 }
 
 export interface IShippingCharges {
