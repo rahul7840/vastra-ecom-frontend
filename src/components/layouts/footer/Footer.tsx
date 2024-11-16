@@ -18,8 +18,8 @@ export const Footer = () => {
 					Over <span className='font-bold'>15 Thousand</span> Happy Customers
 				</p>
 			</div>
-			<div className='flex flex-col gap-5 px-12 my-10 lg:flex-row xl:justify-between'>
-				<div className='w-[25%]'>
+			<div className='flex flex-col gap-8 lg:gap-5 px-5 lg:px-12 my-10 lg:flex-row xl:justify-between'>
+				<div className='w-full lg:w-[25%]'>
 					<Image
 						src={logo}
 						alt='logo'
@@ -27,7 +27,7 @@ export const Footer = () => {
 						height={37}
 						className='object-contain '
 					/>
-					<p className='mb-6 mt-10 text-sm text-gray-500'>
+					<p className='mb-6 mt-4 lg:mt-10 text-sm text-gray-500'>
 						About us ipsum dolor sit amet, consectetuer adipiscing elit, sed
 						diam nonummy dolor sit amet, consectetuer adipiscing elit, sed diam
 						nonummy.
@@ -71,7 +71,7 @@ export const Footer = () => {
 					</div>
 				</div>
 				{/* Contact Section */}
-				<div className='flex flex-col gap-5 text-base w-[20%]'>
+				<div className='flex flex-col gap-5 text-base w-full lg:w-[20%]'>
 					<h3 className='font-bold text-gray-600'>Contact</h3>
 					<div className='flex gap-2 items-start'>
 						<Image
@@ -118,7 +118,7 @@ export const Footer = () => {
 				</div>
 
 				{/* Customer Service */}
-				<div className='flex flex-col gap-5 text-base w-[15%]'>
+				<div className='flex flex-col gap-5 text-base w-full lg:w-[15%]'>
 					<h3 className='font-bold text-gray-600'>Customer Service</h3>
 					<a href='/' className='text-gray-500 text-sm'>
 						Contact us
@@ -135,7 +135,7 @@ export const Footer = () => {
 				</div>
 
 				{/* Legal Section */}
-				<div className='flex flex-col gap-5 text-base w-[15%]'>
+				<div className='flex flex-col gap-5 text-base w-full lg:w-[15%]'>
 					<h3 className='font-bold text-gray-600'>Legal</h3>
 					<a href='/' className='text-gray-500 text-sm'>
 						Privacy Policy
@@ -146,7 +146,7 @@ export const Footer = () => {
 				</div>
 
 				{/* Sign Up for Offers Section */}
-				<div className='flex flex-col text-base w-[25%]'>
+				<div className='flex flex-col text-base w-full lg:w-[25%]'>
 					<h3 className='font-bold mb-5 text-gray-600'>
 						Sign up for exciting offers
 					</h3>

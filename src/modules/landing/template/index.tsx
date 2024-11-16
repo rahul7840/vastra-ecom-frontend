@@ -7,7 +7,7 @@ import { useProducts } from '@/modules/product/queries/use-products';
 export const LandingTemplate = () => {
 	const images = ['/assets/images/banner.png', '/assets/images/banner.png'];
 
-	const { products: trendingNow, isLoading } = useProducts({
+	const { products: trendingNow, isLoading: trendingNowLoading } = useProducts({
 		limit: 8,
 		sort: 'trending',
 	});
@@ -38,11 +38,24 @@ export const LandingTemplate = () => {
 			<div className='flex flex-col gap-8 md:gap-32 mb-14'>
 				<TitleWithCards
 					viewAll={true}
+					isLoading={trendingNowLoading}
 					items={trendingNow}
 					text='Trending Now'
+					link='/products'
 				/>
-				<TitleWithCards items={bestSeller} text='Best Seller' />
-				<TitleWithCards viewAll={true} items={newArrival} text='New Arrival' />
+				<TitleWithCards
+					isLoading={bestSellerLoading}
+					items={bestSeller}
+					text='Best Seller'
+					link='/products'
+				/>
+				<TitleWithCards
+					isLoading={newArrivalLoading}
+					viewAll={true}
+					items={newArrival}
+					text='New Arrival'
+					link='/new-arrivals'
+				/>
 			</div>
 
 			<Testimonails />

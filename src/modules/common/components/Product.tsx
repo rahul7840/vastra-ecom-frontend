@@ -11,16 +11,16 @@ export const ProductCard = (props: Props) => {
 
 	const hasVariants = product.hasVariants;
 
+	console.log(product, 'has variants', hasVariants);
 	const thumbnail = hasVariants
-		? product.variants[0].thumbnail
-		: product.thumbnail;
+		? product?.variants?.[0]?.thumbnail
+		: product?.thumbnail;
 
-	const price = hasVariants ? product.variants[0].price : product.price;
+	const price = hasVariants ? product?.variants?.[0]?.price : product?.price;
 	const discountedPrice = hasVariants
-		? product.variants[0].discountedPrice
-		: product.discountedPrice;
+		? product?.variants?.[0]?.discountedPrice
+		: product?.discountedPrice;
 
-	// 288X384
 	return (
 		<div
 			onClick={(e) => router.push(`/product/${product.id}`)}

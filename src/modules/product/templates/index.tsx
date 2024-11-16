@@ -17,6 +17,7 @@ import { useProduct } from '../queries/use-product';
 import { useProducts } from '../queries/use-products';
 import { IAttribute, IProduct, IVariant } from '@/modules/types/product';
 import { CustomCarousel } from '@/modules/common/components/CustomCarousel';
+import { ProductSkeleton } from '../skeleton/product-skeleton';
 
 interface ProductTemplateProps {
 	id: string;
@@ -217,7 +218,13 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 		}
 	}, [product, displayedVariant]);
 
-	if (isLoading) return <div>Loading...</div>;
+	useEffect(() => {
+		if (product?.variants?.length) {
+			setSelectedVariant(product?.variants[0]);
+		}
+	}, [product]);
+
+	if (isLoading) return <ProductSkeleton />;
 	if (!product) return notFound();
 
 	return (

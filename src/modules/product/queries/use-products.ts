@@ -10,6 +10,7 @@ export const useProducts = (params: IApiParams) => {
 
 	return {
 		products: data?.data?.data,
+		meta: data?.data?.meta,
 		isLoading,
 	};
 };
