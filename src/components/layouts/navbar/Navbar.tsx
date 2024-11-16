@@ -42,7 +42,7 @@ export const Navbar = () => {
 					<img
 						onClick={() => router.push('/')}
 						className='w-16 h-16 max-md:left-8 relative md:w-28 md:h-28 cursor-pointer'
-						src='/assets/images/logo-cropped.svg'
+						src='/assets/images/logo.svg'
 						alt='Logo'
 					/>
 				</div>
@@ -125,7 +125,7 @@ export const Navbar = () => {
 					<div className='flex justify-between items-center p-4 border-b'>
 						<img
 							className='w-16 h-16'
-							src='/assets/images/logo-cropped.svg'
+							src='/assets/images/logo.svg'
 							alt='Logo'
 						/>
 						<button onClick={() => setIsOpen(false)}>

@@ -1,12 +1,7 @@
 import { api } from '@/api';
 import { IApiError } from '@/api/types';
 import { useSession } from '@/modules/auth/queries/use-session';
-import {
-	IAddItemToCart,
-	ICart,
-	ICartItem,
-	IUpdateAddress,
-} from '@/modules/types/cart';
+import { IAddItemToCart, ICart, ICartItem } from '@/modules/types/cart';
 import { RootState } from '@/store';
 import { setShippingCharges } from '@/store/slices/cartSlice';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -15,6 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { useCart } from './use-cart';
 import { debounce } from 'lodash';
+import { IUpdateAddress } from '@/modules/types/address';
 
 const LOCAL_STORAGE_CART_KEY = 'guestCart';
 
@@ -165,12 +161,9 @@ export const useCartManager = () => {
 			toast.success('Address updated successfully.');
 			console.log('variables logs 2222222', variables);
 			queryClient.invalidateQueries({ queryKey });
-			if (variables?.shipping?.pincode) {
-				console.log(
-					'variables?.shipping?.pincode logs 2222222',
-					variables?.shipping?.pincode
-				);
-				getShippingCharges(variables?.shipping?.pincode);
+			if (variables?.pincode) {
+				console.log('variables?.pincode logs 2222222', variables?.pincode);
+				getShippingCharges(variables?.pincode);
 			}
 		},
 		onError: (error: IApiError) => {
@@ -188,12 +181,9 @@ export const useCartManager = () => {
 	};
 
 	const saveGuestCart = (cart: ICart) => {
-		console.log('cart in save guest cart logs 33333333', cart);
 		calculateSubTotal(cart);
 		localStorage.setItem(LOCAL_STORAGE_CART_KEY, JSON.stringify(cart));
-		queryClient.setQueryData(queryKey, () => {
-			return cart;
-		});
+		queryClient.invalidateQueries({ queryKey });
 	};
 
 	const calculateSubTotal = (cart: ICart) => {

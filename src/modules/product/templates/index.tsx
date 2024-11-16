@@ -2,8 +2,10 @@
 import { api } from '@/api';
 import { IApiError } from '@/api/types';
 import { useCartManager } from '@/modules/cart/queries/use-cart-manager';
+import { CustomCarousel } from '@/modules/common/components/CustomCarousel';
 import { StarRating } from '@/modules/common/components/StarRating';
 import { TitleWithCards } from '@/modules/common/components/TitleWithCards';
+import { IVariant } from '@/modules/types/product';
 import { useMutation } from '@tanstack/react-query';
 import { notFound, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -15,8 +17,6 @@ import { ReviewForm } from '../forms/review';
 import { ReviewFormSchema } from '../forms/review/schema';
 import { useProduct } from '../queries/use-product';
 import { useProducts } from '../queries/use-products';
-import { IAttribute, IProduct, IVariant } from '@/modules/types/product';
-import { CustomCarousel } from '@/modules/common/components/CustomCarousel';
 import { ProductSkeleton } from '../skeleton/product-skeleton';
 
 interface ProductTemplateProps {
@@ -24,7 +24,7 @@ interface ProductTemplateProps {
 }
 
 export const ProductTemplate = ({ id }: ProductTemplateProps) => {
-	const { addItemToCart } = useCartManager();
+	const { addItemToCart, cart } = useCartManager();
 	const { product, isLoading } = useProduct(id);
 	const { products: relatedProducts } = useProducts({
 		limit: 10,

@@ -21,6 +21,7 @@ const ShoppingCartList: React.FC<ShoppingCartListProps> = () => {
 				</div>
 				<div className='mt-6 w-full border border-solid border-zinc-600 min-h-[1px] max-md:max-w-full' />
 			</header>
+			{console.log('cart', cart)}
 			{cart?.cartItems?.map((item: ICartItem) => {
 				if (!item.product) return null;
 
