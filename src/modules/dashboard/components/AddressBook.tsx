@@ -1,9 +1,7 @@
+import { IAddress } from '@/modules/types/address';
 import Link from 'next/link';
 import { Card } from '../../common/components/Card';
-import { Badge } from '../../common/components/Badge';
 import { Icon } from '../../common/components/Icon';
-import { useAddresses } from '../queries/use-addresses';
-import { IAddress } from '@/modules/types/cart';
 
 interface AddressBookProps {
 	address?: IAddress | null;

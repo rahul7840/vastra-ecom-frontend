@@ -88,6 +88,7 @@ export const AddressTemplate = () => {
 							onSubmit={(newAddress) => {
 								// setAddresses([...addresses, newAddress]);
 							}}
+							onCancel={() => setIsEditModalOpen(false)}
 						/>
 					</DialogContent>
 				</Dialog>
@@ -156,6 +157,7 @@ export const AddressTemplate = () => {
 					{selectedAddress && (
 						<AddressForm
 							initialData={selectedAddress}
+							onCancel={() => setIsEditModalOpen(false)}
 							onSubmit={handleUpdateAddress}
 						/>
 					)}

@@ -1,5 +1,5 @@
 import { IUser } from './user';
-import { IAddress } from './cart';
+import { IAddress } from './address';
 import { IProduct, IVariant } from './product';
 
 export interface IOrder {

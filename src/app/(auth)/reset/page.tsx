@@ -1,4 +1,4 @@
-import { ResetTemplate } from '@/app/modules/auth/reset/templates';
+import { ResetTemplate } from '@/modules/auth/reset/templates';
 
 const page = () => {
 	return <ResetTemplate />;

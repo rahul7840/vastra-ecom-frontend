@@ -1,4 +1,4 @@
-import { ForgotTemplate } from '@/app/modules/auth/forgot/templates';
+import { ForgotTemplate } from '@/modules/auth/forgot/templates';
 
 const page = () => {
 	return <ForgotTemplate />;

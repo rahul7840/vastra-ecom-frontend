@@ -1,11 +1,9 @@
 'use client';
-import G_icon from '@/../public/assets/images/G-icon.svg';
 import { api } from '@/api';
 import { IApiError } from '@/api/types';
 import { populateError } from '@/modules/core/lib/error';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { FC, useState } from 'react';
@@ -33,7 +31,7 @@ export const SignupForm: FC<SignupFormProps> = () => {
 	});
 
 	const mutation = useMutation({
-		mutationFn: (data: SignupFormSchema) => api.auth.signup(data),
+		mutationFn: (data: SignupFormSchema) => api.auth.register(data),
 		onSuccess: (response) => {
 			toast.success('Signup successfully.');
 			router.push('/');
@@ -184,7 +182,11 @@ export const SignupForm: FC<SignupFormProps> = () => {
 			<div>
 				<button className='flex gap-2 items-center justify-center border border-colors-grayBorder w-full p-2 hover:underline'>
 					<span>
-						<Image src={G_icon} alt='Icon' width={20} height={100} />
+						<img
+							className='w-[20px] h-[100px]'
+							src={'/assets/images/G-icon.svg'}
+							alt='Icon'
+						/>
 					</span>
 					Continue with Google
 				</button>

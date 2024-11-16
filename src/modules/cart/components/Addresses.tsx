@@ -34,10 +34,10 @@ export const Addresses: React.FC = () => {
 				: undefined,
 		};
 
-		const response = await updateAddressMutation.mutateAsync(addressData);
-		if (response?.data?.success) {
-			setShowForm(false);
-		}
+		// const response = await updateAddressMutation.mutateAsync(addressData);
+		// if (response?.data?.success) {
+		// 	setShowForm(false);
+		// }
 	};
 
 	const EditView = () => {

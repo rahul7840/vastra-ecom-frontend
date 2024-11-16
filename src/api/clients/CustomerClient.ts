@@ -1,4 +1,4 @@
-import { IAddress } from '@/modules/types/cart';
+import { IAddress } from '@/modules/types/address';
 import { BaseClient } from './templates/BaseClient';
 
 export class CustomerClient extends BaseClient {

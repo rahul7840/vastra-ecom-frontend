@@ -1,11 +1,10 @@
 import {
 	IAddItemToCart,
-	IAddress,
 	ICart,
 	ICheckServiceability,
-	IUpdateAddress,
 } from '@/modules/types/cart';
 import { CrudClient } from './templates/CrudClient';
+import { IUpdateAddress } from '@/modules/types/address';
 
 export class CartClient extends CrudClient<ICart> {
 	constructor() {

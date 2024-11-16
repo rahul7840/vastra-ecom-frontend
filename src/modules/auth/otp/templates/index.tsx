@@ -1,8 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import logo from '@/public/auth/logo.svg';
-import authImg from '@/public/auth/authImg.svg';
 import Link from 'next/link';
 
 export const OtpTemplate = () => {
@@ -45,19 +43,17 @@ export const OtpTemplate = () => {
 	return (
 		<div className='flex flex-col lg:flex-row justify-center items-center h-screen'>
 			<div className='h-2/5 lg:h-full w-full lg:order-2'>
-				<Image
-					src={authImg}
+				<img
+					src={'/assets/images/authImg.svg'}
 					alt='authImg'
 					className='max-h-full w-full object-cover object-top'
 				/>
 			</div>
 			<div className='relative h-3/5 lg:h-full w-full p-5 flex flex-col items-center justify-center '>
-				<Image
-					src={logo}
+				<img
+					src={'/assets/images/logo.svg'}
 					alt='authImg'
-					width={75}
-					height={100}
-					className='absolute top-5 left-5 hidden lg:block'
+					className='absolute w-[75px] h-[100px] top-5 left-5 hidden lg:block'
 				/>
 				<form
 					onSubmit={onSubmit}
