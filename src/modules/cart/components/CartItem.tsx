@@ -31,47 +31,90 @@ export const ShoppingCartItem: React.FC<ShoppingCartItemProps> = ({ item }) => {
 	const product = item.product;
 
 	return (
-		<article className='flex my-6 gap-14 justify-between items-center w-full max-md:max-w-full'>
-			<div className='flex gap-8 items-center self-stretch my-auto min-w-[240px]'>
+		<article className='flex my-6 gap-4 md:gap-14 justify-between items-start md:items-center w-full'>
+			<div className='flex gap-4 md:gap-8 items-start md:items-center my-auto w-full min-w-[240px]'>
 				<img
 					loading='lazy'
-					src={product?.images[0]}
+					src={
+						product?.hasVariants ? item?.variant?.thumbnail : product?.images[0]
+					}
 					alt={`${product?.name}`}
-					className='object-contain shrink-0 self-stretch my-auto aspect-[0.84] w-[107px]'
+					className='object-cover aspect-[0.84] w-[107px]'
 				/>
-				<div className='flex gap-5 items-start self-stretch my-auto min-w-[240px] w-[280px]'>
-					<div className='flex flex-col justify-center min-w-[240px] w-[280px]'>
-						<div className='flex flex-col w-full'>
-							<h3 className='text-xl capitalize font-semibold text-neutral-900'>
-								{product?.name}
-							</h3>
-							<p className='mt-2 text-sm text-zinc-500'>Color: {item.color}</p>
-						</div>
-						<button
-							onClick={() => {
-								removeCartItem(item.id);
-							}}
-							className='flex gap-1 items-center self-start mt-3 text-lg font-semibold whitespace-nowrap border-0 border-solid border-zinc-600 text-zinc-600'
-						>
-							<img
-								loading='lazy'
-								src='https://cdn.builder.io/api/v1/image/assets/TEMP/45422142bd2f78eb70ac24c02f6e039b8c76a09e7f5fd7b035e31d75c080ca18?placeholderIfAbsent=true&apiKey=58620f448f4d4934b34d4e1e054160c6'
-								alt=''
-								className='object-contain shrink-0 self-stretch my-auto w-5 aspect-square'
-							/>
-							<span className='self-stretch my-auto'>Remove</span>
-						</button>
+				{/* <div className='flex gap-4 items-start min-w-[240px] w-full md:w-[280px]'> */}
+				<div className='flex gap-3 lg:gap-0 flex-col justify-center min-w-[240px] w-full md:w-[280px]'>
+					<div className='flex flex-col max-w-36 md:max-w-full w-full'>
+						<h3 className='text-lg lg:text-xl  capitalize font-semibold text-neutral-900'>
+							{product?.name}
+						</h3>
+
+						{item.variant && item.variant.attributeValues && (
+							<div className='mt-2 space-y-1'>
+								{item.variant.attributeValues.map((attr) => (
+									<p key={attr.id} className='text-sm text-zinc-500'>
+										{attr.attribute?.title}:
+										<span className='ml-1 text-zinc-700'>{attr.value}</span>
+									</p>
+								))}
+							</div>
+						)}
+
+						{/* <p className='mt-2 text-sm text-zinc-500'>Color: {item.color}</p> */}
 					</div>
+					<div className='flex lg:hidden'>
+						<ProductQuantity
+							quantity={quantity}
+							handleQuantityChange={handleQuantityChange}
+						/>
+					</div>
+					<button
+						onClick={() => {
+							removeCartItem(item.id);
+						}}
+						className='hidden lg:flex gap-1 items-center self-start mt-3 text-lg font-semibold whitespace-nowrap border-0 border-solid border-zinc-600 text-zinc-600'
+					>
+						<img
+							loading='lazy'
+							src='https://cdn.builder.io/api/v1/image/assets/TEMP/45422142bd2f78eb70ac24c02f6e039b8c76a09e7f5fd7b035e31d75c080ca18?placeholderIfAbsent=true&apiKey=58620f448f4d4934b34d4e1e054160c6'
+							alt=''
+							className='object-contain shrink-0 self-stretch my-auto w-5 aspect-square'
+						/>
+						<span className='self-stretch my-auto'>Remove</span>
+					</button>
 				</div>
 			</div>
-			<div className='flex gap-10 justify-between items-center self-stretch my-auto text-2xl font-semibold whitespace-nowrap min-w-[240px] w-[435px] max-md:max-w-full'>
-				<ProductQuantity
-					quantity={quantity}
-					handleQuantityChange={handleQuantityChange}
-				/>
-				<div className='self-stretch my-auto text-right text-neutral-800'>
-					₹{((product?.discountedPrice ?? 0) * quantity).toFixed(2)}
+			{/* </div> */}
+			<div className='flex flex-col h-full lg:flex-row lg:gap-10 justify-end lg:justify-between  items-end lg:items-center lg:my-auto text-2xl font-semibold whitespace-nowrap md:min-w-[240px] w-full md:w-[435px]'>
+				<div className='hidden lg:flex'>
+					<ProductQuantity
+						quantity={quantity}
+						handleQuantityChange={handleQuantityChange}
+					/>
 				</div>
+				<div className='text-sm lg:text-2xl text-right text-neutral-800'>
+					₹
+					{(
+						((product?.hasVariants
+							? item?.variant?.discountedPrice ?? item?.variant?.price
+							: product?.discountedPrice ?? product?.price ?? 0) ?? 0) *
+						quantity
+					)?.toFixed(2)}
+				</div>
+
+				<button
+					onClick={() => {
+						removeCartItem(item.id);
+					}}
+					className='flex lg:hidden gap-1 items-end lg:items-center mt-3 text-lg font-semibold whitespace-nowrap border-0 border-solid border-zinc-600 text-zinc-600'
+				>
+					<img
+						loading='lazy'
+						src='https://cdn.builder.io/api/v1/image/assets/TEMP/45422142bd2f78eb70ac24c02f6e039b8c76a09e7f5fd7b035e31d75c080ca18?placeholderIfAbsent=true&apiKey=58620f448f4d4934b34d4e1e054160c6'
+						alt=''
+						className='object-contain shrink-0 self-stretch my-auto w-5 aspect-square'
+					/>
+					<span className='self-stretch my-auto'>Remove</span>
+				</button>
 			</div>
 		</article>
 	);

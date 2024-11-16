@@ -15,7 +15,7 @@ export const TabButton: React.FC<TabButtonProps> = ({
 		<button
 			type='button'
 			onClick={onClick}
-			className={`self-stretch text-2xl my-auto ${
+			className={`text-sm md:text-2xl my-auto ${
 				isActive ? 'font-semibold text-neutral-800' : 'text-neutral-400'
 			}`}
 		>

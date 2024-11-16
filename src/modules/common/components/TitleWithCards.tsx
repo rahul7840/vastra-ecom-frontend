@@ -28,12 +28,20 @@ export const TitleWithCards = (props: Props) => {
 					</div>
 
 					{viewAll && (
-						<div className='flex gap-4 mt-4 sm:mt-12'>
-							<img src='/assets/images/curly-light.svg' alt='' />
+						<div className='flex items-center justify-center gap-4 mt-4 sm:mt-12'>
+							<img
+								className='w-4 h-4 md:w-7 md:h-7'
+								src='/assets/images/curly-light.svg'
+								alt=''
+							/>
 							<div className='underline text-sm font-semibold text-[#212121]'>
 								View All
 							</div>
-							<img src='/assets/images/curly-light.svg' alt='' />
+							<img
+								className='w-4 h-4 md:w-7 md:h-7'
+								src='/assets/images/curly-light.svg'
+								alt=''
+							/>
 						</div>
 					)}
 				</div>

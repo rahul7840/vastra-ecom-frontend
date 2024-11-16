@@ -137,15 +137,15 @@ export const useCartManager = () => {
 	);
 
 	const debouncedGetShippingCharges = useCallback(
-		debounce((pincode: number) => {
+		debounce((pincode?: number) => {
 			getShippingCharges(pincode);
 		}, 500),
 		[getShippingCharges]
 	);
 
 	useEffect(() => {
-		if (user?.id && !charges && cart?.shippingAddress?.pincode) {
-			debouncedGetShippingCharges(cart.shippingAddress.pincode as number);
+		if (user?.id && !charges) {
+			debouncedGetShippingCharges(cart?.shippingAddress?.pincode as number);
 		}
 
 		return () => {

@@ -13,7 +13,7 @@ export const CartTemplate = () => {
 		<div>
 			<Title className='my-12' text='Cart' />
 
-			<main className='container flex justify-between mx-auto px-4'>
+			<main className='flex flex-col w-full md:flex-row justify-between px-4  lg:gap-10 lg:mx-auto'>
 				<ShoppingCartList />
 				<div className='flex flex-col gap-4'>
 					<CartSummary />

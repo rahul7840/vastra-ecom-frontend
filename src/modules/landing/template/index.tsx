@@ -27,9 +27,10 @@ export const LandingTemplate = () => {
 			<CustomCarousel
 				items={images.map((e) => {
 					return (
-						<div>
-							<img src={e} />
-						</div>
+						<img
+							className='w-full object-cover h-[400px] md:h-[665px]'
+							src={e}
+						/>
 					);
 				})}
 			/>

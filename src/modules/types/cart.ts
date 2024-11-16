@@ -1,4 +1,4 @@
-import { IProduct } from './product';
+import { IProduct, IVariant } from './product';
 
 export interface ICart {
 	id: string;
@@ -31,6 +31,7 @@ export interface ICartItem {
 	cartId: string;
 	quantity: number;
 	product?: IProduct;
+	variant?: IVariant;
 	createdAt: string;
 	updatedAt: string;
 }

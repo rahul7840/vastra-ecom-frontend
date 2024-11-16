@@ -4,7 +4,7 @@ import { Carousel } from 'react-responsive-carousel';
 import { useRef, useState } from 'react';
 
 export const CustomCarousel = (props: any) => {
-	const { items } = props;
+	const { items, className } = props;
 	const carouselRef = useRef<any>(null); // Create a ref for the Carousel
 	const [currentIndex, setCurrentIndex] = useState(0); // State for the current index
 
@@ -28,7 +28,7 @@ export const CustomCarousel = (props: any) => {
 	};
 
 	return (
-		<div className='relative'>
+		<div className={`relative ${className}`}>
 			<Carousel
 				ref={carouselRef} // Attach the ref to the Carousel
 				showThumbs={false}
@@ -43,14 +43,14 @@ export const CustomCarousel = (props: any) => {
 
 			{currentIndex > 0 && (
 				<img
-					className='absolute top-1/2 left-6 w-8 cursor-pointer'
+					className='hidden md:block absolute top-1/2 left-6 w-8 cursor-pointer'
 					src='/assets/images/arrowLeft.svg'
 					alt='Previous'
 					onClick={goPrev}
 				/>
 			)}
 			<img
-				className='absolute top-1/2 right-6 w-8 cursor-pointer'
+				className='hidden md:block absolute top-1/2 right-6 w-8 cursor-pointer'
 				src='/assets/images/arrowRight.svg'
 				alt='Next'
 				onClick={goNext} // Trigger the goNext function on click
