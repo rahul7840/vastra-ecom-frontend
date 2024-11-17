@@ -1,7 +1,5 @@
 import { CartTemplate } from '@/modules/cart/templates';
 
-const page = () => {
+export default function Page() {
 	return <CartTemplate />;
-};
-
-export default page;
+}

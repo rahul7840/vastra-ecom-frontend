@@ -8,6 +8,10 @@ const nextConfig = {
 			},
 		];
 	},
+	
+	images: {
+		remotePatterns: [{ hostname: 'localhost' }],
+	},
 };
 
 export default nextConfig;

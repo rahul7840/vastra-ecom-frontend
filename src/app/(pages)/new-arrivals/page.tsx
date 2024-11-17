@@ -1,5 +1,5 @@
-import { NewArrivalTemplate } from '@/modules/product/templates/new-arrival';
+import { NewArrivalTemplate } from "@/modules/product/templates/new-arrival";
 
-export default function NewArrivalPage() {
+export default function Page() {
 	return <NewArrivalTemplate />;
 }

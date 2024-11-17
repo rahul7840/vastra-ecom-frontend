@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 import { useCart } from './use-cart';
 import { debounce } from 'lodash';
 import { IUpdateAddress } from '@/modules/types/address';
+import { isClient } from '@/modules/lib/utils';
 
 const LOCAL_STORAGE_CART_KEY = 'guestCart';
 
@@ -174,6 +175,9 @@ export const useCartManager = () => {
 	});
 
 	const getGuestCart = (): ICart => {
+		if (!isClient()) {
+			return { cartItems: [], totalItems: 0 } as any;
+		}
 		const storedCart = localStorage.getItem(LOCAL_STORAGE_CART_KEY);
 		return storedCart
 			? JSON.parse(storedCart)

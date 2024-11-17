@@ -1,3 +1,4 @@
+'use client';
 import { api } from '@/api';
 import { IApiParams } from '@/api/types';
 import { useQuery } from '@tanstack/react-query';

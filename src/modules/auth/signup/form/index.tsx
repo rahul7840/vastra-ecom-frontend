@@ -35,7 +35,7 @@ export const SignupForm: FC<SignupFormProps> = () => {
 		onSuccess: (response) => {
 			toast.success('Signup successfully.');
 			router.push('/');
-			window.location.reload();
+			// window.location.reload();
 		},
 		onError: (error: IApiError) => {
 			if (error.response?.data.message) {

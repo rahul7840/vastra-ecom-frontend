@@ -1,8 +1,7 @@
-import { CheckoutTemplate } from "@/modules/cart/templates/checkout";
-import React from "react";
+import { CheckoutTemplate } from '@/modules/cart/templates/checkout';
 
 const page = () => {
-  return <CheckoutTemplate />;
+	return <CheckoutTemplate />;
 };
 
 export default page;

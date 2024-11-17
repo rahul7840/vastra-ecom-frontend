@@ -19,20 +19,21 @@ export const CheckoutTemplate = () => {
 	const charges = useSelector((state: RootState) => state.cart.shippingCharges);
 	const [paymentMethods, setPaymentMethods] = useState<string[]>([]);
 
-	useEffect(() => {
-		const script = document.createElement('script');
-		script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-		script.async = true;
-		script.onload = () => {
-			const rzp = new window.Razorpay({
-				key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-			});
-			rzp.once('ready', (response: any) => {
-				setPaymentMethods(response.methods);
-			});
-		};
-		document.body.appendChild(script);
-	}, []);
+	// useEffect(() => {
+	// 	if (typeof window === 'undefined') return;
+	// 	const script = document.createElement('script');
+	// 	script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+	// 	script.async = true;
+	// 	script.onload = () => {
+	// 		const rzp = new window.Razorpay({
+	// 			key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+	// 		});
+	// 		rzp.once('ready', (response: any) => {
+	// 			setPaymentMethods(response.methods);
+	// 		});
+	// 	};
+	// 	document.body.appendChild(script);
+	// }, []);
 
 	const handlePayment = async () => {
 		if (!cart) {
