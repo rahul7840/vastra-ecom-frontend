@@ -34,7 +34,7 @@ export const NewArrivalTemplate = () => {
 	};
 
 	return (
-		<div className='container mx-auto px-4 py-8'>
+		<div className=' mx-auto px-4 py-8'>
 			{/* Header Section */}
 			<div className='mb-8 text-center'>
 				<h1 className='text-2xl md:text-4xl font-bold text-[#212121] mb-4'>
@@ -45,26 +45,6 @@ export const NewArrivalTemplate = () => {
 				</p>
 			</div>
 
-			{/* Filters Section */}
-			{/* <div className='mb-8 flex flex-wrap gap-4 justify-center'>
-				<button className='px-4 py-2 rounded-full bg-[#4F1010] text-white text-sm hover:bg-[#3a0c0c] transition-colors'>
-					All
-				</button>
-				<button className='px-4 py-2 rounded-full border border-[#4F1010] text-[#4F1010] text-sm hover:bg-[#4F1010] hover:text-white transition-colors'>
-					Dresses
-				</button>
-				<button className='px-4 py-2 rounded-full border border-[#4F1010] text-[#4F1010] text-sm hover:bg-[#4F1010] hover:text-white transition-colors'>
-					Tops
-				</button>
-				<button className='px-4 py-2 rounded-full border border-[#4F1010] text-[#4F1010] text-sm hover:bg-[#4F1010] hover:text-white transition-colors'>
-					Bottoms
-				</button>
-				<button className='px-4 py-2 rounded-full border border-[#4F1010] text-[#4F1010] text-sm hover:bg-[#4F1010] hover:text-white transition-colors'>
-					Accessories
-				</button>
-			</div> */}
-
-			{/* Sort and View Options */}
 			<div className='mb-8 flex justify-between items-center'>
 				<div className='flex items-center gap-2'>
 					<span className='text-sm text-[#757575]'>Sort by:</span>
@@ -78,43 +58,6 @@ export const NewArrivalTemplate = () => {
 						<option value='popularity'>Popularity</option>
 					</select>
 				</div>
-				{/* <div className='flex items-center gap-4'>
-					<span className='text-sm text-[#757575]'>
-						{products?.length} Products
-					</span>
-					<div className='flex gap-2'>
-						<button className='p-2 rounded-md hover:bg-gray-100'>
-							<svg
-								className='w-5 h-5 text-[#4F1010]'
-								fill='none'
-								stroke='currentColor'
-								viewBox='0 0 24 24'
-							>
-								<path
-									strokeLinecap='round'
-									strokeLinejoin='round'
-									strokeWidth={2}
-									d='M4 6h16M4 12h16M4 18h16'
-								/>
-							</svg>
-						</button>
-						<button className='p-2 rounded-md hover:bg-gray-100'>
-							<svg
-								className='w-5 h-5 text-[#4F1010]'
-								fill='none'
-								stroke='currentColor'
-								viewBox='0 0 24 24'
-							>
-								<path
-									strokeLinecap='round'
-									strokeLinejoin='round'
-									strokeWidth={2}
-									d='M4 6h16M4 12h16M4 18h16'
-								/>
-							</svg>
-						</button>
-					</div>
-				</div> */}
 			</div>
 
 			{/* Products Grid */}

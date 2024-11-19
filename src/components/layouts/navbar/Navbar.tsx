@@ -59,12 +59,12 @@ export const Navbar = () => {
 					{/* <li className={linkClass('/size-chart')}>
 						<a href='/size-chart'>Size Chart</a>
 					</li> */}
-					{/* <li className={linkClass('/collections')}>
-						<a href='/collections'>Collections</a>
-					</li> */}
-					<li className={linkClass('/policies')}>
-						<a href='/policies'>Policies</a>
+					<li className={linkClass('/products')}>
+						<a href='/products'>Collections</a>
 					</li>
+					{/* <li className={linkClass('/policies')}>
+						<a href='/policies'>Policies</a>
+					</li> */}
 					<li className={linkClass('/contact')}>
 						<a href='/contact'>Contact Us</a>
 					</li>
@@ -82,6 +82,7 @@ export const Navbar = () => {
 						onClick={() =>
 							user ? router.push('/dashboard') : router.push('/login')
 						}
+						className='cursor-pointer'
 					>
 						<img
 							className='w-5 h-5 md:w-7 md:h-7'

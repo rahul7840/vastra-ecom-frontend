@@ -1,17 +1,21 @@
 import { api } from '@/api';
 import { IApiError } from '@/api/types';
 import { useSession } from '@/modules/auth/queries/use-session';
-import { IAddItemToCart, ICart, ICartItem } from '@/modules/types/cart';
+import { isClient } from '@/modules/lib/utils';
+import {
+	IAddItemToCart,
+	ICart,
+	ICartAddress,
+	ICartItem,
+} from '@/modules/types/cart';
 import { RootState } from '@/store';
 import { setShippingCharges } from '@/store/slices/cartSlice';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { debounce } from 'lodash';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { useCart } from './use-cart';
-import { debounce } from 'lodash';
-import { IUpdateAddress } from '@/modules/types/address';
-import { isClient } from '@/modules/lib/utils';
 
 const LOCAL_STORAGE_CART_KEY = 'guestCart';
 
@@ -155,17 +159,14 @@ export const useCartManager = () => {
 		debouncedGetShippingCharges,
 	]);
 
-	const updateAddressMutation = useMutation({
-		mutationFn: (data: IUpdateAddress) =>
+	const updateCartAddressMutation = useMutation({
+		mutationFn: (data: ICartAddress) =>
 			api.cart.updateAddress(cart?.id as string, data),
 		onSuccess: (_, variables) => {
-			toast.success('Address updated successfully.');
-			console.log('variables logs 2222222', variables);
-			queryClient.invalidateQueries({ queryKey });
-			if (variables?.pincode) {
-				console.log('variables?.pincode logs 2222222', variables?.pincode);
-				getShippingCharges(variables?.pincode);
-			}
+			toast.success('Cart Address updated successfully.');
+			queryClient.invalidateQueries({
+				queryKey,
+			});
 		},
 		onError: (error: IApiError) => {
 			if (error.response?.data.message) {
@@ -348,6 +349,6 @@ export const useCartManager = () => {
 		removeCartItem,
 		validatePincode,
 		getShippingCharges,
-		updateAddressMutation,
+		updateCartAddressMutation,
 	};
 };

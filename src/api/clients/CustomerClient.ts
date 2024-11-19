@@ -14,6 +14,10 @@ export class CustomerClient extends BaseClient {
 		return await this.put(`/address/${id}`, data);
 	}
 
+	async createAddress(data: IAddress) {
+		return await this.post('/address', data);
+	}
+
 	async deleteAddress(id: string) {
 		return await this.delete(`/address/${id}`);
 	}

@@ -1,4 +1,4 @@
-import { AddressTemplate } from '@/modules/dashboard/template/addresses';
+import { AddressTemplate } from '@/modules/dashboard/template/AddressTemplate';
 
 export default function Addresses() {
 	return <AddressTemplate />;

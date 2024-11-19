@@ -37,8 +37,8 @@ export const CartSummary: React.FC<CartSummaryProps> = ({ checkout }) => {
 	};
 
 	return (
-		<section className='flex flex-col p-8 max-w-full bg-white border border-solid border-neutral-100 w-[551px] max-md:px-5'>
-			<h2 className='text-2xl font-semibold tracking-wide leading-snug text-neutral-800'>
+		<section className='flex flex-col p-8 w-full bg-white border border-solid border-neutral-100 max-md:px-5'>
+			<h2 className='text-xl md:text-2xl font-semibold tracking-wide leading-snug text-neutral-800'>
 				Cart summary
 			</h2>
 			<div className='flex flex-col mt-5 w-full max-md:max-w-full'>

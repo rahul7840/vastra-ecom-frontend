@@ -10,25 +10,24 @@ const ShoppingCartList: React.FC<ShoppingCartListProps> = () => {
 	const { cart } = useCartManager();
 
 	return (
-		<section className='flex flex-col min-w-[240px] w-full lg:w-[888px]'>
-			<header className='flex flex-col w-full text-2xl font-semibold text-neutral-700 max-md:max-w-full'>
-				<div className='flex gap-10 justify-between items-center w-full max-md:max-w-full'>
-					<h2 className='w-full self-stretch my-auto'>Product</h2>
-					<div className='hidden md:flex gap-10 justify-between items-center self-stretch my-auto min-w-[240px] w-full'>
-						<h3 className='self-stretch my-auto'>Quantity</h3>
-						<h3 className='self-stretch my-auto'>Final Price</h3>
-					</div>
+		<section className='flex flex-col w-full'>
+			<header className='flex flex-col w-full text-2xl font-semibold text-neutral-700'>
+				<div className='flex gap-10 justify-between items-center w-full'>
+					<h2 className='text-lg md:text-2xl w-full md:w-[22rem]  my-auto'>
+						Product
+					</h2>
+					<h3 className='hidden lg:block w-44 my-auto'>Quantity</h3>
+					<h3 className='hidden lg:block w-32 my-auto'>Final Price</h3>
 				</div>
-				<div className='mt-6 w-full border border-solid border-zinc-600 min-h-[1px] max-md:max-w-full' />
+				<div className='mt-6 w-full border border-solid border-zinc-600 min-h-[1px]' />
 			</header>
-			{console.log('cart', cart)}
 			{cart?.cartItems?.map((item: ICartItem) => {
 				if (!item.product) return null;
 
 				return (
 					<React.Fragment key={item.id}>
 						<ShoppingCartItem item={item} />
-						<div className='w-full border border-solid border-zinc-100 min-h-[1px] max-md:max-w-full' />
+						<div className='w-full border border-solid border-zinc-100 min-h-[1px]' />
 					</React.Fragment>
 				);
 			})}

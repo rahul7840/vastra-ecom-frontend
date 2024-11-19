@@ -31,8 +31,8 @@ export const ShoppingCartItem: React.FC<ShoppingCartItemProps> = ({ item }) => {
 	const product = item.product;
 
 	return (
-		<article className='flex my-6 gap-4 md:gap-14 justify-between items-start md:items-center w-full'>
-			<div className='flex gap-4 md:gap-8 items-start md:items-center my-auto w-full min-w-[240px]'>
+		<article className='flex my-6 gap-0 md:gap-14 justify-between items-start md:items-center w-full'>
+			<div className='flex gap-4 md:gap-8 items-start md:items-center my-auto w-full lg:w-4/5'>
 				<img
 					loading='lazy'
 					src={
@@ -41,8 +41,7 @@ export const ShoppingCartItem: React.FC<ShoppingCartItemProps> = ({ item }) => {
 					alt={`${product?.name}`}
 					className='object-cover aspect-[0.84] w-[107px]'
 				/>
-				{/* <div className='flex gap-4 items-start min-w-[240px] w-full md:w-[280px]'> */}
-				<div className='flex gap-3 lg:gap-0 flex-col justify-center min-w-[240px] w-full md:w-[280px]'>
+				<div className='flex gap-3 lg:gap-0 flex-col justify-center w-full'>
 					<div className='flex flex-col max-w-36 md:max-w-full w-full'>
 						<h3 className='text-lg lg:text-xl  capitalize font-semibold text-neutral-900'>
 							{product?.name}
@@ -83,8 +82,7 @@ export const ShoppingCartItem: React.FC<ShoppingCartItemProps> = ({ item }) => {
 					</button>
 				</div>
 			</div>
-			{/* </div> */}
-			<div className='flex flex-col h-full lg:flex-row lg:gap-10 justify-end lg:justify-between  items-end lg:items-center lg:my-auto text-2xl font-semibold whitespace-nowrap md:min-w-[240px] w-full md:w-[435px]'>
+			<div className='flex flex-col h-full justify-between items-end lg:flex-row lg:gap-10 lg:justify-between lg:items-center lg:my-auto text-2xl font-semibold w-full'>
 				<div className='hidden lg:flex'>
 					<ProductQuantity
 						quantity={quantity}
@@ -105,7 +103,7 @@ export const ShoppingCartItem: React.FC<ShoppingCartItemProps> = ({ item }) => {
 					onClick={() => {
 						removeCartItem(item.id);
 					}}
-					className='flex lg:hidden gap-1 items-end lg:items-center mt-3 text-lg font-semibold whitespace-nowrap border-0 border-solid border-zinc-600 text-zinc-600'
+					className='flex lg:hidden gap-1 items-end lg:items-center text-lg font-semibold whitespace-nowrap border-0 border-solid border-zinc-600 text-zinc-600'
 				>
 					<img
 						loading='lazy'

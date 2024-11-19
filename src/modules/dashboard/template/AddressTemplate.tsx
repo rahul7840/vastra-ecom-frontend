@@ -1,5 +1,4 @@
 'use client';
-
 import { api } from '@/api';
 import { Badge } from '@/modules/common/components/Badge';
 import { Button } from '@/modules/common/components/Button';
@@ -10,12 +9,12 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from '@/modules/common/components/Dialog';
+import { IAddress } from '@/modules/types/address';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Pencil, PlusCircle, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { AddressForm } from '../components/AddressForm';
 import { useAddresses } from '../queries/use-addresses';
-import { IAddress } from '@/modules/types/address';
 
 export const AddressTemplate = () => {
 	const { addresses } = useAddresses();
@@ -70,9 +69,9 @@ export const AddressTemplate = () => {
 	};
 
 	return (
-		<div className='container mx-auto p-6'>
+		<div className=' mx-auto p-6'>
 			<div className='flex justify-between items-center mb-6'>
-				<h1 className='text-2xl font-bold'>My Addresses</h1>
+				<h1 className='text-xl md:text-2xl font-bold'>My Addresses</h1>
 				<Dialog>
 					<DialogTrigger asChild>
 						<Button variant='default'>

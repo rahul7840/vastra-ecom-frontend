@@ -1,6 +1,7 @@
 import {
 	IAddItemToCart,
 	ICart,
+	ICartAddress,
 	ICheckServiceability,
 } from '@/modules/types/cart';
 import { CrudClient } from './templates/CrudClient';
@@ -31,7 +32,7 @@ export class CartClient extends CrudClient<ICart> {
 		return this.put(`/${cartId}/update-item-quantity/${lineId}`, { quantity });
 	}
 
-	updateAddress(cartId: string, data: IUpdateAddress) {
+	updateAddress(cartId: string, data: ICartAddress) {
 		return this.put(`/${cartId}/update-address`, data);
 	}
 }

@@ -232,7 +232,7 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 			<section className='flex z-0 flex-col gap-10 items-start px-3 md:px-12 mt-12 w-full'>
 				<div className='flex flex-col md:flex-row gap-10'>
 					<CustomCarousel
-						className='md:hidden'
+						className='lg:hidden'
 						items={(hasVariants
 							? selectedVariant?.images
 							: product?.images
@@ -241,8 +241,8 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 						})}
 					/>
 
-					<div className='flex gap-10 items-start w-full min-w-[240px] '>
-						<div className='hidden md:flex flex-col gap-10 justify-start items-start w-[150px]'>
+					<div className='flex gap-10 items-start w-full'>
+						<div className='hidden lg:flex flex-col gap-10 justify-start items-start w-[150px]'>
 							{(hasVariants ? selectedVariant?.images : product?.images)
 								?.slice(0, 4)
 								.map((image, index) => (
@@ -256,10 +256,10 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 						</div>
 						<img
 							src={selectedImage}
-							className='object-cover hidden md:flex flex-col items-start justify-start bg-white md:min-w-[575px] md:min-h-[735px] md:max-w-[575px] md:max-h-[735px]  h-full'
+							className='object-cover hidden lg:flex flex-col items-start justify-start bg-white h-full w-full lg:min-w-[400px] lg:min-h-[500px] xl:min-w-[575px] xl:min-h-[735px] '
 							alt='Main product image'
 						/>
-						<div className='flex flex-col min-w-[240px] w-full'>
+						<div className='flex flex-col w-full'>
 							<h1 className='text-2xl capitalize font-semibold tracking-wider leading-snug text-neutral-800'>
 								{product.name}
 							</h1>
@@ -276,7 +276,7 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 							<div className='text-[10px] md:text-xs leading-4 mb-1 text-neutral-400 w-full'>
 								MRP incl. of all taxes
 							</div>
-							<div className='flex flex-col mt-8 w-full'>
+							<div className='flex flex-col mt-4 md:mt-8 w-full'>
 								<div className='flex flex-col max-w-full w-[325px]'>
 									<div className='flex flex-col w-full'>
 										{sortedAttributes?.map((attribute) => {
@@ -285,7 +285,6 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 											const selectedValue = selectedAttributes[attribute.title];
 											const selectedSize = selectedAttributes['Size'];
 
-											// Only check available colors if we're on the color attribute and have a size selected
 											const availableColors =
 												isColorAttribute && selectedSize
 													? getAvailableColors(product.variants, selectedSize)
@@ -467,7 +466,7 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 									</div>
 									<button
 										onClick={(e) => router.push('/cart')}
-										className='gap-2 md:px-4 md:py-2.5 mt-5 w-full md:max-w-[416px] text-white bg-red-700 h-[51px] text-lg md:text-[22px]'
+										className='gap-2 md:px-4 md:py-2.5 mt-5 w-full max-w-[28rem] text-white bg-red-700 h-[51px] text-lg md:text-[22px]'
 									>
 										Buy Now
 									</button>

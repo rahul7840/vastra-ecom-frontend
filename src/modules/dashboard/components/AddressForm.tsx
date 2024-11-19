@@ -47,16 +47,16 @@ export const AddressForm = ({
 	const form = useForm<AddressFormValues>({
 		resolver: zodResolver(addressSchema),
 		defaultValues: initialData || {
-			firstName: '',
-			lastName: '',
-			email: '',
-			phone: '',
-			address: '',
+			firstName: 'DEFAULT',
+			lastName: 'DEFAULT',
+			email: 'default@gmail.com',
+			phone: '1234567890',
+			address: 'Address',
 			address2: '',
-			city: '',
-			state: '',
-			country: '',
-			pincode: 0,
+			city: 'Ahmedabad',
+			state: 'Gujarat',
+			country: 'India',
+			pincode: 380001,
 			isDefault: false,
 		},
 	});
@@ -66,10 +66,7 @@ export const AddressForm = ({
 		formState: { errors },
 	} = form;
 
-	const handlePincodeChange = async (
-		formType: 'shipping' | 'billing',
-		pincode: number
-	) => {
+	const handlePincodeChange = async (pincode: number) => {
 		if (pincode?.toString().length === 6) {
 			setIsPincodeLoading(true);
 
@@ -108,7 +105,7 @@ export const AddressForm = ({
 	useEffect(() => {
 		const subscription = form.watch((value, { name, type }) => {
 			if (name === 'pincode' && type === 'change' && value.pincode) {
-				handlePincodeChange('shipping', Number(value.pincode));
+				handlePincodeChange(Number(value.pincode));
 			}
 		});
 
@@ -116,6 +113,8 @@ export const AddressForm = ({
 			subscription.unsubscribe();
 		};
 	}, [form, handlePincodeChange]);
+
+	console.log('errors', errors);
 
 	return (
 		<Form {...form}>
@@ -152,6 +151,7 @@ export const AddressForm = ({
 						label='Phone'
 						placeholder='Phone'
 						inputProps={{
+							maxLength: 10,
 							...register('phone'),
 						}}
 						error={errors.phone?.message}
@@ -176,34 +176,7 @@ export const AddressForm = ({
 					error={errors.address2?.message}
 				/>
 
-				<div className='grid grid-cols-2 gap-4'>
-					<InputField
-						label='City'
-						placeholder='City'
-						inputProps={{
-							...register('city'),
-						}}
-						error={errors.city?.message}
-					/>
-					<InputField
-						label='State'
-						placeholder='State'
-						inputProps={{
-							...register('state'),
-						}}
-						error={errors.state?.message}
-					/>
-				</div>
-
-				<div className='grid grid-cols-2 gap-4'>
-					<InputField
-						label='Country'
-						placeholder='Country'
-						inputProps={{
-							...register('country'),
-						}}
-						error={errors.country?.message}
-					/>
+				<div className='grid grid-cols-3 gap-4'>
 					<InputField
 						label='Pincode'
 						placeholder='Pincode'
@@ -212,6 +185,32 @@ export const AddressForm = ({
 						}}
 						error={errors.pincode?.message}
 					/>
+					<InputField
+						label='City'
+						placeholder='City'
+						inputProps={{
+							...register('city'),
+							readOnly: true,
+						}}
+						error={errors.city?.message}
+					/>
+					<InputField
+						label='State'
+						placeholder='State'
+						inputProps={{
+							...register('state'),
+							readOnly: true,
+						}}
+						error={errors.state?.message}
+					/>
+					{/* <InputField
+						label='Country'
+						placeholder='Country'
+						inputProps={{
+							...register('country'),
+						}}
+						error={errors.country?.message}
+					/> */}
 				</div>
 
 				<FormField
