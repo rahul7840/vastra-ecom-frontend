@@ -115,7 +115,7 @@ export const LoginForm: FC<LoginFormProps> = () => {
 			</div>
 			<div className='text-center'>
 				<p className='text-sm'>
-					Didn't have an account?{' '}
+					Don&apos;t have an account?{' '}
 					<Link href='/signup' className='font-semibold hover:underline'>
 						Sign-up
 					</Link>
