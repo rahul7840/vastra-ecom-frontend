@@ -64,8 +64,8 @@ export const CheckoutTemplate = () => {
 		<div>
 			<Title className='my-12' text='Checkout' />
 
-			<main className='container flex justify-between mx-auto px-4'>
-				<div className='flex flex-col gap-4 w-full mr-8'>
+			<main className='flex flex-col md:flex-row justify-between mx-auto px-4 w-full md:gap-8 lg:max-w-7xl'>
+				<div className='flex flex-col gap-4 w-full lg:w-3/4'>
 					<div className='text-2xl font-semibold tracking-wide leading-snug text-neutral-800'>
 						Shipping Address
 					</div>
@@ -95,7 +95,7 @@ export const CheckoutTemplate = () => {
 						</button>
 					</div> */}
 				</div>
-				<div className='flex flex-col gap-4'>
+				<div className='flex flex-col gap-4 w-full mt-4 sm:mt-0 lg:w-1/3'>
 					<CartSummary checkout={true} />
 				</div>
 			</main>

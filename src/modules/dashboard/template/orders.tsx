@@ -98,17 +98,12 @@ export const OrdersTemplate = () => {
 						className='pl-10'
 					/>
 				</div>
-				<Button variant='outline' className='flex items-center gap-2'>
-					<Icon name='filter_list' />
-					Filter
-				</Button>
 			</div>
 
 			<Tabs value={activeTab} onValueChange={setActiveTab}>
 				<TabsList className='mb-6'>
 					<TabsTrigger value='all'>All Orders</TabsTrigger>
 					<TabsTrigger value='processing'>Processing</TabsTrigger>
-					<TabsTrigger value='shipped'>Shipped</TabsTrigger>
 					<TabsTrigger value='delivered'>Delivered</TabsTrigger>
 					<TabsTrigger value='cancelled'>Cancelled</TabsTrigger>
 				</TabsList>
