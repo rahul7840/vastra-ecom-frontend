@@ -30,13 +30,14 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 		limit: 10,
 		sort: 'new_arrival',
 	});
-
 	const [hasVariants, setHasVariants] = useState(false);
 	const [selectedAttributes, setSelectedAttributes] = useState<
 		Record<string, string>
 	>({});
+	const [uniqueAttributes, setUniqueAttributes] = useState<any>([]);
 	const [selectedImage, setSelectedImage] = useState<string>();
 	const [selectedVariant, setSelectedVariant] = useState<IVariant>();
+	const [selectedAttribute, setSelectedAttribute] = useState<string>();
 	const [hoveredVariant, setHoveredVariant] = useState<IVariant | null>(null);
 	const [selectedTab, setSelectedTab] = useState(0);
 	const [isWriteReview, setIsWriteReview] = useState(false);
@@ -83,6 +84,13 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 			)
 		);
 
+		console.log(
+			'matchingVariant',
+			matchingVariant,
+			'for',
+			newSelectedAttributes
+		);
+
 		if (matchingVariant) {
 			setSelectedVariant(matchingVariant);
 		}
@@ -93,23 +101,30 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 		return variants
 			.filter((variant) =>
 				variant.attributeValues.some(
-					(av) => av?.attribute?.title === 'Size' && av.value === selectedSize
+					(av) => av?.attribute?.title === 'size' && av.value === selectedSize
 				)
 			)
 			.flatMap((variant) =>
 				variant.attributeValues
-					.filter((av) => av?.attribute?.title === 'Color')
+					.filter((av) => av?.attribute?.title === 'color')
 					.map((av) => av?.value)
 			)
 			.filter((value, index, self) => self.indexOf(value) === index);
 	};
 
-	// Sort attributes to ensure Size comes before Color
-	const sortedAttributes = product?.attributes?.sort((a, b) => {
-		if (a.title.toLowerCase() === 'size') return -1;
-		if (b.title.toLowerCase() === 'size') return 1;
-		return 0;
-	});
+	const getAvailableSizes = (variants: IVariant[], selectedColor: string) => {
+		return variants
+			.filter((variant) =>
+				variant.attributeValues.some(
+					(av) => av?.attribute?.title === 'color' && av.value === selectedColor
+				)
+			)
+			.flatMap((variant) =>
+				variant.attributeValues
+					.filter((av) => av?.attribute?.title === 'size')
+					.map((av) => av?.value)
+			);
+	};
 
 	const getPriceDisplay = () => {
 		if (!product?.hasVariants) {
@@ -203,10 +218,204 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 		);
 	};
 
+	const renderAttributes = () => {
+		return uniqueAttributes?.map((attribute: any) => {
+			const isColorAttribute = attribute.title === 'color';
+			const selectedValue = selectedAttributes[attribute.title];
+			const selectedSize = selectedAttributes['size'];
+			const selectedColor = selectedAttributes['color'];
+
+			const renderColorVariants = () => {
+				const availableColors = selectedSize
+					? getAvailableColors(product?.variants as IVariant[], selectedSize)
+					: [];
+
+				return (
+					<div className='flex flex-wrap gap-4 mt-5'>
+						{attribute.values.map((attrValue: any) => {
+							const isSelected = selectedValue === attrValue.value;
+							const isAvailable = availableColors.includes(attrValue.value);
+
+							const variantWithColor = product?.variants?.find((v) =>
+								v.attributeValues.some(
+									(av) =>
+										av?.attribute?.title === 'color' &&
+										av.value === attrValue.value
+								)
+							);
+
+							return (
+								<div
+									key={attrValue.id}
+									className='flex flex-col items-center gap-2'
+								>
+									<button
+										disabled={!isAvailable}
+										className={`relative w-16 h-16 border ${
+											isSelected ? 'border-2 border-red-600' : 'border-gray-200'
+										} rounded-md overflow-hidden`}
+										onClick={() =>
+											handleAttributeSelect(attribute.title, attrValue.value)
+										}
+										onMouseEnter={
+											() => {
+												// setHoveredVariant();
+											}
+											// isAvailable &&
+											// setHoveredVariant(exactVariantMatch as IVariant)
+										}
+										onMouseLeave={() => setHoveredVariant(null)}
+									>
+										<div
+											className={`w-full h-full ${
+												!isAvailable ? 'opacity-50' : ''
+											}`}
+										>
+											<img
+												src={variantWithColor?.thumbnail}
+												alt={`${attrValue.value} variant`}
+												className='w-full h-full object-cover'
+											/>
+										</div>
+										{isSelected && (
+											<div className='absolute bottom-0 right-0 w-4 h-4 bg-red-600 flex items-center justify-center'>
+												<svg
+													width='12'
+													height='12'
+													viewBox='0 0 24 24'
+													fill='none'
+												>
+													<path
+														d='M5.16699 14.5C5.16699 14.5 6.66699 14.5 8.66699 18C8.66699 18 14.2258 8.83333 19.167 7'
+														stroke='white'
+														strokeWidth='2'
+														strokeLinecap='round'
+														strokeLinejoin='round'
+													/>
+												</svg>
+											</div>
+										)}
+									</button>
+								</div>
+							);
+						})}
+					</div>
+				);
+			};
+
+			const renderSizeVariants = () => {
+				const availableSizes = selectedColor
+					? getAvailableSizes(product?.variants as IVariant[], selectedColor)
+					: [];
+
+				return (
+					<div className='flex gap-2.5 items-center mt-5 w-full'>
+						{attribute.values.map((attrValue) => {
+							const isAvailable = availableSizes.includes(attrValue.value);
+							const isSelected = selectedValue === attrValue.value;
+
+							console.log(
+								'attrvalue',
+								attrValue,
+								'isAvailable',
+								isAvailable,
+								'for color',
+								selectedAttribute
+							);
+
+							return (
+								<button
+									disabled={!isAvailable}
+									key={attrValue.id}
+									className={`py-2.5 uppercase my-auto disabled:opacity-50 ${
+										attrValue.value.length > 3 ? 'w-full' : 'w-10'
+									} h-10 ${
+										isSelected
+											? 'text-white bg-red-600 border border-red-600 border-solid'
+											: 'bg-zinc-100'
+									}`}
+									onClick={() => {
+										handleAttributeSelect(attribute.title, attrValue.value);
+									}}
+								>
+									{attrValue.value}
+								</button>
+							);
+						})}
+					</div>
+				);
+			};
+
+			return (
+				<div
+					key={attribute.id}
+					className='flex flex-col w-full font-semibold tracking-wide leading-snug whitespace-nowrap mb-8'
+				>
+					<label className='text-base capitalize text-zinc-600'>
+						{attribute.title}
+						{isColorAttribute && selectedValue && (
+							<span className='ml-2 text-neutral-800'>: {selectedValue}</span>
+						)}
+					</label>
+
+					{isColorAttribute ? renderColorVariants() : renderSizeVariants()}
+				</div>
+			);
+		});
+	};
+
+	useEffect(() => {
+		if (product?.hasVariants && product.variants.length > 0) {
+			setHasVariants(true);
+
+			// Get the first available variant
+			const firstVariant = product.variants[0];
+			setSelectedVariant(firstVariant);
+
+			// Extract color and size from the first variant
+			const colorValue = firstVariant.attributeValues.find(
+				(attr) => attr.attribute?.title === 'color'
+			)?.value;
+			const sizeValue = firstVariant.attributeValues.find(
+				(attr) => attr.attribute?.title === 'size'
+			)?.value;
+
+			// Set initial attributes
+			setSelectedAttributes({
+				color: colorValue || '',
+				size: sizeValue || '',
+			});
+
+			// Process unique attributes
+			const uniqueAttributes = product?.attributes.map((attribute) => {
+				const uniqueValues = Array.from(
+					new Set(attribute.values.map((v) => v.value))
+				);
+				return {
+					...attribute,
+					values: attribute.values.filter(
+						(v, i, self) => i === self.findIndex((t) => t.value === v.value)
+					),
+				};
+			});
+			setUniqueAttributes(uniqueAttributes);
+		}
+	}, [product]);
+
 	useEffect(() => {
 		if (product?.hasVariants) {
 			setHasVariants(true);
 			setSelectedVariant(product?.variants[0]);
+
+			const uniqueAttributes = product?.attributes.map((attribute) => {
+				const uniqueValues = Array.from(
+					new Set(attribute.values.map((v) => v.value))
+				);
+				attribute.values = uniqueValues.map((value) => ({ value }));
+				return attribute;
+			});
+			console.log('Unique Attributes', uniqueAttributes);
+			setUniqueAttributes(uniqueAttributes as any);
 		}
 	}, [product]);
 
@@ -217,12 +426,6 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 			);
 		}
 	}, [product, displayedVariant]);
-
-	useEffect(() => {
-		if (product?.variants?.length) {
-			setSelectedVariant(product?.variants[0]);
-		}
-	}, [product]);
 
 	if (isLoading) return <ProductSkeleton />;
 	if (!product) return notFound();
@@ -244,7 +447,7 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 					<div className='flex gap-10 items-start w-full'>
 						<div className='hidden lg:flex flex-col gap-10 justify-start items-start w-[150px]'>
 							{(hasVariants ? selectedVariant?.images : product?.images)
-								?.slice(0, 4)
+								?.slice(0, 5)
 								.map((image, index) => (
 									<img
 										src={image}
@@ -256,7 +459,7 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 						</div>
 						<img
 							src={selectedImage}
-							className='object-cover hidden lg:flex flex-col items-start justify-start bg-white h-full w-full lg:min-w-[400px] lg:min-h-[500px] xl:min-w-[575px] xl:min-h-[735px] '
+							className='object-cover hidden lg:flex flex-col items-start justify-start bg-white h-full w-full lg:min-w-[400px] lg:min-h-[500px] lg:max-w-[400px] lg:max-h-[500px] xl:min-w-[600px] xl:max-w-[600px] xl:min-h-[735px] xl:max-h-[735px] '
 							alt='Main product image'
 						/>
 						<div className='flex flex-col w-full'>
@@ -279,174 +482,7 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 							<div className='flex flex-col mt-4 md:mt-8 w-full'>
 								<div className='flex flex-col max-w-full w-[325px]'>
 									<div className='flex flex-col w-full'>
-										{sortedAttributes?.map((attribute) => {
-											const isColorAttribute =
-												attribute.title.toLowerCase() === 'color';
-											const selectedValue = selectedAttributes[attribute.title];
-											const selectedSize = selectedAttributes['Size'];
-
-											const availableColors =
-												isColorAttribute && selectedSize
-													? getAvailableColors(product.variants, selectedSize)
-													: [];
-
-											return (
-												<div
-													key={attribute.id}
-													className='flex flex-col w-full font-semibold tracking-wide leading-snug whitespace-nowrap mb-8'
-												>
-													<label className='text-base text-zinc-600'>
-														{attribute.title}
-														{isColorAttribute && selectedValue && (
-															<span className='ml-2 text-neutral-800'>
-																: {selectedValue}
-															</span>
-														)}
-													</label>
-
-													{isColorAttribute ? (
-														<div className='flex flex-wrap gap-4 mt-5'>
-															{attribute.values.map((attrValue) => {
-																const isSelected =
-																	selectedValue === attrValue.value;
-																const isAvailable = availableColors.includes(
-																	attrValue.value
-																);
-
-																// Find variant with this color regardless of size
-																const variantWithColor =
-																	product?.variants?.find((v) =>
-																		v.attributeValues.some(
-																			(av) =>
-																				av.value === attrValue.value &&
-																				av?.attribute?.title === 'Color'
-																		)
-																	);
-
-																// Find exact variant match with selected size (for availability)
-																const exactVariantMatch = selectedSize
-																	? product?.variants?.find((v) =>
-																			v.attributeValues.some(
-																				(av) =>
-																					av.value === attrValue.value &&
-																					av?.attribute?.title === 'Color' &&
-																					v.attributeValues.some(
-																						(sav) =>
-																							sav?.attribute?.title ===
-																								'Size' &&
-																							sav.value === selectedSize
-																					)
-																			)
-																	  )
-																	: null;
-
-																return (
-																	<div
-																		key={attrValue.id}
-																		className='flex flex-col items-center gap-2'
-																	>
-																		<button
-																			disabled={!isAvailable}
-																			className={`relative w-16 h-16 border ${
-																				isSelected
-																					? 'border-2 border-red-600'
-																					: 'border-gray-200'
-																			} rounded-md overflow-hidden`}
-																			onClick={() =>
-																				handleAttributeSelect(
-																					attribute.title,
-																					attrValue.value
-																				)
-																			}
-																			onMouseEnter={() =>
-																				isAvailable &&
-																				setHoveredVariant(
-																					exactVariantMatch as IVariant
-																				)
-																			}
-																			onMouseLeave={() =>
-																				setHoveredVariant(null)
-																			}
-																		>
-																			<div
-																				className={`w-full h-full ${
-																					!isAvailable ? 'opacity-50' : ''
-																				}`}
-																			>
-																				<img
-																					src={variantWithColor?.thumbnail}
-																					alt={`${attrValue.value} variant`}
-																					className='w-full h-full object-cover'
-																				/>
-																			</div>
-																			{isSelected && (
-																				<div className='absolute bottom-0 right-0 w-4 h-4 bg-red-600 flex items-center justify-center'>
-																					<svg
-																						width='12'
-																						height='12'
-																						viewBox='0 0 24 24'
-																						fill='none'
-																					>
-																						<path
-																							d='M5.16699 14.5C5.16699 14.5 6.66699 14.5 8.66699 18C8.66699 18 14.2258 8.83333 19.167 7'
-																							stroke='white'
-																							strokeWidth='2'
-																							strokeLinecap='round'
-																							strokeLinejoin='round'
-																						/>
-																					</svg>
-																				</div>
-																			)}
-																		</button>
-																		<span
-																			className={`text-xs ${
-																				!isAvailable
-																					? 'text-gray-400'
-																					: 'text-gray-700'
-																			}`}
-																		>
-																			{attrValue.value}
-																		</span>
-																	</div>
-																);
-															})}
-														</div>
-													) : (
-														<div className='flex gap-2.5 items-center mt-5 w-full'>
-															{attribute.values.map((attrValue) => {
-																const isSelected =
-																	selectedValue === attrValue.value;
-																return (
-																	<button
-																		key={attrValue.id}
-																		className={`py-2.5 my-auto ${
-																			attrValue.value.length > 3
-																				? 'w-full'
-																				: 'w-10'
-																		} h-10 ${
-																			isSelected
-																				? 'text-white bg-red-600 border border-red-600 border-solid'
-																				: 'bg-zinc-100'
-																		}`}
-																		onClick={() => {
-																			handleAttributeSelect(
-																				attribute.title,
-																				attrValue.value
-																			);
-																			if (selectedAttributes['Color']) {
-																				handleAttributeSelect('Color', '');
-																			}
-																		}}
-																	>
-																		{attrValue.value}
-																	</button>
-																);
-															})}
-														</div>
-													)}
-												</div>
-											);
-										})}
+										{renderAttributes()}
 									</div>
 								</div>
 								<div className='flex flex-col mt-4 md:mt-8 w-full text-2xl font-semibold leading-snug'>
