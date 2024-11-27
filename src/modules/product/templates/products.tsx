@@ -12,14 +12,20 @@ import { ProductCard } from '@/modules/common/components/Product';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { useProducts } from '../queries/use-products';
-import { ProductCardSkeleton } from '@/modules/common/components/ProductCardSkeleton';
 
-export const ProductsTemplate = () => {
+interface Props {
+	title: string;
+	description?: string;
+	url: string;
+}
+
+export const ProductListTemplate = (props: Props) => {
+	const { title, description, url } = props;
 	const [sortBy, setSortBy] = useState('createdAt:desc');
 
 	const searchParams = useSearchParams();
 
-	const { products, meta, isLoading } = useProducts({
+	const { products, meta } = useProducts({
 		limit: 10,
 		page: Number(searchParams.get('page')) || 1,
 		sort: sortBy,
@@ -31,105 +37,42 @@ export const ProductsTemplate = () => {
 	const currentPage = Number(searchParams.get('page')) || 1;
 
 	const handlePageChange = (page: number) => {
-		router.push(`/products?page=${page}`);
+		router.push(`${url}?page=${page}`);
 	};
 
 	return (
-		<div className='container mx-auto px-4 py-8'>
-			{/* Header Section */}
+		<div className='flex flex-col items-center w-full max-w-[22rem] sm:max-w-[32rem] md:max-w-[45rem] lg:max-w-[58rem] xl:max-w-[77rem] mx-auto py-8'>
 			<div className='mb-8 text-center'>
 				<h1 className='text-2xl md:text-4xl font-bold text-[#212121] mb-4'>
-					Products
+					{title}
 				</h1>
-				<p className='text-[#757575] text-sm md:text-base max-w-2xl mx-auto'>
-					Discover products that match your style and exceed your expectations
+				<p className='text-[#757575] w-full text-center text-sm md:text-base'>
+					{description}
 				</p>
 			</div>
 
-			{/* Filters Section */}
-			{/* <div className='mb-8 flex flex-wrap gap-4 justify-center'>
-				<button className='px-4 py-2 rounded-full bg-[#4F1010] text-white text-sm hover:bg-[#3a0c0c] transition-colors'>
-					All
-				</button>
-				<button className='px-4 py-2 rounded-full border border-[#4F1010] text-[#4F1010] text-sm hover:bg-[#4F1010] hover:text-white transition-colors'>
-					Dresses
-				</button>
-				<button className='px-4 py-2 rounded-full border border-[#4F1010] text-[#4F1010] text-sm hover:bg-[#4F1010] hover:text-white transition-colors'>
-					Tops
-				</button>
-				<button className='px-4 py-2 rounded-full border border-[#4F1010] text-[#4F1010] text-sm hover:bg-[#4F1010] hover:text-white transition-colors'>
-					Bottoms
-				</button>
-				<button className='px-4 py-2 rounded-full border border-[#4F1010] text-[#4F1010] text-sm hover:bg-[#4F1010] hover:text-white transition-colors'>
-					Accessories
-				</button>
-			</div> */}
-
-			{/* Sort and View Options */}
-			<div className='mb-8 flex justify-between items-center'>
-				<div className='flex items-center gap-2'>
-					<span className='text-sm text-[#757575]'>Sort by:</span>
-					<select
-						className='border rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-[#4F1010]'
-						onChange={(e) => setSortBy(e.target.value)}
-					>
-						<option value='createdAt:desc'>Newest First</option>
-						<option value='price:asc'>Price: Low to High</option>
-						<option value='price:desc'>Price: High to Low</option>
-						<option value='popularity'>Popularity</option>
-					</select>
-				</div>
-				<div className='flex items-center gap-4'>
-					<span className='text-sm text-[#757575]'>
-						{products?.length} Products
-					</span>
-					{/* <div className='flex gap-2'>
-						<button className='p-2 rounded-md hover:bg-gray-100'>
-							<svg
-								className='w-5 h-5 text-[#4F1010]'
-								fill='none'
-								stroke='currentColor'
-								viewBox='0 0 24 24'
-							>
-								<path
-									strokeLinecap='round'
-									strokeLinejoin='round'
-									strokeWidth={2}
-									d='M4 6h16M4 12h16M4 18h16'
-								/>
-							</svg>
-						</button>
-						<button className='p-2 rounded-md hover:bg-gray-100'>
-							<svg
-								className='w-5 h-5 text-[#4F1010]'
-								fill='none'
-								stroke='currentColor'
-								viewBox='0 0 24 24'
-							>
-								<path
-									strokeLinecap='round'
-									strokeLinejoin='round'
-									strokeWidth={2}
-									d='M4 6h16M4 12h16M4 18h16'
-								/>
-							</svg>
-						</button>
-					</div> */}
-				</div>
+			<div className='sm:mr-4 md:mr-8  mb-8 flex items-center justify-end gap-2 w-full'>
+				<span className='text-sm text-[#757575]'>Sort by:</span>
+				<select
+					className='border rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-[#4F1010]'
+					onChange={(e) => setSortBy(e.target.value)}
+				>
+					<option value='createdAt:desc'>Newest First</option>
+					<option value='price:asc'>Price: Low to High</option>
+					<option value='price:desc'>Price: High to Low</option>
+					<option value='popularity'>Popularity</option>
+				</select>
 			</div>
 
 			{/* Products Grid */}
-			<div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8'>
-				{isLoading
-					? Array.from({ length: 12 }).map((_, index) => (
-							<ProductCardSkeleton key={index} />
-					  ))
-					: products?.map((product) => (
-							<ProductCard key={product.id} product={product} />
-					  ))}
+			<div className='flex flex-col items-center'>
+				<div className='grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-y-12 gap-4 md:gap-6 md:gap-y-16 lg:gap-y-20 lg:gap-10'>
+					{products?.map((product) => (
+						<ProductCard key={product.id} product={product} />
+					))}
+				</div>
 			</div>
 
-			{/* Load More Button */}
 			<div className='mt-12 flex items-center justify-center'>
 				<Pagination>
 					<PaginationContent>
@@ -140,7 +83,6 @@ export const ProductsTemplate = () => {
 							/>
 						</PaginationItem>
 
-						{/* First Page */}
 						{currentPage > 2 && (
 							<PaginationItem>
 								<PaginationLink onClick={() => handlePageChange(1)}>
@@ -149,14 +91,12 @@ export const ProductsTemplate = () => {
 							</PaginationItem>
 						)}
 
-						{/* Ellipsis */}
 						{currentPage > 3 && (
 							<PaginationItem>
 								<PaginationEllipsis />
 							</PaginationItem>
 						)}
 
-						{/* Previous Page */}
 						{currentPage > 1 && (
 							<PaginationItem>
 								<PaginationLink
@@ -167,12 +107,10 @@ export const ProductsTemplate = () => {
 							</PaginationItem>
 						)}
 
-						{/* Current Page */}
 						<PaginationItem>
 							<PaginationLink isActive>{currentPage}</PaginationLink>
 						</PaginationItem>
 
-						{/* Next Page */}
 						{currentPage < totalPages && (
 							<PaginationItem>
 								<PaginationLink
@@ -183,14 +121,12 @@ export const ProductsTemplate = () => {
 							</PaginationItem>
 						)}
 
-						{/* Ellipsis */}
 						{currentPage < totalPages - 2 && (
 							<PaginationItem>
 								<PaginationEllipsis />
 							</PaginationItem>
 						)}
 
-						{/* Last Page */}
 						{currentPage < totalPages - 1 && (
 							<PaginationItem>
 								<PaginationLink onClick={() => handlePageChange(totalPages)}>
@@ -209,7 +145,6 @@ export const ProductsTemplate = () => {
 				</Pagination>
 			</div>
 
-			{/* Empty State */}
 			{products?.length === 0 && (
 				<div className='text-center py-16'>
 					<div className='text-6xl mb-4'>🏷️</div>

@@ -32,7 +32,7 @@ export const ShoppingCartItem: React.FC<ShoppingCartItemProps> = ({ item }) => {
 
 	return (
 		<article className='flex my-6 gap-0 md:gap-14 justify-between items-start md:items-center w-full'>
-			<div className='flex gap-4 md:gap-8 items-start md:items-center my-auto w-full lg:w-4/5'>
+			<div className='flex gap-4 md:gap-8 items-start md:items-center my-auto w-[80%] lg:w-[50%] truncate'>
 				<img
 					loading='lazy'
 					src={
@@ -42,8 +42,8 @@ export const ShoppingCartItem: React.FC<ShoppingCartItemProps> = ({ item }) => {
 					className='object-cover aspect-[0.84] w-[107px]'
 				/>
 				<div className='flex gap-3 lg:gap-0 flex-col justify-center w-full'>
-					<div className='flex flex-col max-w-36 md:max-w-full w-full'>
-						<h3 className='text-lg lg:text-xl  capitalize font-semibold text-neutral-900'>
+					<div className='flex flex-col w-full'>
+						<h3 className='text-base line-clamp-2 truncate sm:text-lg lg:text-xl  capitalize font-semibold text-neutral-900'>
 							{product?.name}
 						</h3>
 
@@ -51,7 +51,7 @@ export const ShoppingCartItem: React.FC<ShoppingCartItemProps> = ({ item }) => {
 							<div className='mt-2 space-y-1'>
 								{item.variant.attributeValues.map((attr) => (
 									<p key={attr.id} className='text-sm text-zinc-500'>
-										{attr.attribute?.title}:
+										<span className='capitalize'>{attr.attribute?.title}:</span>
 										<span className='ml-1 text-zinc-700'>{attr.value}</span>
 									</p>
 								))}
@@ -82,14 +82,14 @@ export const ShoppingCartItem: React.FC<ShoppingCartItemProps> = ({ item }) => {
 					</button>
 				</div>
 			</div>
-			<div className='flex flex-col h-full justify-between items-end lg:flex-row lg:gap-10 lg:justify-between lg:items-center lg:my-auto text-2xl font-semibold w-full'>
+			<div className='flex flex-col w-[20%]  lg:w-[50%] h-full  justify-between items-end lg:flex-row lg:gap-10 lg:justify-between lg:items-center lg:my-auto text-2xl font-semibold '>
 				<div className='hidden lg:flex'>
 					<ProductQuantity
 						quantity={quantity}
 						handleQuantityChange={handleQuantityChange}
 					/>
 				</div>
-				<div className='text-sm lg:text-2xl text-right text-neutral-800'>
+				<div className='text-base lg:text-2xl text-right text-neutral-800'>
 					₹
 					{(
 						((product?.hasVariants

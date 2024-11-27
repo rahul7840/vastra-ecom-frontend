@@ -9,12 +9,12 @@ const config: Config = {
 	],
 	theme: {
 		screens: {
-			xs: '320px', // Extra small devices
-			sm: '576px', // Small devices
-			md: '768px', // Medium devices
-			lg: '1024px', // Large devices
-			xl: '1280px', // Extra large devices
-			'2xl': '1440px', // 2X large devices
+			xs: '320px',
+			sm: '576px',
+			md: '768px',
+			lg: '1024px',
+			xl: '1280px',
+			'2xl': '1440px',
 		},
 		extend: {
 			fontFamily: {

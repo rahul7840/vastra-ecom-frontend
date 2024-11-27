@@ -27,14 +27,12 @@ export const TitleWithCards = (props: Props) => {
 	const router = useRouter();
 
 	return (
-		<div
-			className={`flex flex-col w-full max-xs:max-w-96 sm:max-w-128 ${mainDivClassName}`}
-		>
+		<div className={`flex flex-col w-full items-center ${mainDivClassName}`}>
 			<Title text={text} />
 
 			{items && (
-				<div className='flex flex-col justify-center items-center mt-8 md:mt-16 px-4 md:px-14'>
-					<div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 items-center justify-center gap-x-4 gap-y-8 sm:gap-x-8 sm:gap-y-16 w-full max-w-[1383px]'>
+				<div className='flex flex-col justify-center items-center mt-8 md:mt-16 md:max-w-[45rem] lg:max-w-[50rem] xl:max-w-[76rem]'>
+					<div className='grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 items-center justify-center gap-x-4 gap-y-8 sm:gap-x-8 sm:gap-y-16 w-full'>
 						{isLoading
 							? [1, 2, 3, 4].map((index) => <ProductCardSkeleton key={index} />)
 							: items.map((product: IProduct) => {
