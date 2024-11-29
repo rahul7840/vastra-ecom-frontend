@@ -52,7 +52,15 @@ export const ShoppingCartItem: React.FC<ShoppingCartItemProps> = ({ item }) => {
 								{item.variant.attributeValues.map((attr) => (
 									<p key={attr.id} className='text-sm text-zinc-500'>
 										<span className='capitalize'>{attr.attribute?.title}:</span>
-										<span className='ml-1 text-zinc-700'>{attr.value}</span>
+										<span
+											className={`ml-1 text-zinc-700 ${
+												attr.attribute?.title === 'size'
+													? 'uppercase'
+													: 'capitalize'
+											}`}
+										>
+											{attr.value}
+										</span>
 									</p>
 								))}
 							</div>
