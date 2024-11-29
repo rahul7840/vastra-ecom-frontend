@@ -1,8 +1,6 @@
 'use client';
 import { Title } from '@/modules/common/components/Title';
-import { RootState } from '@/store';
-import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { Addresses } from '../components/Addresses';
 import { CartSummary } from '../components/CartSummary';
@@ -16,7 +14,6 @@ declare global {
 
 export const CheckoutTemplate = () => {
 	const { cart } = useCartManager();
-	const charges = useSelector((state: RootState) => state.cart.shippingCharges);
 	const [paymentMethods, setPaymentMethods] = useState<string[]>([]);
 
 	// useEffect(() => {
@@ -77,8 +74,8 @@ export const CheckoutTemplate = () => {
 						Shipping
 					</div>
 					<div>
-						<div>₹ {charges?.shippingCost} - Standard</div>
-						<div>Delivery By: {charges?.estimatedDeliveryDate}</div>
+						<div>₹ {cart?.shippingCost} - Standard</div>
+						<div>Delivery By: {cart?.estimatedDeliveryDate}</div>
 					</div>
 
 					<hr className='border-neutral-100' />

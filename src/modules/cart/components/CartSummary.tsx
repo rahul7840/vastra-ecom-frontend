@@ -15,7 +15,6 @@ interface CartSummaryProps {
 
 export const CartSummary: React.FC<CartSummaryProps> = ({ checkout }) => {
 	const { cart } = useCartManager();
-	const charges = useSelector((state: RootState) => state.cart.shippingCharges);
 	const disabledCheckoutButton = useSelector(
 		(state: RootState) => state.cart.disabledCheckoutButton
 	);
@@ -43,25 +42,25 @@ export const CartSummary: React.FC<CartSummaryProps> = ({ checkout }) => {
 			</h2>
 			<div className='flex flex-col mt-5 w-full max-md:max-w-full'>
 				<div className='flex flex-col pb-11 w-full max-md:max-w-full'>
-					<SummaryItem label={'Subtotal'} value={charges?.subTotal ?? 0} />
+					<SummaryItem label={'Subtotal'} value={cart?.subTotal ?? 0} />
 
 					<SummaryItem
 						label={'Shipping'}
 						value={
-							charges && charges.estimatedDeliveryDate.length > 0
-								? charges.shippingCost
+							cart && cart.estimatedDeliveryDate.length > 0
+								? cart.shippingCost
 								: null
 						}
 					/>
 
-					{checkout && charges?.codCharges ? (
+					{checkout && cart?.codCharges ? (
 						<SummaryItem
 							label={'COD Charges'}
-							value={charges ? charges.codCharges : null}
+							value={cart ? cart?.codCharges : null}
 						/>
 					) : null}
 
-					<SummaryItem label={'Total'} value={charges?.totalCost} />
+					<SummaryItem label={'Total'} value={cart?.totalCost} />
 				</div>
 				<button
 					onClick={() => {

@@ -60,10 +60,10 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 
 	const [quantity, setQuantity] = useState(1);
 
-	const handleAddToCart = () => {
+	const handleAddToCart = async () => {
 		console.log('add to cart');
 
-		addItemToCart({
+		await addItemToCart({
 			productId: id,
 			quantity,
 			variantId: selectedVariant?.id as string,
@@ -420,21 +420,25 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 	if (isLoading) return <ProductSkeleton />;
 	if (!product) return notFound();
 
+	const getImages = () => {
+		return hasVariants
+			? [selectedVariant?.thumbnail, ...(selectedVariant?.images as string[])]
+			: [product.thumbnail, ...(product?.images as string[])];
+	};
+
 	return (
 		<>
 			<section className='flex z-0 flex-col lg:flex-row gap-6 lg:gap-10 items-start mt-6 lg:mt-12 w-full px-5 md:px-12'>
 				<CustomCarousel
 					className='lg:hidden'
-					items={(hasVariants ? selectedVariant?.images : product?.images)?.map(
-						(e) => {
-							return <img className='w-full object-cover h-[50rem]' src={e} />;
-						}
-					)}
+					items={getImages()?.map((e) => {
+						return <img className='w-full object-cover h-[50rem]' src={e} />;
+					})}
 				/>
 
 				<div className='flex gap-10 items-start w-full'>
 					<div className='hidden lg:flex flex-col gap-10 justify-start items-start w-[150px]'>
-						{(hasVariants ? selectedVariant?.images : product?.images)
+						{getImages()
 							?.slice(0, 5)
 							.map((image, index) => (
 								<img
@@ -487,7 +491,10 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 									</button>
 								</div>
 								<button
-									onClick={(e) => router.push('/cart')}
+									onClick={async (e) => {
+										await handleAddToCart();
+										router.push('/cart');
+									}}
 									className='md:px-4 md:py-2.5 mt-5 w-full text-white bg-red-700 h-[51px] text-lg md:text-[22px]'
 								>
 									Buy Now
