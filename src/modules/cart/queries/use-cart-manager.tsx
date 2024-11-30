@@ -18,8 +18,7 @@ const LOCAL_STORAGE_CART_KEY = 'guestCart';
 export const useCartManager = () => {
 	const { user } = useSession();
 	const queryClient = useQueryClient();
-	const { cart, queryKey, isCartLoading } = useCart(user?.id);
-	const [isInitialized, setIsInitialized] = useState(false);
+	const { cart, queryKey } = useCart(user?.id);
 
 	useEffect(() => {
 		const syncGuestCartWithUserCart = async () => {
@@ -48,17 +47,6 @@ export const useCartManager = () => {
 			syncGuestCartWithUserCart();
 		}
 	}, [user, cart, queryClient, queryKey]);
-
-	const createCartMutation = useMutation({
-		mutationFn: () => api.cart.create({}),
-		onSuccess: (response) => {
-			queryClient.setQueryData(queryKey, () => {
-				return response?.data?.data;
-			});
-
-			setIsInitialized(true);
-		},
-	});
 
 	const validatePincodeMutation = useMutation({
 		mutationFn: (pincode: number) => api.shipping.validatePincode(pincode),
@@ -261,28 +249,13 @@ export const useCartManager = () => {
 		}
 	).current;
 
-	const initializeCart = async () => {
-		await createCartMutation.mutateAsync();
-	};
-
-	useEffect(() => {
-		if (
-			user?.id &&
-			!isCartLoading &&
-			!cart?.id &&
-			!createCartMutation.isPending &&
-			!isInitialized
-		) {
-			initializeCart();
-		}
-	}, [user, isCartLoading, cart, createCartMutation, isInitialized]);
-
 	return {
 		cart,
 		addItemToCart,
 		updateCartItemQuantity,
 		removeCartItem,
 		validatePincode,
+		queryKey,
 		updateCartAddressMutation,
 	};
 };

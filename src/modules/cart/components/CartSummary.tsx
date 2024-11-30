@@ -5,7 +5,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { useCartManager } from '../queries/use-cart-manager';
 import SummaryItem from './SummaryItem';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/api';
 import { toast } from 'react-toastify';
 
@@ -14,7 +14,8 @@ interface CartSummaryProps {
 }
 
 export const CartSummary: React.FC<CartSummaryProps> = ({ checkout }) => {
-	const { cart } = useCartManager();
+	const { cart, queryKey } = useCartManager();
+	const queryClient = useQueryClient();
 	const disabledCheckoutButton = useSelector(
 		(state: RootState) => state.cart.disabledCheckoutButton
 	);
@@ -25,6 +26,8 @@ export const CartSummary: React.FC<CartSummaryProps> = ({ checkout }) => {
 		mutationFn: () => api.order.createOrder(),
 		onSuccess: () => {
 			toast.success('Order created successfully.');
+			queryClient.invalidateQueries({ queryKey });
+			router.push('/dashboard/orders');
 		},
 		onError: () => {
 			toast.error('Something went wrong.');
@@ -47,8 +50,8 @@ export const CartSummary: React.FC<CartSummaryProps> = ({ checkout }) => {
 					<SummaryItem
 						label={'Shipping'}
 						value={
-							cart && cart.estimatedDeliveryDate.length > 0
-								? cart.shippingCost
+							cart && cart?.estimatedDeliveryDate?.length > 0
+								? cart?.shippingCost
 								: null
 						}
 					/>

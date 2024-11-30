@@ -15,8 +15,15 @@ export const useCart = (userId?: string) => {
 					: { cartItems: [], totalItems: 0 };
 			}
 
-			const respone = await api.cart.getCartByCustomerId();
-			return respone?.data?.data;
+			const response = await api.cart.getCartByCustomerId();
+			console.log('response logs 9000000', response);
+
+			if (response.status === 404) {
+				const response = await api.cart.create({});
+				return response?.data?.data;
+			}
+
+			return response?.data?.data;
 		},
 		staleTime: 1000 * 60 * 5,
 	});
