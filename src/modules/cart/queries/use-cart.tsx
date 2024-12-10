@@ -8,8 +8,14 @@ export const useCart = (userId?: string) => {
 	const { data, isLoading: isCartLoading } = useQuery({
 		queryKey,
 		queryFn: async () => {
+			console.log('userId logs 9000000', userId);
+
 			if (!userId) {
 				const guestCart = localStorage.getItem(LOCAL_STORAGE_CART_KEY);
+				console.log(
+					'returning guestCart logs 9000000',
+					JSON.parse(guestCart ?? '{}')
+				);
 				return guestCart
 					? JSON.parse(guestCart)
 					: { cartItems: [], totalItems: 0 };

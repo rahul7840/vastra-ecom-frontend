@@ -48,6 +48,10 @@ export const useCartManager = () => {
 		}
 	}, [user, cart, queryClient, queryKey]);
 
+	useEffect(() => {
+		console.log('cart in useCartManager useEffect logs 9000000', cart);
+	}, [cart]);
+
 	const validatePincodeMutation = useMutation({
 		mutationFn: (pincode: number) => api.shipping.validatePincode(pincode),
 	});

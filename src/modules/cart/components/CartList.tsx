@@ -9,7 +9,7 @@ interface ShoppingCartListProps {}
 const ShoppingCartList: React.FC<ShoppingCartListProps> = () => {
 	const { cart } = useCartManager();
 
-	console.log('Carrttt logs 9000000', cart);
+	console.log('Carrttt logs 9000000 in ShoppingCartList', cart);
 
 	return (
 		<section className='flex flex-col w-full'>
