@@ -5,7 +5,10 @@ import { Testimonails } from '@/modules/common/testimonials/Testimonials';
 import { useProducts } from '@/modules/product/queries/use-products';
 
 export const LandingTemplate = () => {
-	const images = ['/assets/images/banner.png', '/assets/images/banner.png'];
+	const images = [
+		'/assets/images/banner.png',
+		'/assets/images/banner-mobile.svg',
+	];
 
 	const { products: trendingNow, isLoading: trendingNowLoading } = useProducts({
 		limit: 8,

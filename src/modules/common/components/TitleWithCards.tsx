@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { ProductCard } from './Product';
 import { ProductCardSkeleton } from './ProductCardSkeleton';
 import { Title } from './Title';
+import { useEffect, useState } from 'react';
 
 interface Props {
 	text: string;
@@ -23,12 +24,21 @@ export const TitleWithCards = (props: Props) => {
 		isLoading = false,
 		link,
 	} = props;
+	const [isMobile, setIsMobile] = useState(false);
+
+	useEffect(() => {
+		if (!window) return;
+
+		setIsMobile(window.innerWidth < 576);
+	}, [window]);
 
 	const router = useRouter();
 
 	return (
 		<div
-			className={`flex flex-col w-full max-xs:max-w-96 sm:max-w-128 ${mainDivClassName}`}
+			className={`flex flex-col w-full max-xs:max-w-96 sm:max-w-128 ${
+				mainDivClassName ?? ''
+			}`}
 		>
 			<Title text={text} />
 
@@ -49,15 +59,17 @@ export const TitleWithCards = (props: Props) => {
 						>
 							<img
 								className='w-4 h-4 md:w-7 md:h-7'
-								src='/assets/images/curly-light.svg'
+								src={`/assets/images/curly-light.svg`}
 								alt=''
 							/>
-							<div className='underline text-sm font-semibold text-[#212121]'>
+							<div className='underline text-[10px] md:text-sm font-semibold text-[#212121]'>
 								View All
 							</div>
 							<img
 								className='w-4 h-4 md:w-7 md:h-7'
-								src='/assets/images/curly-light.svg'
+								src={`/assets/images/${
+									isMobile ? 'curly-light-m' : 'curly-light'
+								}.svg`}
 								alt=''
 							/>
 						</div>

@@ -28,14 +28,12 @@ export const ProductCard = (props: Props) => {
 		>
 			<div className='flex flex-col gap-4 md:gap-8 min-w-40 max-w-40 lg:max-w-72 lg:min-w-72 '>
 				<img
-					// className='w-full h-full object-cover'
-					className='
-					min-w-40 min-h-52 max-w-40 max-h-52  lg:max-w-72 lg:max-h-96 lg:min-w-72 lg:min-h-96 object-cover'
+					className='min-w-40 max-w-40 min-h-52  max-h-52 lg:min-w-72 lg:max-w-72 lg:max-h-96  lg:min-h-96 object-cover'
 					src={thumbnail ?? ''}
 					alt='Thumbnail'
 				/>
 				<div className='flex flex-col gap-2'>
-					<div className='font-semibold capitalize text-xs lg:text-xl text-[#212121]'>
+					<div className='font-semibold truncate h-8 text-wrap capitalize text-xs lg:text-xl text-[#212121]'>
 						{product.name}
 					</div>
 					{/* {product.category && (
@@ -48,15 +46,15 @@ export const ProductCard = (props: Props) => {
 						{discountedPrice ? (
 							<>
 								<div className='text-[10px] md:text-sm line-through font-semibold text-[#616161]'>
-									{price}
+									Rs.{price}
 								</div>
 								<div className='text-xs md:text-lg font-semibold text-[#4F1010]'>
-									{discountedPrice}
+									Rs.{discountedPrice}
 								</div>
 							</>
 						) : (
 							<div className=' text-xs md:text-lg font-semibold text-[#4F1010]'>
-								{price}
+								Rs.{price}
 							</div>
 						)}
 					</div>
