@@ -1,5 +1,11 @@
-import { NewArrivalTemplate } from "@/modules/product/templates/new-arrival";
+import { ProductListTemplate } from '@/modules/product/templates/products';
 
 export default function Page() {
-	return <NewArrivalTemplate />;
+	return (
+		<ProductListTemplate
+			title='New Arrivals'
+			url='/new-arrivals'
+			description='Discover our latest collection of trendsetting pieces that just landed'
+		/>
+	);
 }

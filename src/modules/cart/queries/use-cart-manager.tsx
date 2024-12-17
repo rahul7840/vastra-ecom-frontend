@@ -8,12 +8,8 @@ import {
 	ICartAddress,
 	ICartItem,
 } from '@/modules/types/cart';
-import { RootState } from '@/store';
-import { setShippingCharges } from '@/store/slices/cartSlice';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { debounce } from 'lodash';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { useCart } from './use-cart';
 
@@ -22,25 +18,22 @@ const LOCAL_STORAGE_CART_KEY = 'guestCart';
 export const useCartManager = () => {
 	const { user } = useSession();
 	const queryClient = useQueryClient();
-	const dispatch = useDispatch();
-	const { cart, queryKey, isCartLoading } = useCart(user?.id);
-	const [isInitialized, setIsInitialized] = useState(false);
-
-	const charges = useSelector((state: RootState) => state.cart.shippingCharges);
+	const { cart, queryKey } = useCart(user?.id);
 
 	useEffect(() => {
 		const syncGuestCartWithUserCart = async () => {
 			if (user?.id && cart?.id) {
 				const guestCart = getGuestCart();
-				const promises = guestCart?.cartItems?.map(async (item) => {
-					return await api.cart.addItemToCart(cart?.id as string, {
-						quantity: item?.quantity,
-						productId: item?.productId as string,
-						variantId: item?.variantId as string,
-					});
-				});
-				const results = await Promise.all(promises);
-				console.log('results logs 33333333', results);
+
+				await Promise.all(
+					guestCart?.cartItems?.map(async (item) => {
+						return await api.cart.addItemToCart(cart?.id as string, {
+							quantity: item?.quantity,
+							productId: item?.productId as string,
+							variantId: item?.variantId as string,
+						});
+					})
+				);
 
 				queryClient.invalidateQueries({
 					queryKey,
@@ -55,16 +48,9 @@ export const useCartManager = () => {
 		}
 	}, [user, cart, queryClient, queryKey]);
 
-	const createCartMutation = useMutation({
-		mutationFn: () => api.cart.create({}),
-		onSuccess: (response) => {
-			queryClient.setQueryData(queryKey, () => {
-				return response?.data?.data;
-			});
-
-			setIsInitialized(true);
-		},
-	});
+	useEffect(() => {
+		console.log('cart in useCartManager useEffect logs 9000000', cart);
+	}, [cart]);
 
 	const validatePincodeMutation = useMutation({
 		mutationFn: (pincode: number) => api.shipping.validatePincode(pincode),
@@ -94,7 +80,7 @@ export const useCartManager = () => {
 			}
 			return { isValid: false, error: 'Pincode is required' };
 		},
-		[dispatch, cart]
+		[validatePincodeMutation]
 	);
 
 	const deleteMutation = useMutation({
@@ -104,60 +90,8 @@ export const useCartManager = () => {
 		onSuccess: (response) => {
 			toast.success('Item deleted successfully');
 			queryClient.invalidateQueries({ queryKey });
-			if (cart?.shippingAddress?.pincode) {
-				getShippingCharges(cart?.shippingAddress?.pincode as number);
-			}
 		},
 	});
-
-	const getShippingCharges = useCallback(
-		async (pincode?: number) => {
-			try {
-				if (pincode) {
-					const response = await api.shipping.getCharges(cart?.id as string, {
-						cod: 0,
-						delivery_postcode: pincode,
-					});
-
-					dispatch(
-						setShippingCharges({
-							shippingCost: response?.data?.data?.shippingCost ?? 0,
-							codCharges: response?.data?.data?.codCharges ?? 0,
-							estimatedDeliveryDate:
-								response?.data?.data?.estimatedDeliveryDate ?? '',
-							subTotal: response?.data?.data?.subTotal ?? 0,
-							totalCost: response?.data?.data?.totalCost ?? 0,
-						})
-					);
-				}
-			} catch (error) {
-				console.error('Error in shipping debounced logs 9999', error);
-			}
-		},
-		[cart, dispatch]
-	);
-
-	const debouncedGetShippingCharges = useCallback(
-		debounce((pincode?: number) => {
-			getShippingCharges(pincode);
-		}, 500),
-		[getShippingCharges]
-	);
-
-	useEffect(() => {
-		if (user?.id && !charges) {
-			debouncedGetShippingCharges(cart?.shippingAddress?.pincode as number);
-		}
-
-		return () => {
-			debouncedGetShippingCharges.cancel();
-		};
-	}, [
-		user?.id,
-		charges,
-		cart?.shippingAddress?.pincode,
-		debouncedGetShippingCharges,
-	]);
 
 	const updateCartAddressMutation = useMutation({
 		mutationFn: (data: ICartAddress) =>
@@ -186,8 +120,10 @@ export const useCartManager = () => {
 	};
 
 	const saveGuestCart = (cart: ICart) => {
-		calculateSubTotal(cart);
-		localStorage.setItem(LOCAL_STORAGE_CART_KEY, JSON.stringify(cart));
+		localStorage.setItem(
+			LOCAL_STORAGE_CART_KEY,
+			JSON.stringify(calculateSubTotal(cart))
+		);
 		queryClient.invalidateQueries({ queryKey });
 	};
 
@@ -202,17 +138,14 @@ export const useCartManager = () => {
 
 		console.log('logs 33333333 subtotal', subTotal);
 
-		const newShippingCharges = {
+		return {
+			...cart,
 			shippingCost: 0,
 			codCharges: 0,
 			estimatedDeliveryDate: '',
 			subTotal: subTotal ?? 0,
 			totalCost: subTotal ?? 0,
 		};
-
-		dispatch(setShippingCharges(newShippingCharges));
-
-		return cart;
 	};
 
 	const updateCartItemQuantityMutation = useMutation({
@@ -227,9 +160,6 @@ export const useCartManager = () => {
 			toast.success('Quantity updated successfully');
 			console.log('queryKey', queryKey);
 			console.log('cart in update quantity logs 9999', cart);
-			if (cart?.shippingAddress?.pincode) {
-				getShippingCharges(cart?.shippingAddress?.pincode as number);
-			}
 			queryClient.invalidateQueries({ queryKey });
 		},
 	});
@@ -275,9 +205,6 @@ export const useCartManager = () => {
 			queryClient.invalidateQueries({
 				queryKey,
 			});
-			if (cart?.shippingAddress?.pincode) {
-				getShippingCharges(cart?.shippingAddress?.pincode as number);
-			}
 		},
 		onError: (error: IApiError) => {
 			toast.error(
@@ -326,29 +253,13 @@ export const useCartManager = () => {
 		}
 	).current;
 
-	const initializeCart = async () => {
-		await createCartMutation.mutateAsync();
-	};
-
-	useEffect(() => {
-		if (
-			user?.id &&
-			!isCartLoading &&
-			!cart?.id &&
-			!createCartMutation.isPending &&
-			!isInitialized
-		) {
-			initializeCart();
-		}
-	}, [user, isCartLoading, cart, createCartMutation, isInitialized]);
-
 	return {
 		cart,
 		addItemToCart,
 		updateCartItemQuantity,
 		removeCartItem,
 		validatePincode,
-		getShippingCharges,
+		queryKey,
 		updateCartAddressMutation,
 	};
 };

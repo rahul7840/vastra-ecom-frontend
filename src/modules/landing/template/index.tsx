@@ -3,12 +3,10 @@ import { CustomCarousel } from '@/modules/common/components/CustomCarousel';
 import { TitleWithCards } from '@/modules/common/components/TitleWithCards';
 import { Testimonails } from '@/modules/common/testimonials/Testimonials';
 import { useProducts } from '@/modules/product/queries/use-products';
+import { useEffect, useState } from 'react';
 
 export const LandingTemplate = () => {
-	const images = [
-		'/assets/images/banner.png',
-		'/assets/images/banner-mobile.svg',
-	];
+	const [isSmallScreen, setIsSmallScreen] = useState(false);
 
 	const { products: trendingNow, isLoading: trendingNowLoading } = useProducts({
 		limit: 8,
@@ -25,9 +23,23 @@ export const LandingTemplate = () => {
 		sort: 'new_arrival',
 	});
 
+	useEffect(() => {
+		setIsSmallScreen(window.innerWidth < 1024);
+	}, [window.innerWidth]);
+
 	return (
 		<div>
-			<CustomCarousel
+			<img
+				src={
+					isSmallScreen
+						? '/assets/images/banner-m.png'
+						: '/assets/images/banner.png'
+				}
+				alt=''
+				className='w-full object-cover h-[36rem] md:h-[665px] mb-8'
+			/>
+
+			{/* <CustomCarousel
 				items={images.map((e) => {
 					return (
 						<img
@@ -36,7 +48,7 @@ export const LandingTemplate = () => {
 						/>
 					);
 				})}
-			/>
+			/> */}
 
 			<div className='flex flex-col gap-8 md:gap-32 mb-14'>
 				<TitleWithCards

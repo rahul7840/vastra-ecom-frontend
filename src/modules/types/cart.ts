@@ -44,7 +44,7 @@ export interface ICheckServiceability {
 
 export interface ICartAddress {
 	shippingAddressId: string;
-	billingAddressId?: string;
+	billingAddressId: string;
 }
 
 export interface IShippingCharges {

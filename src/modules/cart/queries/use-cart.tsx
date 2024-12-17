@@ -8,15 +8,28 @@ export const useCart = (userId?: string) => {
 	const { data, isLoading: isCartLoading } = useQuery({
 		queryKey,
 		queryFn: async () => {
+			console.log('userId logs 9000000', userId);
+
 			if (!userId) {
 				const guestCart = localStorage.getItem(LOCAL_STORAGE_CART_KEY);
+				console.log(
+					'returning guestCart logs 9000000',
+					JSON.parse(guestCart ?? '{}')
+				);
 				return guestCart
 					? JSON.parse(guestCart)
 					: { cartItems: [], totalItems: 0 };
 			}
 
-			const respone = await api.cart.getCartByCustomerId();
-			return respone?.data?.data;
+			const response = await api.cart.getCartByCustomerId();
+			console.log('response logs 9000000', response);
+
+			if (response.status === 404) {
+				const response = await api.cart.create({});
+				return response?.data?.data;
+			}
+
+			return response?.data?.data;
 		},
 		staleTime: 1000 * 60 * 5,
 	});

@@ -88,7 +88,7 @@ export const Addresses: React.FC = () => {
 			shippingAddressId: selectedShippingId,
 			billingAddressId: useDifferentBillingAddress
 				? selectedBillingId
-				: undefined,
+				: selectedShippingId,
 		};
 
 		const response = await updateCartAddressMutation.mutateAsync(addressData);

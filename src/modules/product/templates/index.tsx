@@ -30,17 +30,19 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 		limit: 10,
 		sort: 'new_arrival',
 	});
-
 	const [hasVariants, setHasVariants] = useState(false);
 	const [selectedAttributes, setSelectedAttributes] = useState<
 		Record<string, string>
 	>({});
+	const [uniqueAttributes, setUniqueAttributes] = useState<any>([]);
 	const [selectedImage, setSelectedImage] = useState<string>();
 	const [selectedVariant, setSelectedVariant] = useState<IVariant>();
+	const [selectedAttribute, setSelectedAttribute] = useState<string>();
 	const [hoveredVariant, setHoveredVariant] = useState<IVariant | null>(null);
 	const [selectedTab, setSelectedTab] = useState(0);
 	const [isWriteReview, setIsWriteReview] = useState(false);
 	const router = useRouter();
+	const sizeOrder = ['s', 'm', 'l', 'xl', '2xl', '3xl', '4xl', '5xl'];
 	const displayedVariant = hoveredVariant || selectedVariant;
 
 	const mutation = useMutation({
@@ -58,10 +60,10 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 
 	const [quantity, setQuantity] = useState(1);
 
-	const handleAddToCart = () => {
+	const handleAddToCart = async () => {
 		console.log('add to cart');
 
-		addItemToCart({
+		await addItemToCart({
 			productId: id,
 			quantity,
 			variantId: selectedVariant?.id as string,
@@ -83,6 +85,13 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 			)
 		);
 
+		console.log(
+			'matchingVariant',
+			matchingVariant,
+			'for',
+			newSelectedAttributes
+		);
+
 		if (matchingVariant) {
 			setSelectedVariant(matchingVariant);
 		}
@@ -93,23 +102,30 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 		return variants
 			.filter((variant) =>
 				variant.attributeValues.some(
-					(av) => av?.attribute?.title === 'Size' && av.value === selectedSize
+					(av) => av?.attribute?.title === 'size' && av.value === selectedSize
 				)
 			)
 			.flatMap((variant) =>
 				variant.attributeValues
-					.filter((av) => av?.attribute?.title === 'Color')
+					.filter((av) => av?.attribute?.title === 'color')
 					.map((av) => av?.value)
 			)
 			.filter((value, index, self) => self.indexOf(value) === index);
 	};
 
-	// Sort attributes to ensure Size comes before Color
-	const sortedAttributes = product?.attributes?.sort((a, b) => {
-		if (a.title.toLowerCase() === 'size') return -1;
-		if (b.title.toLowerCase() === 'size') return 1;
-		return 0;
-	});
+	const getAvailableSizes = (variants: IVariant[], selectedColor: string) => {
+		return variants
+			.filter((variant) =>
+				variant.attributeValues.some(
+					(av) => av?.attribute?.title === 'color' && av.value === selectedColor
+				)
+			)
+			.flatMap((variant) =>
+				variant.attributeValues
+					.filter((av) => av?.attribute?.title === 'size')
+					.map((av) => av?.value)
+			);
+	};
 
 	const getPriceDisplay = () => {
 		if (!product?.hasVariants) {
@@ -203,10 +219,193 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 		);
 	};
 
+	const renderAttributes = () => {
+		return uniqueAttributes?.map((attribute: any) => {
+			const isColorAttribute = attribute.title === 'color';
+			const selectedValue = selectedAttributes[attribute.title];
+			const selectedSize = selectedAttributes['size'];
+			const selectedColor = selectedAttributes['color'];
+
+			const renderColorVariants = () => {
+				const availableColors = selectedSize
+					? getAvailableColors(product?.variants as IVariant[], selectedSize)
+					: [];
+
+				return (
+					<div className='flex flex-wrap gap-4 mt-5'>
+						{attribute.values.map((attrValue: any) => {
+							const isSelected = selectedValue === attrValue.value;
+							const isAvailable = availableColors.includes(attrValue.value);
+
+							const variantWithColor = product?.variants?.find((v) =>
+								v.attributeValues.some(
+									(av) =>
+										av?.attribute?.title === 'color' &&
+										av.value === attrValue.value
+								)
+							);
+
+							return (
+								<div
+									key={attrValue.id}
+									className='flex flex-col items-center gap-2'
+								>
+									<button
+										disabled={!isAvailable}
+										className={`relative w-16 h-16 border ${
+											isSelected ? 'border-2 border-red-600' : 'border-gray-200'
+										} rounded-md overflow-hidden`}
+										onClick={() =>
+											handleAttributeSelect(attribute.title, attrValue.value)
+										}
+										onMouseEnter={
+											() => {
+												// setHoveredVariant();
+											}
+											// isAvailable &&
+											// setHoveredVariant(exactVariantMatch as IVariant)
+										}
+										onMouseLeave={() => setHoveredVariant(null)}
+									>
+										<div
+											className={`w-full h-full ${
+												!isAvailable ? 'opacity-50' : ''
+											}`}
+										>
+											<img
+												src={variantWithColor?.thumbnail}
+												alt={`${attrValue.value} variant`}
+												className='w-full h-full object-cover'
+											/>
+										</div>
+										{isSelected && (
+											<div className='absolute bottom-0 right-0 w-4 h-4 bg-red-600 flex items-center justify-center'>
+												<svg
+													width='12'
+													height='12'
+													viewBox='0 0 24 24'
+													fill='none'
+												>
+													<path
+														d='M5.16699 14.5C5.16699 14.5 6.66699 14.5 8.66699 18C8.66699 18 14.2258 8.83333 19.167 7'
+														stroke='white'
+														strokeWidth='2'
+														strokeLinecap='round'
+														strokeLinejoin='round'
+													/>
+												</svg>
+											</div>
+										)}
+									</button>
+								</div>
+							);
+						})}
+					</div>
+				);
+			};
+
+			const renderSizeVariants = () => {
+				const availableSizes = selectedColor
+					? getAvailableSizes(product?.variants as IVariant[], selectedColor)
+					: [];
+
+				return (
+					<div className='flex gap-2.5 items-center mt-5 w-full'>
+						{attribute.values.map((attrValue: any) => {
+							const isAvailable = availableSizes.includes(attrValue.value);
+							const isSelected = selectedValue === attrValue.value;
+
+							console.log(
+								'attrvalue',
+								attrValue,
+								'isAvailable',
+								isAvailable,
+								'for color',
+								selectedAttribute
+							);
+
+							return (
+								<button
+									disabled={!isAvailable}
+									key={attrValue.id}
+									className={`py-2.5 uppercase my-auto disabled:opacity-50 ${
+										attrValue.value.length > 3 ? 'w-full' : 'w-10'
+									} h-10 ${
+										isSelected
+											? 'text-white bg-red-600 border border-red-600 border-solid'
+											: 'bg-zinc-100'
+									}`}
+									onClick={() => {
+										handleAttributeSelect(attribute.title, attrValue.value);
+									}}
+								>
+									{attrValue.value}
+								</button>
+							);
+						})}
+					</div>
+				);
+			};
+
+			return (
+				<div
+					key={attribute.id}
+					className='flex flex-col w-full font-semibold tracking-wide leading-snug whitespace-nowrap mb-8'
+				>
+					<label className='text-base capitalize text-zinc-600'>
+						{attribute.title}
+						{isColorAttribute && selectedValue && (
+							<span className='ml-2 text-neutral-800'>: {selectedValue}</span>
+						)}
+					</label>
+
+					{isColorAttribute ? renderColorVariants() : renderSizeVariants()}
+				</div>
+			);
+		});
+	};
+
 	useEffect(() => {
 		if (product?.hasVariants) {
 			setHasVariants(true);
-			setSelectedVariant(product?.variants[0]);
+
+			// Get the first available variant
+			const firstVariant = product.variants[0];
+			setSelectedVariant(firstVariant);
+
+			// Extract color and size from the first variant
+			const colorValue = firstVariant.attributeValues.find(
+				(attr) => attr.attribute?.title === 'color'
+			)?.value;
+			const sizeValue = firstVariant.attributeValues.find(
+				(attr) => attr.attribute?.title === 'size'
+			)?.value;
+
+			// Set initial attributes
+			setSelectedAttributes({
+				color: colorValue || '',
+				size: sizeValue || '',
+			});
+
+			const uniqueAttributes = product?.attributes.map((attribute) => {
+				const uniqueValues = Array.from(
+					new Set(attribute.values.map((v) => v.value))
+				);
+
+				if (attribute.title.toLowerCase() === 'size') {
+					const sortedValues = uniqueValues.sort((a, b) => {
+						const indexA = sizeOrder.indexOf(a);
+						const indexB = sizeOrder.indexOf(b);
+						return indexA - indexB;
+					});
+					attribute.values = sortedValues.map((value) => ({ value }));
+				} else {
+					attribute.values = uniqueValues.map((value) => ({ value }));
+				}
+
+				return attribute;
+			});
+			setUniqueAttributes(uniqueAttributes as any);
 		}
 	}, [product]);
 
@@ -218,267 +417,96 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 		}
 	}, [product, displayedVariant]);
 
-	useEffect(() => {
-		if (product?.variants?.length) {
-			setSelectedVariant(product?.variants[0]);
-		}
-	}, [product]);
-
 	if (isLoading) return <ProductSkeleton />;
 	if (!product) return notFound();
 
+	const getImages = () => {
+		return hasVariants
+			? [selectedVariant?.thumbnail, ...(selectedVariant?.images as string[])]
+			: [product.thumbnail, ...(product?.images as string[])];
+	};
+
 	return (
 		<>
-			<section className='flex z-0 flex-col gap-10 items-start px-3 md:px-12 mt-12 w-full'>
-				<div className='flex flex-col md:flex-row gap-10'>
-					<CustomCarousel
-						className='lg:hidden'
-						items={(hasVariants
-							? selectedVariant?.images
-							: product?.images
-						)?.map((e) => {
-							return <img className='w-full object-cover h-[400px]' src={e} />;
-						})}
+			<section className='flex z-0 flex-col lg:flex-row gap-6 lg:gap-10 items-start mt-6 lg:mt-12 w-full px-5 md:px-12'>
+				<CustomCarousel
+					className='lg:hidden'
+					items={getImages()?.map((e) => {
+						return <img className='w-full object-cover h-[50rem]' src={e} />;
+					})}
+				/>
+
+				<div className='flex gap-10 items-start w-full'>
+					<div className='hidden lg:flex flex-col gap-10 justify-start items-start w-[150px]'>
+						{getImages()
+							?.slice(0, 5)
+							.map((image, index) => (
+								<img
+									src={image}
+									onClick={() => setSelectedImage(image)}
+									className='flex cursor-pointer flex-col items-center bg-red  object-cover  max-h-[150px] min-h-[150px] max-w-[150px] min-w-[150px]'
+									alt={`Product image ${index + 1}`}
+								/>
+							))}
+					</div>
+					<img
+						src={selectedImage}
+						className='object-cover hidden lg:flex flex-col items-start justify-start bg-white h-full w-full lg:min-w-[400px] lg:min-h-[500px] lg:max-w-[400px] lg:max-h-[500px] xl:min-w-[600px] xl:max-w-[600px] xl:min-h-[735px] xl:max-h-[735px] '
+						alt='Main product image'
 					/>
-
-					<div className='flex gap-10 items-start w-full'>
-						<div className='hidden lg:flex flex-col gap-10 justify-start items-start w-[150px]'>
-							{(hasVariants ? selectedVariant?.images : product?.images)
-								?.slice(0, 4)
-								.map((image, index) => (
-									<img
-										src={image}
-										onClick={() => setSelectedImage(image)}
-										className='flex cursor-pointer flex-col items-center bg-red  object-cover  max-h-[150px] min-h-[150px] max-w-[150px] min-w-[150px]'
-										alt={`Product image ${index + 1}`}
-									/>
-								))}
+					<div className='flex flex-col w-full'>
+						<h1 className='text-2xl capitalize font-semibold text-neutral-800'>
+							{product.name}
+						</h1>
+						<div className='flex gap-4 items-center mt-2 w-full max-w-full'>
+							<div className='flex gap-1 items-center self-stretch my-auto'>
+								<StarRating rating={4} readonly />
+							</div>
+							<img loading='lazy' src='/assets/images/vertical.svg' alt='' />
+							<div className='self-stretch my-auto text-xs font-semibold tracking-wide text-neutral-500'>
+								{product?.reviews?.length} review
+							</div>
 						</div>
-						<img
-							src={selectedImage}
-							className='object-cover hidden lg:flex flex-col items-start justify-start bg-white h-full w-full lg:min-w-[400px] lg:min-h-[500px] xl:min-w-[575px] xl:min-h-[735px] '
-							alt='Main product image'
-						/>
-						<div className='flex flex-col w-full'>
-							<h1 className='text-2xl capitalize font-semibold tracking-wider leading-snug text-neutral-800'>
-								{product.name}
-							</h1>
-							<div className='flex gap-4 items-center mt-2 max-w-full w-[196px]'>
-								<div className='flex gap-1 items-center self-stretch my-auto'>
-									<StarRating rating={4} readonly />
-								</div>
-								<img loading='lazy' src='/assets/images/vertical.svg' alt='' />
-								<div className='self-stretch my-auto text-xs font-semibold tracking-wide text-neutral-500'>
-									{product?.reviews?.length} review
-								</div>
+						{getPriceDisplay()}
+						<div className='text-[10px] md:text-xs leading-4 mb-1 text-neutral-400 w-full'>
+							MRP incl. of all taxes
+						</div>
+						<div className='flex flex-col mt-4 md:mt-8 w-full'>
+							<div className='flex flex-col w-full'>
+								<div className='flex flex-col w-full'>{renderAttributes()}</div>
 							</div>
-							{getPriceDisplay()}
-							<div className='text-[10px] md:text-xs leading-4 mb-1 text-neutral-400 w-full'>
-								MRP incl. of all taxes
-							</div>
-							<div className='flex flex-col mt-4 md:mt-8 w-full'>
-								<div className='flex flex-col max-w-full w-[325px]'>
-									<div className='flex flex-col w-full'>
-										{sortedAttributes?.map((attribute) => {
-											const isColorAttribute =
-												attribute.title.toLowerCase() === 'color';
-											const selectedValue = selectedAttributes[attribute.title];
-											const selectedSize = selectedAttributes['Size'];
-
-											const availableColors =
-												isColorAttribute && selectedSize
-													? getAvailableColors(product.variants, selectedSize)
-													: [];
-
-											return (
-												<div
-													key={attribute.id}
-													className='flex flex-col w-full font-semibold tracking-wide leading-snug whitespace-nowrap mb-8'
-												>
-													<label className='text-base text-zinc-600'>
-														{attribute.title}
-														{isColorAttribute && selectedValue && (
-															<span className='ml-2 text-neutral-800'>
-																: {selectedValue}
-															</span>
-														)}
-													</label>
-
-													{isColorAttribute ? (
-														<div className='flex flex-wrap gap-4 mt-5'>
-															{attribute.values.map((attrValue) => {
-																const isSelected =
-																	selectedValue === attrValue.value;
-																const isAvailable = availableColors.includes(
-																	attrValue.value
-																);
-
-																// Find variant with this color regardless of size
-																const variantWithColor =
-																	product?.variants?.find((v) =>
-																		v.attributeValues.some(
-																			(av) =>
-																				av.value === attrValue.value &&
-																				av?.attribute?.title === 'Color'
-																		)
-																	);
-
-																// Find exact variant match with selected size (for availability)
-																const exactVariantMatch = selectedSize
-																	? product?.variants?.find((v) =>
-																			v.attributeValues.some(
-																				(av) =>
-																					av.value === attrValue.value &&
-																					av?.attribute?.title === 'Color' &&
-																					v.attributeValues.some(
-																						(sav) =>
-																							sav?.attribute?.title ===
-																								'Size' &&
-																							sav.value === selectedSize
-																					)
-																			)
-																	  )
-																	: null;
-
-																return (
-																	<div
-																		key={attrValue.id}
-																		className='flex flex-col items-center gap-2'
-																	>
-																		<button
-																			disabled={!isAvailable}
-																			className={`relative w-16 h-16 border ${
-																				isSelected
-																					? 'border-2 border-red-600'
-																					: 'border-gray-200'
-																			} rounded-md overflow-hidden`}
-																			onClick={() =>
-																				handleAttributeSelect(
-																					attribute.title,
-																					attrValue.value
-																				)
-																			}
-																			onMouseEnter={() =>
-																				isAvailable &&
-																				setHoveredVariant(
-																					exactVariantMatch as IVariant
-																				)
-																			}
-																			onMouseLeave={() =>
-																				setHoveredVariant(null)
-																			}
-																		>
-																			<div
-																				className={`w-full h-full ${
-																					!isAvailable ? 'opacity-50' : ''
-																				}`}
-																			>
-																				<img
-																					src={variantWithColor?.thumbnail}
-																					alt={`${attrValue.value} variant`}
-																					className='w-full h-full object-cover'
-																				/>
-																			</div>
-																			{isSelected && (
-																				<div className='absolute bottom-0 right-0 w-4 h-4 bg-red-600 flex items-center justify-center'>
-																					<svg
-																						width='12'
-																						height='12'
-																						viewBox='0 0 24 24'
-																						fill='none'
-																					>
-																						<path
-																							d='M5.16699 14.5C5.16699 14.5 6.66699 14.5 8.66699 18C8.66699 18 14.2258 8.83333 19.167 7'
-																							stroke='white'
-																							strokeWidth='2'
-																							strokeLinecap='round'
-																							strokeLinejoin='round'
-																						/>
-																					</svg>
-																				</div>
-																			)}
-																		</button>
-																		<span
-																			className={`text-xs ${
-																				!isAvailable
-																					? 'text-gray-400'
-																					: 'text-gray-700'
-																			}`}
-																		>
-																			{attrValue.value}
-																		</span>
-																	</div>
-																);
-															})}
-														</div>
-													) : (
-														<div className='flex gap-2.5 items-center mt-5 w-full'>
-															{attribute.values.map((attrValue) => {
-																const isSelected =
-																	selectedValue === attrValue.value;
-																return (
-																	<button
-																		key={attrValue.id}
-																		className={`py-2.5 my-auto ${
-																			attrValue.value.length > 3
-																				? 'w-full'
-																				: 'w-10'
-																		} h-10 ${
-																			isSelected
-																				? 'text-white bg-red-600 border border-red-600 border-solid'
-																				: 'bg-zinc-100'
-																		}`}
-																		onClick={() => {
-																			handleAttributeSelect(
-																				attribute.title,
-																				attrValue.value
-																			);
-																			if (selectedAttributes['Color']) {
-																				handleAttributeSelect('Color', '');
-																			}
-																		}}
-																	>
-																		{attrValue.value}
-																	</button>
-																);
-															})}
-														</div>
-													)}
-												</div>
-											);
-										})}
-									</div>
-								</div>
-								<div className='flex flex-col mt-4 md:mt-8 w-full text-2xl font-semibold leading-snug'>
-									<div className='flex items-start md:flex-row gap-3 md:items-center w-full'>
-										<ProductQuantity
-											quantity={quantity}
-											handleQuantityChange={(newQuantity: number) =>
-												setQuantity(newQuantity)
-											}
-										/>
-										<button
-											onClick={handleAddToCart}
-											className='gap-2 h-[45px] md:h-[51px] text-lg px-7 py-2.5 border border-solid border-neutral-800 text-neutral-800 w-56 md:w-72'
-										>
-											Add to Cart
-										</button>
-									</div>
+							<div className='flex flex-col mt-4 md:mt-8 w-full text-2xl font-semibold max-w-lg'>
+								<div className='flex items-start md:flex-row gap-3 md:items-center w-full'>
+									<ProductQuantity
+										quantity={quantity}
+										handleQuantityChange={(newQuantity: number) =>
+											setQuantity(newQuantity)
+										}
+									/>
 									<button
-										onClick={(e) => router.push('/cart')}
-										className='gap-2 md:px-4 md:py-2.5 mt-5 w-full max-w-[28rem] text-white bg-red-700 h-[51px] text-lg md:text-[22px]'
+										onClick={handleAddToCart}
+										className='gap-2 h-[45px] md:h-[51px] text-lg px-7 py-2.5 border border-solid border-neutral-800 text-neutral-800 w-full'
 									>
-										Buy Now
+										Add to Cart
 									</button>
 								</div>
+								<button
+									onClick={async (e) => {
+										await handleAddToCart();
+										router.push('/cart');
+									}}
+									className='md:px-4 md:py-2.5 mt-5 w-full text-white bg-red-700 h-[51px] text-lg md:text-[22px]'
+								>
+									Buy Now
+								</button>
 							</div>
 						</div>
 					</div>
 				</div>
 			</section>
 
-			<section className='flex flex-col pt-12 pb-8 lg:py-32 px-4 md:px-12 lg:px-60'>
-				<div className='flex gap-20 justify-center items-center w-full text-2xl leading-snug whitespace-nowrap max-md:max-w-full'>
+			<section className='flex flex-col pt-12 pb-8 lg:py-32 px-5 md:px-12 lg:px-20 xl:px-44 2xl:px-56'>
+				<div className='flex gap-20 justify-center items-center w-full text-2xl whitespace-nowrap'>
 					<TabButton
 						label='Description'
 						isActive={selectedTab === 0}
@@ -492,40 +520,32 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 				</div>
 
 				{selectedTab === 0 ? (
-					<div className='mt-4 md:mt-10 text-[#757575] text-lg'>
+					<div className='mt-4 md:mt-10 text-[#757575] text-base md:text-lg'>
 						{product?.description}
 					</div>
 				) : (
-					<div className='flex flex-col gap-20 mt-8'>
-						<div className='flex gap-40 justify-center items-center w-full'>
-							<div className='flex gap-6 items-start self-stretch my-auto'>
-								<div className='flex flex-col w-full'>
-									<h2 className='text-2xl font-bold text-neutral-700'>
-										Customer Reviews
-									</h2>
-									<div className='flex gap-2 items-center mt-2 w-full'>
-										<StarRating rating={3} />
-										<span className='self-stretch my-auto text-xs font-semibold tracking-wide text-zinc-600'>
-											3 out of 5
-										</span>
-									</div>
+					<div className='flex flex-col gap-10 lg:gap-20 mt-8'>
+						<div className='flex flex-col sm:flex-row gap-6 lg:gap-40 justify-between items-center w-full'>
+							<div className='flex flex-col w-full'>
+								<h2 className='text-xl lg:text-2xl font-bold text-neutral-700'>
+									Customer Reviews
+								</h2>
+								<div className='flex justify-start gap-2 items-center mt-2 w-full'>
+									<StarRating rating={3} />
+									<span className='self-stretch my-auto text-xs font-semibold tracking-wide text-zinc-600'>
+										3 out of 5
+									</span>
 								</div>
 							</div>
-							{isWriteReview === true ? (
-								<button
-									onClick={() => setIsWriteReview(false)}
-									className='gap-2 self-stretch px-7 py-3 my-auto text-xl font-semibold tracking-wider leading-snug whitespace-nowrap bg-white border-2 border-solid border-neutral-800 min-h-[51px] min-w-[240px] text-neutral-800 w-[271px] max-md:px-5'
-								>
-									Cancel
-								</button>
-							) : (
-								<button
-									onClick={() => setIsWriteReview(true)}
-									className='gap-2 self-stretch px-7 py-3 my-auto text-xl font-semibold tracking-wider leading-snug whitespace-nowrap bg-[#222] border-2 border-solid border-neutral-800 min-h-[51px] min-w-[240px] text-white w-[271px] max-md:px-5'
-								>
-									Write Review
-								</button>
-							)}
+
+							<button
+								onClick={() => {
+									setIsWriteReview(isWriteReview === false);
+								}}
+								className='gap-2 px-3 md:px-7 py-3 text-xl font-semibold whitespace-nowrap bg-[#222] border-2 border-solid border-neutral-800 min-h-[51px] text-white max-w-[271px] w-full'
+							>
+								{isWriteReview === false ? 'Write Review' : 'Cancel'}
+							</button>
 						</div>
 						{isWriteReview === true ? (
 							<ReviewForm
@@ -534,11 +554,10 @@ export const ProductTemplate = ({ id }: ProductTemplateProps) => {
 								}}
 							/>
 						) : null}
+						<Testimonails showTitle={false} />
 					</div>
 				)}
 			</section>
-
-			<Testimonails showTitle={false} />
 
 			<TitleWithCards
 				mainDivClassName='my-4 md:my-28'

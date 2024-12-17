@@ -12,13 +12,13 @@ import location from '@/../public/assets/images/locationIcon.svg';
 
 export const Footer = () => {
 	return (
-		<footer className='text-black-100 mt-5 border-t border-gray-100'>
+		<footer className='text-black-100 mt-8 border-t border-gray-100'>
 			<div className='my-5 text-center'>
 				<p className='text-gray-700'>
 					Over <span className='font-bold'>15 Thousand</span> Happy Customers
 				</p>
 			</div>
-			<div className='flex flex-col gap-8 lg:gap-5 px-5 lg:px-12 my-10 lg:flex-row xl:justify-between'>
+			<div className='flex flex-col gap-8 lg:gap-5 px-5 lg:px-7 xl:px-12 my-10 lg:flex-row xl:justify-between'>
 				<div className='w-full lg:w-[25%]'>
 					<Image
 						src={logo}
@@ -161,7 +161,7 @@ export const Footer = () => {
 						<input
 							type='text'
 							placeholder='Enter your email'
-							className='px-5 py-2 border-gray-400 border-[1.5px] text-sm'
+							className='w-full px-5 py-2 border-gray-400 border-[1.5px] text-sm'
 						/>
 						<button className='px-5 py-2 bg-[#871B1B] text-md text-white'>
 							Submit
